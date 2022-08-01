@@ -14,7 +14,7 @@ __all__ = ('printImported', 'StructMsg', 'Callback', 'Enum' )
 
 def printImported():
     """Output a list of pubsub modules imported so far"""
-    ll = sorted([mod for mod in sys.modules if mod.find('pubsub') >= 0])
+    ll = sorted(mod for mod in sys.modules if mod.find('pubsub') >= 0)
 
     py2and3.print_('\n'.join(ll))
 

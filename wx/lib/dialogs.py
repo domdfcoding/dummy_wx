@@ -329,7 +329,7 @@ def multipleChoiceDialog(parent=None, message='', title='', lst=[],
     dialog = wx.MultiChoiceDialog(parent, message, title, lst,
                                   wx.CHOICEDLG_STYLE, pos)
     result = DialogResults(dialog.ShowModal())
-    result.selection = tuple([lst[i] for i in dialog.GetSelections()])
+    result.selection = tuple(lst[i] for i in dialog.GetSelections())
     dialog.Destroy()
     return result
 
