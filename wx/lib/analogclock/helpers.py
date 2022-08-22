@@ -197,7 +197,7 @@ class Hand(ElementWithDyer):
         radius, centre, r = end
         angle = math.degrees(r)
         polygon = self.polygon[:]
-        vscale = radius / max([y for x, y in polygon])
+        vscale = radius / max(y for x, y in polygon)
 
         for i, (x, y) in enumerate(polygon):
             x *= self.scale * self.size
@@ -256,13 +256,13 @@ class TickPoly(Element):
 
 
     def _calcPolygon(self):
-        width = max([x for x, y in self.polygon])
-        height = max([y for x, y in self.polygon])
+        width = max(x for x, y in self.polygon)
+        height = max(y for x, y in self.polygon)
         tscale = self.size / max(width, height) * self.scale
         polygon = [(x * tscale, y * tscale) for x, y in self.polygon]
 
-        width = max([x for x, y in polygon])
-        height = max([y for x, y in polygon])
+        width = max(x for x, y in polygon)
+        height = max(y for x, y in polygon)
 
         return polygon, width, height
 

@@ -104,7 +104,7 @@ def makeGray(rgb, factor, maskColor):
     """
 
     if rgb != maskColor:
-        return tuple([int((230 - x)*factor) + x for x in rgb])
+        return tuple(int((230 - x)*factor) + x for x in rgb)
     else:
         return rgb
 

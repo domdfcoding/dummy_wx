@@ -1173,7 +1173,7 @@ class SwitcherDialog(wx.Dialog):
     # Convert a colour to a 6-digit hex string
     def ColourToHexString(self, col):
 
-        hx = '%02x%02x%02x%02x' % tuple([int(c) for c in col])
+        hx = '%02x%02x%02x%02x' % tuple(int(c) for c in col)
         return hx
 
 

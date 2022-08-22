@@ -1896,7 +1896,7 @@ def _colourToValues(c):
     """
     Helper which converts wx.Colour components to a set of values between 0 and 1
     """
-    return tuple( [x/255.0 for x in c.Get(True)] )
+    return tuple( x/255.0 for x in c.Get(True) )
 
 
 class _OffsetHelper:
