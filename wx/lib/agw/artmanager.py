@@ -6,7 +6,7 @@ This module contains drawing routines and customizations for the AGW widgets
 import wx
 import random
 
-from six import BytesIO
+from io import BytesIO
 
 from .fmresources import *
 
@@ -206,7 +206,7 @@ class RendererXP(RendererBase):
         :param `input`: a flag used to call the right method.
         """
 
-        if input is None or type(input) == type(False):
+        if input is None or type(input) == bool:
             self.DrawButtonTheme(dc, rect, state, input)
         else:
             self.DrawButtonColour(dc, rect, state, input)
@@ -1236,7 +1236,7 @@ class ArtManager(wx.EvtHandler):
         :param `input`: a flag used to call the right method.
         """
 
-        if input is None or type(input) == type(False):
+        if input is None or type(input) == bool:
             self.DrawButtonTheme(dc, rect, theme, state, input)
         else:
             self.DrawButtonColour(dc, rect, theme, state, input)
