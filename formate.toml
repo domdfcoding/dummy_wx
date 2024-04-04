@@ -41,5 +41,5 @@ known_third_party = [
     "pytest_rerunfailures",
     "requests",
 ]
-known_first_party = "wx"
+known_first_party = [ "wx",]
 line_length = 115
