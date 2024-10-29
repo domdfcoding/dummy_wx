@@ -27,11 +27,6 @@ python_versions:
 preserve_custom_theme: True
 
 exclude_files:
-  - doc_requirements
-  - conf
-  - rtfd
-  - tox
-  - gitignore
   - pre-commit
 
 # travis secure password for PyPI
