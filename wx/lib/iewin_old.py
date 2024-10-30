@@ -397,97 +397,97 @@ class IEHtmlWindow(wx.activex.IEHtmlWindowBase):
 #  PROPERTIES
 #  --------------------
 #  application
-#      type:VT_DISPATCH  arg:VT_EMPTY  canGet:True  canSet:False
+#  #    type:VT_DISPATCH  arg:VT_EMPTY  canGet:True  canSet:False
 #
 #  parent
-#      type:VT_DISPATCH  arg:VT_EMPTY  canGet:True  canSet:False
+#  #    type:VT_DISPATCH  arg:VT_EMPTY  canGet:True  canSet:False
 #
 #  container
-#      type:VT_DISPATCH  arg:VT_EMPTY  canGet:True  canSet:False
+#  #    type:VT_DISPATCH  arg:VT_EMPTY  canGet:True  canSet:False
 #
 #  document
-#      type:VT_DISPATCH  arg:VT_EMPTY  canGet:True  canSet:False
+#  #    type:VT_DISPATCH  arg:VT_EMPTY  canGet:True  canSet:False
 #
 #  toplevelcontainer
-#      type:bool  arg:VT_EMPTY  canGet:True  canSet:False
+#  #    type:bool  arg:VT_EMPTY  canGet:True  canSet:False
 #
 #  type
-#      type:string  arg:VT_EMPTY  canGet:True  canSet:False
+#  #    type:string  arg:VT_EMPTY  canGet:True  canSet:False
 #
 #  left
-#      type:int  arg:int  canGet:True  canSet:True
+#  #    type:int  arg:int  canGet:True  canSet:True
 #
 #  top
-#      type:int  arg:int  canGet:True  canSet:True
+#  #    type:int  arg:int  canGet:True  canSet:True
 #
 #  width
-#      type:int  arg:int  canGet:True  canSet:True
+#  #    type:int  arg:int  canGet:True  canSet:True
 #
 #  height
-#      type:int  arg:int  canGet:True  canSet:True
+#  #    type:int  arg:int  canGet:True  canSet:True
 #
 #  locationname
-#      type:string  arg:VT_EMPTY  canGet:True  canSet:False
+#  #    type:string  arg:VT_EMPTY  canGet:True  canSet:False
 #
 #  locationurl
-#      type:string  arg:VT_EMPTY  canGet:True  canSet:False
+#  #    type:string  arg:VT_EMPTY  canGet:True  canSet:False
 #
 #  busy
-#      type:bool  arg:VT_EMPTY  canGet:True  canSet:False
+#  #    type:bool  arg:VT_EMPTY  canGet:True  canSet:False
 #
 #  name
-#      type:string  arg:VT_EMPTY  canGet:True  canSet:False
+#  #    type:string  arg:VT_EMPTY  canGet:True  canSet:False
 #
 #  hwnd
-#      type:int  arg:VT_EMPTY  canGet:True  canSet:False
+#  #    type:int  arg:VT_EMPTY  canGet:True  canSet:False
 #
 #  fullname
-#      type:string  arg:VT_EMPTY  canGet:True  canSet:False
+#  #    type:string  arg:VT_EMPTY  canGet:True  canSet:False
 #
 #  path
-#      type:string  arg:VT_EMPTY  canGet:True  canSet:False
+#  #    type:string  arg:VT_EMPTY  canGet:True  canSet:False
 #
 #  visible
-#      type:bool  arg:bool  canGet:True  canSet:True
+#  #    type:bool  arg:bool  canGet:True  canSet:True
 #
 #  statusbar
-#      type:bool  arg:bool  canGet:True  canSet:True
+#  #    type:bool  arg:bool  canGet:True  canSet:True
 #
 #  statustext
-#      type:string  arg:string  canGet:True  canSet:True
+#  #    type:string  arg:string  canGet:True  canSet:True
 #
 #  toolbar
-#      type:int  arg:int  canGet:True  canSet:True
+#  #    type:int  arg:int  canGet:True  canSet:True
 #
 #  menubar
-#      type:bool  arg:bool  canGet:True  canSet:True
+#  #    type:bool  arg:bool  canGet:True  canSet:True
 #
 #  fullscreen
-#      type:bool  arg:bool  canGet:True  canSet:True
+#  #    type:bool  arg:bool  canGet:True  canSet:True
 #
 #  readystate
-#      type:unsupported type 29  arg:VT_EMPTY  canGet:True  canSet:False
+#  #    type:unsupported type 29  arg:VT_EMPTY  canGet:True  canSet:False
 #
 #  offline
-#      type:bool  arg:bool  canGet:True  canSet:True
+#  #    type:bool  arg:bool  canGet:True  canSet:True
 #
 #  silent
-#      type:bool  arg:bool  canGet:True  canSet:True
+#  #    type:bool  arg:bool  canGet:True  canSet:True
 #
 #  registerasbrowser
-#      type:bool  arg:bool  canGet:True  canSet:True
+#  #    type:bool  arg:bool  canGet:True  canSet:True
 #
 #  registerasdroptarget
-#      type:bool  arg:bool  canGet:True  canSet:True
+#  #    type:bool  arg:bool  canGet:True  canSet:True
 #
 #  theatermode
-#      type:bool  arg:bool  canGet:True  canSet:True
+#  #    type:bool  arg:bool  canGet:True  canSet:True
 #
 #  addressbar
-#      type:bool  arg:bool  canGet:True  canSet:True
+#  #    type:bool  arg:bool  canGet:True  canSet:True
 #
 #  resizable
-#      type:bool  arg:bool  canGet:True  canSet:True
+#  #    type:bool  arg:bool  canGet:True  canSet:True
 #
 #
 #

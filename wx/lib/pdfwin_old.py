@@ -531,10 +531,10 @@ elif get_acroversion() is not None:
 #  PROPERTIES
 #  --------------------
 #  src
-#      type:string  arg:string  canGet:True  canSet:True
+#  #    type:string  arg:string  canGet:True  canSet:True
 #
 #  messagehandler
-#      type:VT_VARIANT  arg:VT_VARIANT  canGet:True  canSet:True
+#  #    type:VT_VARIANT  arg:VT_VARIANT  canGet:True  canSet:True
 #
 #
 #

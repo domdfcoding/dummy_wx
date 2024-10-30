@@ -292,73 +292,73 @@ class FlashWindow(wx.activex.ActiveXWindow):
 #  PROPERTIES
 #  --------------------
 #  readystate
-#      type:int  arg:VT_EMPTY  canGet:True  canSet:False
+#  #    type:int  arg:VT_EMPTY  canGet:True  canSet:False
 #
 #  totalframes
-#      type:int  arg:VT_EMPTY  canGet:True  canSet:False
+#  #    type:int  arg:VT_EMPTY  canGet:True  canSet:False
 #
 #  playing
-#      type:bool  arg:bool  canGet:True  canSet:True
+#  #    type:bool  arg:bool  canGet:True  canSet:True
 #
 #  quality
-#      type:int  arg:int  canGet:True  canSet:True
+#  #    type:int  arg:int  canGet:True  canSet:True
 #
 #  scalemode
-#      type:int  arg:int  canGet:True  canSet:True
+#  #    type:int  arg:int  canGet:True  canSet:True
 #
 #  alignmode
-#      type:int  arg:int  canGet:True  canSet:True
+#  #    type:int  arg:int  canGet:True  canSet:True
 #
 #  backgroundcolor
-#      type:int  arg:int  canGet:True  canSet:True
+#  #    type:int  arg:int  canGet:True  canSet:True
 #
 #  loop
-#      type:bool  arg:bool  canGet:True  canSet:True
+#  #    type:bool  arg:bool  canGet:True  canSet:True
 #
 #  movie
-#      type:string  arg:string  canGet:True  canSet:True
+#  #    type:string  arg:string  canGet:True  canSet:True
 #
 #  framenum
-#      type:int  arg:int  canGet:True  canSet:True
+#  #    type:int  arg:int  canGet:True  canSet:True
 #
 #  wmode
-#      type:string  arg:string  canGet:True  canSet:True
+#  #    type:string  arg:string  canGet:True  canSet:True
 #
 #  salign
-#      type:string  arg:string  canGet:True  canSet:True
+#  #    type:string  arg:string  canGet:True  canSet:True
 #
 #  menu
-#      type:bool  arg:bool  canGet:True  canSet:True
+#  #    type:bool  arg:bool  canGet:True  canSet:True
 #
 #  base
-#      type:string  arg:string  canGet:True  canSet:True
+#  #    type:string  arg:string  canGet:True  canSet:True
 #
 #  scale
-#      type:string  arg:string  canGet:True  canSet:True
+#  #    type:string  arg:string  canGet:True  canSet:True
 #
 #  devicefont
-#      type:bool  arg:bool  canGet:True  canSet:True
+#  #    type:bool  arg:bool  canGet:True  canSet:True
 #
 #  embedmovie
-#      type:bool  arg:bool  canGet:True  canSet:True
+#  #    type:bool  arg:bool  canGet:True  canSet:True
 #
 #  bgcolor
-#      type:string  arg:string  canGet:True  canSet:True
+#  #    type:string  arg:string  canGet:True  canSet:True
 #
 #  quality2
-#      type:string  arg:string  canGet:True  canSet:True
+#  #    type:string  arg:string  canGet:True  canSet:True
 #
 #  swremote
-#      type:string  arg:string  canGet:True  canSet:True
+#  #    type:string  arg:string  canGet:True  canSet:True
 #
 #  flashvars
-#      type:string  arg:string  canGet:True  canSet:True
+#  #    type:string  arg:string  canGet:True  canSet:True
 #
 #  allowscriptaccess
-#      type:string  arg:string  canGet:True  canSet:True
+#  #    type:string  arg:string  canGet:True  canSet:True
 #
 #  moviedata
-#      type:string  arg:string  canGet:True  canSet:True
+#  #    type:string  arg:string  canGet:True  canSet:True
 #
 #
 #
