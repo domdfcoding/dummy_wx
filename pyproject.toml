@@ -49,6 +49,15 @@ python-implementations = [ "CPython",]
 platforms = [ "Windows", "macOS", "Linux",]
 license-key = "LGPL-3.0-or-later"
 package = "wx"
+additional-files = [
+    "recursive-include wx/py *.txt",
+    "recursive-include wx/lib *.txt",
+    "recursive-include wx/lib *.md",
+    "recursive-include wx/lib *.idl",
+    "recursive-include wx/lib *.tlb",
+    "recursive-include wx/lib *.html",
+    "recursive-include wx/lib *.py",
+]
 
 [tool.mypy]
 python_version = "3.6"
