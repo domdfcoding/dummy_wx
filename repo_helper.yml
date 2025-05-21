@@ -29,11 +29,15 @@ preserve_custom_theme: True
 exclude_files:
   - pre-commit
 
-# travis secure password for PyPI
+manifest_additional:
+  - "recursive-include wx/py *.txt"
+  - "recursive-include wx/lib *.txt"
+  - "recursive-include wx/lib *.md"
+  - "recursive-include wx/lib *.idl"
+  - "recursive-include wx/lib *.tlb"
+  - "recursive-include wx/lib *.html"
+  - "recursive-include wx/lib *.py"
 
-# additional lines for MANIFEST.in
-#manifest_additional:
-#  - "recursive-include git_helper/templates *"
 
 classifiers:
   - 'Intended Audience :: Developers'

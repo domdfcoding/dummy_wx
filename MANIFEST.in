@@ -1,5 +1,12 @@
 include LICENSE
 include requirements.txt
 prune **/__pycache__
+recursive-include wx/py *.txt
+recursive-include wx/lib *.txt
+recursive-include wx/lib *.md
+recursive-include wx/lib *.idl
+recursive-include wx/lib *.tlb
+recursive-include wx/lib *.html
+recursive-include wx/lib *.py
 recursive-include wx *.pyi
 include wx/py.typed
