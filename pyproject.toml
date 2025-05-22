@@ -7,7 +7,7 @@ name = "dummy_wx"
 version = "0.3.0"
 description = "This module does nothing."
 readme = "README.rst"
-requires-python = ">=3.6.1"
+requires-python = ">=3.7"
 keywords = [ "sphinx", "wxpython",]
 classifiers = [
     "Intended Audience :: Developers",
@@ -15,7 +15,6 @@ classifiers = [
     "Operating System :: OS Independent",
     "Programming Language :: Python",
     "Programming Language :: Python :: 3 :: Only",
-    "Programming Language :: Python :: 3.6",
     "Programming Language :: Python :: 3.7",
     "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: Implementation :: CPython",
@@ -44,7 +43,7 @@ platforms = [ "Windows", "macOS", "Linux",]
 
 [tool.whey]
 base-classifiers = [ "Intended Audience :: Developers", "Operating System :: OS Independent", "Topic :: Utilities",]
-python-versions = [ "3.6", "3.7", "3.8",]
+python-versions = [ "3.7", "3.8",]
 python-implementations = [ "CPython",]
 platforms = [ "Windows", "macOS", "Linux",]
 license-key = "LGPL-3.0-or-later"
@@ -60,7 +59,7 @@ additional-files = [
 ]
 
 [tool.mypy]
-python_version = "3.6"
+python_version = "3.8"
 namespace_packages = true
 check_untyped_defs = true
 warn_unused_ignores = true
