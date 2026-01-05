@@ -2593,7 +2593,7 @@ if __name__ == '__main__':
     if sys.version_info[0] == 2:
         PY2 = True
         PY3 = False
-    elif sys.version_info[0] == 3:
+    else:
         PY2 = False
         PY3 = True
     if PY2:
