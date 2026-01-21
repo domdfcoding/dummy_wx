@@ -53,20 +53,20 @@ the same "wx" package name to pretend to be wxPython.
 	:target: https://www.codefactor.io/repository/github/domdfcoding/dummy_wx
 	:alt: CodeFactor Grade
 
-.. |pypi-version| image:: https://img.shields.io/pypi/v/dummy_wx
-	:target: https://pypi.org/project/dummy_wx/
+.. |pypi-version| image:: https://img.shields.io/pypi/v/dummy-wx
+	:target: https://pypi.org/project/dummy-wx/
 	:alt: PyPI - Package Version
 
-.. |supported-versions| image:: https://img.shields.io/pypi/pyversions/dummy_wx?logo=python&logoColor=white
-	:target: https://pypi.org/project/dummy_wx/
+.. |supported-versions| image:: https://img.shields.io/pypi/pyversions/dummy-wx?logo=python&logoColor=white
+	:target: https://pypi.org/project/dummy-wx/
 	:alt: PyPI - Supported Python Versions
 
-.. |supported-implementations| image:: https://img.shields.io/pypi/implementation/dummy_wx
-	:target: https://pypi.org/project/dummy_wx/
+.. |supported-implementations| image:: https://img.shields.io/pypi/implementation/dummy-wx
+	:target: https://pypi.org/project/dummy-wx/
 	:alt: PyPI - Supported Implementations
 
-.. |wheel| image:: https://img.shields.io/pypi/wheel/dummy_wx
-	:target: https://pypi.org/project/dummy_wx/
+.. |wheel| image:: https://img.shields.io/pypi/wheel/dummy-wx
+	:target: https://pypi.org/project/dummy-wx/
 	:alt: PyPI - Wheel
 
 .. |license| image:: https://img.shields.io/github/license/domdfcoding/dummy_wx
@@ -87,8 +87,8 @@ the same "wx" package name to pretend to be wxPython.
 .. |maintained| image:: https://img.shields.io/maintenance/yes/2026
 	:alt: Maintenance
 
-.. |pypi-downloads| image:: https://img.shields.io/pypi/dm/dummy_wx
-	:target: https://pypistats.org/packages/dummy_wx
+.. |pypi-downloads| image:: https://img.shields.io/pypi/dm/dummy-wx
+	:target: https://pypistats.org/packages/dummy-wx
 	:alt: PyPI - Downloads
 
 .. end shields
