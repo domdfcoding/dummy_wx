@@ -23,7 +23,6 @@ user hits '.' when typing.
 """
 
 import  wx
-import  six
 from wx.lib.masked import BaseMaskedTextCtrl
 
 # jmg 12/9/03 - when we cut ties with Py 2.2 and earlier, this would
@@ -60,14 +59,14 @@ class IpAddrCtrlAccessorsMixin:
 
     for param in exposed_basectrl_params:
         propname = param[0].upper() + param[1:]
-        exec(f'def Set{propname}(self, value): self.SetCtrlParameters({param}=value)')
+        exec('def Set%s(self, value): self.SetCtrlParameters(%s=value)' % (propname, param))
         exec('def Get%s(self): return self.GetCtrlParameter("%s")''' % (propname, param))
 
         if param.find('Colour') != -1:
             # add non-british spellings, for backward-compatibility
             propname.replace('Colour', 'Color')
 
-            exec(f'def Set{propname}(self, value): self.SetCtrlParameters({param}=value)')
+            exec('def Set%s(self, value): self.SetCtrlParameters(%s=value)' % (propname, param))
             exec('def Get%s(self): return self.GetCtrlParameter("%s")''' % (propname, param))
 
 
@@ -155,7 +154,7 @@ class IpAddrCtrl( BaseMaskedTextCtrl, IpAddrCtrlAccessorsMixin ):
         if not event.ShiftDown():
             if pos > edit_start and pos < edit_end:
                 # clip data in field to the right of pos, if adjusting fields
-                # when not at delimeter; (assumption == they hit '.')
+                # when not at delimiter; (assumption == they hit '.')
                 newvalue = oldvalue[:pos] + ' ' * (edit_end - pos) + oldvalue[edit_end:]
                 self._SetValue(newvalue)
                 self._SetInsertionPoint(pos)

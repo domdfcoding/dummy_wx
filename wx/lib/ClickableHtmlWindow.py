@@ -46,7 +46,7 @@ class PyClickableHtmlWindow(html.HtmlWindow):
                     command = "/usr/bin/netscape"
                 else:
                     command = "start"
-                command = "{} \"{}\"".format(command,
+                command = "%s \"%s\"" % (command,
                                          self.link.GetText ())
                 os.system (command)
 

@@ -50,6 +50,30 @@ class pdfButtonPanel(bp.ButtonPanel):
         self.SetProperties()
         self.CreateButtons()
 
+    def GetPanelItems(self):
+        """
+        Return the buttons that should be displayed. A subclass can customize this
+        """
+        return [
+          ('btn', images.PrintIt.GetBitmap(), wx.ITEM_NORMAL, "Print", self.OnPrint),
+          ('sep',),
+          ('btn', images.SaveIt.GetBitmap(), wx.ITEM_NORMAL, "Save", self.OnSave),
+          ('sep',),
+          ('btn', images.First.GetBitmap(), wx.ITEM_NORMAL, "First page", self.OnFirst),
+          ('btn', images.Prev.GetBitmap(), wx.ITEM_NORMAL, "Previous page", self.OnPrev),
+          ('btn', images.Next.GetBitmap(), wx.ITEM_NORMAL, "Next page", self.OnNext),
+          ('btn', images.Last.GetBitmap(), wx.ITEM_NORMAL, "Last page", self.OnLast),
+          ('Ctrl', self.pagelabel),
+          ('ctrl', self.page),
+          ('ctrl', self.maxlabel),
+          ('sep',),
+          ('btn', images.ZoomOut.GetBitmap(), wx.ITEM_NORMAL, "Zoom out", self.OnZoomOut),
+          ('btn', images.ZoomIn.GetBitmap(), wx.ITEM_NORMAL, "Zoom in", self.OnZoomIn),
+          ('ctrl', self.zoom),
+          ('btn', images.Width.GetBitmap(), wx.ITEM_NORMAL, "Fit page width", self.OnWidth),
+          ('btn', images.Height.GetBitmap(), wx.ITEM_NORMAL, "Fit page height", self.OnHeight),
+          ]
+
     def CreateButtons(self):
         """
         Add the buttons and other controls to the panel.
@@ -73,25 +97,7 @@ class pdfButtonPanel(bp.ButtonPanel):
             self.zoom.Append(item[0], item[1])      # string value and client data
         self.Bind(wx.EVT_COMBOBOX, self.OnZoomSet, self.zoom)
         self.Bind(wx.EVT_TEXT_ENTER, self.OnZoomSet, self.zoom)
-        panelitems = [
-          ('btn', images.PrintIt.GetBitmap(), wx.ITEM_NORMAL, "Print", self.OnPrint),
-          ('sep',),
-          ('btn', images.SaveIt.GetBitmap(), wx.ITEM_NORMAL, "Save", self.OnSave),
-          ('sep',),
-          ('btn', images.First.GetBitmap(), wx.ITEM_NORMAL, "First page", self.OnFirst),
-          ('btn', images.Prev.GetBitmap(), wx.ITEM_NORMAL, "Previous page", self.OnPrev),
-          ('btn', images.Next.GetBitmap(), wx.ITEM_NORMAL, "Next page", self.OnNext),
-          ('btn', images.Last.GetBitmap(), wx.ITEM_NORMAL, "Last page", self.OnLast),
-          ('Ctrl', self.pagelabel),
-          ('ctrl', self.page),
-          ('ctrl', self.maxlabel),
-          ('sep',),
-          ('btn', images.ZoomOut.GetBitmap(), wx.ITEM_NORMAL, "Zoom out", self.OnZoomOut),
-          ('btn', images.ZoomIn.GetBitmap(), wx.ITEM_NORMAL, "Zoom in", self.OnZoomIn),
-          ('ctrl', self.zoom),
-          ('btn', images.Width.GetBitmap(), wx.ITEM_NORMAL, "Fit page width", self.OnWidth),
-          ('btn', images.Height.GetBitmap(), wx.ITEM_NORMAL, "Fit page height", self.OnHeight),
-          ]
+        panelitems = self.GetPanelItems()
 
         self.Freeze()
         for item in panelitems:
@@ -122,7 +128,7 @@ class pdfButtonPanel(bp.ButtonPanel):
         bpArt.SetColor(bp.BP_GRADIENT_COLOUR_FROM, wx.Colour(119, 136, 153)) #light slate
         bpArt.SetColor(bp.BP_GRADIENT_COLOUR_TO, wx.Colour(245, 245, 245))   # white smoke
         bpArt.SetColor(bp.BP_BORDER_COLOUR, wx.Colour(119, 136, 153))
-        bpArt.SetColor(bp.BP_BUTTONTEXT_COLOUR, wx.Colour(0,0,0))            # not used
+        bpArt.SetColor(bp.BP_BUTTONTEXT_COLOUR, wx.BLACK)  # not used
         bpArt.SetColor(bp.BP_SEPARATOR_COLOUR,
                        bp.BrightenColour(wx.Colour(60, 11, 112), 0.85))
         bpArt.SetColor(bp.BP_SELECTION_BRUSH_COLOUR, wx.Colour(225, 225, 255))    # used?

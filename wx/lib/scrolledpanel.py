@@ -154,9 +154,10 @@ class ScrolledPanel(wx.ScrolledWindow):
 
 
     def _SetupAfter(self, scrollToTop):
-        self.SetVirtualSize(self.GetBestVirtualSize())
-        if scrollToTop:
-            self.Scroll(0,0)
+        if self:
+            self.SetVirtualSize(self.GetBestVirtualSize())
+            if scrollToTop:
+                self.Scroll(0,0)
 
 
     def OnChildFocus(self, evt):
@@ -173,6 +174,23 @@ class ScrolledPanel(wx.ScrolledWindow):
             evt.Skip()
 
 
+    def GetChildRectRelativeToSelf(self, child: wx.Window):
+        """
+        Same as `child.GetRect()` except the position returned is relative
+        to this ScrolledPanel rather than the child's parent.
+
+        :param wx.Window `child`: any :class:`wx.Window` - derived control.
+
+        .. note:: window.GetRect returns the size of a window, and its position
+            relative to its parent. When calculating ScrollChildIntoView, the
+            position relative to its parent is not relevant unless the parent
+            is the ScrolledPanel itself.
+        """
+        cr = child.GetScreenRect()
+        spp = self.GetScreenPosition()
+        return wx.Rect(cr.x - spp.x, cr.y - spp.y, cr.width, cr.height)
+
+
     def ScrollChildIntoView(self, child):
         """
         Scroll the panel so that the specified child window is in view.
@@ -187,7 +205,7 @@ class ScrolledPanel(wx.ScrolledWindow):
 
         sppu_x, sppu_y = self.GetScrollPixelsPerUnit()
         vs_x, vs_y   = self.GetViewStart()
-        cr = child.GetRect()
+        cr = self.GetChildRectRelativeToSelf(child)
         clntsz = self.GetClientSize()
         new_vs_x, new_vs_y = -1, -1
 
@@ -222,4 +240,4 @@ class ScrolledPanel(wx.ScrolledWindow):
         # if we need to adjust
         if new_vs_x != -1 or new_vs_y != -1:
             #print("%s: (%s, %s)" % (self.GetName(), new_vs_x, new_vs_y))
-            self.Scroll(new_vs_x, new_vs_y)
+            self.Scroll(int(new_vs_x), int(new_vs_y))

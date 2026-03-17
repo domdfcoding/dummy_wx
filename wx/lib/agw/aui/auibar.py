@@ -30,13 +30,8 @@ import wx
 
 from .aui_utilities import BitmapFromBits, StepColour, GetLabelSize
 from .aui_utilities import GetBaseColour, MakeDisabledBitmap
-
-import six
-
 from .aui_constants import *
 
-# wxPython version string
-_VERSION_STRING = wx.VERSION_STRING
 
 # AuiToolBar events
 wxEVT_COMMAND_AUITOOLBAR_TOOL_DROPDOWN = wx.NewEventType()
@@ -69,7 +64,7 @@ class CommandToolBarEvent(wx.PyCommandEvent):
         :param integer `win_id`: the window identification number.
         """
 
-        if type(command_type) in (int,):
+        if isinstance(command_type, int):
             wx.PyCommandEvent.__init__(self, command_type, win_id)
         else:
             wx.PyCommandEvent.__init__(self, command_type.GetEventType(), command_type.GetId())
@@ -159,7 +154,7 @@ class AuiToolBarEvent(CommandToolBarEvent):
 
         CommandToolBarEvent.__init__(self, command_type, win_id)
 
-        if type(command_type) in (int,):
+        if isinstance(command_type, int):
             self.notify = wx.NotifyEvent(command_type, win_id)
         else:
             self.notify = wx.NotifyEvent(command_type.GetEventType(), command_type.GetId())
@@ -272,8 +267,9 @@ class AuiToolBarItem:
     """
     AuiToolBarItem is a toolbar element.
 
-    It has a unique id (except for the separators which always have id = -1), the
-    style (telling whether it is a normal button, separator or a control), the
+    It has a unique id (except for the separators which always have id = -1 and the
+    automatically added restore-from-minimize which always have id = ID_RESTORE_FRAME),
+    the style (telling whether it is a normal button, separator or a control), the
     state (toggled or not, enabled or not) and short and long help strings. The
     default implementations use the short help string for the tooltip text which
     is popped up when the mouse pointer enters the tool and the long help string
@@ -740,7 +736,7 @@ class AuiToolBarItem:
 class AuiDefaultToolBarArt:
     """
     Toolbar art provider code - a tab provider provides all drawing functionality to the :class:`AuiToolBar`.
-    This allows the :class:`AuiToolBar` to have a plugable look-and-feel.
+    This allows the :class:`AuiToolBar` to have a pluggable look-and-feel.
 
     By default, a :class:`AuiToolBar` uses an instance of this class called :class:`AuiDefaultToolBarArt`
     which provides bitmap art and a colour scheme that is adapted to the major platforms'
@@ -980,16 +976,16 @@ class AuiDefaultToolBarArt:
 
         if orient == AUI_TBTOOL_HORIZONTAL:
             text_x = rect.x
-            text_y = rect.y + (rect.height-text_height)/2
+            text_y = rect.y + (rect.height-text_height)//2
             dc.DrawText(item.GetLabel(), text_x, text_y)
 
         elif orient == AUI_TBTOOL_VERT_CLOCKWISE:
-            text_x = rect.x + (rect.width+text_width)/2
+            text_x = rect.x + (rect.width+text_width)//2
             text_y = rect.y
             dc.DrawRotatedText(item.GetLabel(), text_x, text_y, 270)
 
         elif AUI_TBTOOL_VERT_COUNTERCLOCKWISE:
-            text_x = rect.x + (rect.width-text_width)/2
+            text_x = rect.x + (rect.width-text_width)//2
             text_y = rect.y + text_height
             dc.DrawRotatedText(item.GetLabel(), text_x, text_y, 90)
 
@@ -1006,38 +1002,38 @@ class AuiDefaultToolBarArt:
 
         bmp_rect, text_rect = self.GetToolsPosition(dc, item, rect)
 
-        if not item.GetState() & AUI_BUTTON_STATE_DISABLED:
+        item_state = item.GetState()
+        if not item_state & AUI_BUTTON_STATE_DISABLED:
 
-            if item.GetState() & AUI_BUTTON_STATE_PRESSED:
+            if item_state & AUI_BUTTON_STATE_PRESSED:
 
                 dc.SetPen(wx.Pen(self._highlight_colour))
                 dc.SetBrush(wx.Brush(StepColour(self._highlight_colour, 150)))
                 dc.DrawRectangle(rect)
 
-            elif item.GetState() & AUI_BUTTON_STATE_HOVER or item.IsSticky():
+            elif item_state & AUI_BUTTON_STATE_HOVER or item.IsSticky():
 
                 dc.SetPen(wx.Pen(self._highlight_colour))
                 dc.SetBrush(wx.Brush(StepColour(self._highlight_colour, 170)))
 
                 # draw an even lighter background for checked item hovers (since
                 # the hover background is the same colour as the check background)
-                if item.GetState() & AUI_BUTTON_STATE_CHECKED:
+                if item_state & AUI_BUTTON_STATE_CHECKED:
                     dc.SetBrush(wx.Brush(StepColour(self._highlight_colour, 180)))
 
                 dc.DrawRectangle(rect)
 
-            elif item.GetState() & AUI_BUTTON_STATE_CHECKED:
+            elif item_state & AUI_BUTTON_STATE_CHECKED:
 
-                # it's important to put this code in an else statment after the
+                # it's important to put this code in an else statement after the
                 # hover, otherwise hovers won't draw properly for checked items
                 dc.SetPen(wx.Pen(self._highlight_colour))
                 dc.SetBrush(wx.Brush(StepColour(self._highlight_colour, 170)))
                 dc.DrawRectangle(rect)
 
-        if item.GetState() & AUI_BUTTON_STATE_DISABLED:
+        if item_state & AUI_BUTTON_STATE_DISABLED:
             bmp = item.GetDisabledBitmap()
-        elif item.GetState() & AUI_BUTTON_STATE_HOVER or \
-                item.GetState() & AUI_BUTTON_STATE_PRESSED:
+        elif item_state & AUI_BUTTON_STATE_HOVER or item_state & AUI_BUTTON_STATE_PRESSED:
             bmp = item.GetHoverBitmap()
             if not bmp:
                 bmp = item.GetBitmap()
@@ -1049,7 +1045,7 @@ class AuiDefaultToolBarArt:
 
         # set the item's text colour based on if it is disabled
         dc.SetTextForeground(wx.BLACK)
-        if item.GetState() & AUI_BUTTON_STATE_DISABLED:
+        if item_state & AUI_BUTTON_STATE_DISABLED:
             dc.SetTextForeground(DISABLED_TEXT_COLOUR)
 
         if self._agwFlags & AUI_TB_TEXT and item.GetLabel() != "":
@@ -1087,34 +1083,35 @@ class AuiDefaultToolBarArt:
             dropbmp_width = dropbmp_height
             dropbmp_height = tmp
 
-        dropbmp_x = dropdown_rect.x + (dropdown_rect.width/2) - dropbmp_width/2
-        dropbmp_y = dropdown_rect.y + (dropdown_rect.height/2) - dropbmp_height/2
+        dropbmp_x = dropdown_rect.x + (dropdown_rect.width//2) - dropbmp_width//2
+        dropbmp_y = dropdown_rect.y + (dropdown_rect.height//2) - dropbmp_height//2
 
         bmp_rect, text_rect = self.GetToolsPosition(dc, item, button_rect)
 
-        if item.GetState() & AUI_BUTTON_STATE_PRESSED:
+        item_state = item.GetState()
+        if item_state & AUI_BUTTON_STATE_PRESSED:
 
             dc.SetPen(wx.Pen(self._highlight_colour))
             dc.SetBrush(wx.Brush(StepColour(self._highlight_colour, 140)))
             dc.DrawRectangle(button_rect)
             dc.DrawRectangle(dropdown_rect)
 
-        elif item.GetState() & AUI_BUTTON_STATE_HOVER or item.IsSticky():
+        elif item_state & AUI_BUTTON_STATE_HOVER or item.IsSticky():
 
             dc.SetPen(wx.Pen(self._highlight_colour))
             dc.SetBrush(wx.Brush(StepColour(self._highlight_colour, 170)))
             dc.DrawRectangle(button_rect)
             dc.DrawRectangle(dropdown_rect)
 
-        elif item.GetState() & AUI_BUTTON_STATE_CHECKED:
-            # it's important to put this code in an else statment after the
+        elif item_state & AUI_BUTTON_STATE_CHECKED:
+            # it's important to put this code in an else statement after the
             # hover, otherwise hovers won't draw properly for checked items
             dc.SetPen(wx.Pen(self._highlight_colour))
             dc.SetBrush(wx.Brush(StepColour(self._highlight_colour, 170)))
             dc.DrawRectangle(button_rect)
             dc.DrawRectangle(dropdown_rect)
 
-        if item.GetState() & AUI_BUTTON_STATE_DISABLED:
+        if item_state & AUI_BUTTON_STATE_DISABLED:
 
             bmp = item.GetDisabledBitmap()
             dropbmp = self._disabled_button_dropdown_bmp
@@ -1126,6 +1123,7 @@ class AuiDefaultToolBarArt:
 
         if bmp.IsOk():
             dc.DrawBitmap(bmp, bmp_rect.x, bmp_rect.y, True)
+
         if horizontal:
             dc.DrawBitmap(dropbmp, dropbmp_x, dropbmp_y, True)
         else:
@@ -1134,7 +1132,7 @@ class AuiDefaultToolBarArt:
 
         # set the item's text colour based on if it is disabled
         dc.SetTextForeground(wx.BLACK)
-        if item.GetState() & AUI_BUTTON_STATE_DISABLED:
+        if item_state & AUI_BUTTON_STATE_DISABLED:
             dc.SetTextForeground(DISABLED_TEXT_COLOUR)
 
         if self._agwFlags & AUI_TB_TEXT and item.GetLabel() != "":
@@ -1170,7 +1168,7 @@ class AuiDefaultToolBarArt:
         # set the label's text colour
         dc.SetTextForeground(wx.BLACK)
 
-        text_x = rect.x + (rect.width/2) - (text_width/2) + 1
+        text_x = rect.x + (rect.width//2) - (text_width//2) + 1
         text_y = rect.y + rect.height - text_height - 1
 
         if self._agwFlags & AUI_TB_TEXT and item.GetLabel() != "":
@@ -1263,18 +1261,18 @@ class AuiDefaultToolBarArt:
 
         if horizontal:
 
-            rect.x += (rect.width/2)
+            rect.x += (rect.width//2)
             rect.width = 1
-            new_height = (rect.height*3)/4
-            rect.y += (rect.height/2) - (new_height/2)
+            new_height = (rect.height*3)//4
+            rect.y += (rect.height//2) - (new_height//2)
             rect.height = new_height
 
         else:
 
-            rect.y += (rect.height/2)
+            rect.y += (rect.height//2)
             rect.height = 1
-            new_width = (rect.width*3)/4
-            rect.x += (rect.width/2) - (new_width/2)
+            new_width = (rect.width*3)//4
+            rect.x += (rect.width//2) - (new_width//2)
             rect.width = new_width
 
         start_colour = StepColour(self._base_colour, 80)
@@ -1290,33 +1288,39 @@ class AuiDefaultToolBarArt:
         :param `wnd`: a :class:`wx.Window` derived window;
         :param wx.Rect `rect`: the :class:`AuiToolBarItem` rectangle.
         """
+        # local opts
+        dc_DrawPoint = dc.DrawPoint
+        dc_SetPen = dc.SetPen
+        _gripper_pen1, _gripper_pen2, _gripper_pen3 = self._gripper_pen1, self._gripper_pen2, self._gripper_pen3
+        toolbar_is_vertical = self._agwFlags & AUI_TB_VERTICAL
+        rect_x, rect_y, rect_width, rect_height = rect.x, rect.y, rect.GetWidth(), rect.GetHeight()
 
         i = 0
         while 1:
 
-            if self._agwFlags & AUI_TB_VERTICAL:
+            if toolbar_is_vertical:
 
-                x = rect.x + (i*4) + 4
-                y = rect.y + 3
-                if x > rect.GetWidth() - 4:
+                x = rect_x + (i*4) + 4
+                y = rect_y + 3
+                if x > rect_width - 4:
                     break
 
             else:
 
-                x = rect.x + 3
-                y = rect.y + (i*4) + 4
-                if y > rect.GetHeight() - 4:
+                x = rect_x + 3
+                y = rect_y + (i*4) + 4
+                if y > rect_height - 4:
                     break
 
-            dc.SetPen(self._gripper_pen1)
-            dc.DrawPoint(x, y)
-            dc.SetPen(self._gripper_pen2)
-            dc.DrawPoint(x, y+1)
-            dc.DrawPoint(x+1, y)
-            dc.SetPen(self._gripper_pen3)
-            dc.DrawPoint(x+2, y+1)
-            dc.DrawPoint(x+2, y+2)
-            dc.DrawPoint(x+1, y+2)
+            dc_SetPen(_gripper_pen1)
+            dc_DrawPoint(x, y)
+            dc_SetPen(_gripper_pen2)
+            dc_DrawPoint(x, y+1)
+            dc_DrawPoint(x+1, y)
+            dc_SetPen(_gripper_pen3)
+            dc_DrawPoint(x+2, y+1)
+            dc_DrawPoint(x+2, y+2)
+            dc_DrawPoint(x+1, y+2)
 
             i += 1
 
@@ -1352,8 +1356,8 @@ class AuiDefaultToolBarArt:
                 dc.SetBrush(wx.Brush(light_gray_bg))
                 dc.DrawRectangle(rect.x+1, rect.y, rect.width, rect.height)
 
-        x = rect.x + 1 + (rect.width-self._overflow_bmp.GetWidth())/2
-        y = rect.y + 1 + (rect.height-self._overflow_bmp.GetHeight())/2
+        x = rect.x + 1 + (rect.width-self._overflow_bmp.GetWidth())//2
+        y = rect.y + 1 + (rect.height-self._overflow_bmp.GetHeight())//2
         dc.DrawBitmap(self._overflow_bmp, x, y, True)
 
 
@@ -1485,21 +1489,21 @@ class AuiDefaultToolBarArt:
         bmp_x = bmp_y = text_x = text_y = 0
 
         if horizontal and text_bottom:
-            bmp_x = rect.x + (rect.width/2) - (bmp_width/2)
+            bmp_x = rect.x + (rect.width//2) - (bmp_width//2)
             bmp_y = rect.y + 3
-            text_x = rect.x + (rect.width/2) - (text_width/2)
+            text_x = rect.x + (rect.width//2) - (text_width//2)
             text_y = rect.y + ((bmp_y - rect.y) * 2) + bmp_height
 
         elif horizontal and text_right:
             bmp_x = rect.x + 3
-            bmp_y = rect.y + (rect.height/2) - (bmp_height / 2)
+            bmp_y = rect.y + (rect.height//2) - (bmp_height // 2)
             text_x = rect.x + ((bmp_x - rect.x) * 2) + bmp_width
-            text_y = rect.y + (rect.height/2) - (text_height/2)
+            text_y = rect.y + (rect.height//2) - (text_height//2)
 
         elif not horizontal and text_bottom:
-            bmp_x = rect.x + (rect.width / 2) - (bmp_width / 2)
+            bmp_x = rect.x + (rect.width // 2) - (bmp_width // 2)
             bmp_y = rect.y + 3
-            text_x = rect.x + (rect.width / 2) - (text_width / 2)
+            text_x = rect.x + (rect.width // 2) - (text_width // 2)
             text_y = rect.y + ((bmp_y - rect.y) * 2) + bmp_height
 
         bmp_rect = wx.Rect(bmp_x, bmp_y, bmp_width, bmp_height)
@@ -1698,7 +1702,7 @@ class AuiToolBar(wx.Control):
     def SetArtProvider(self, art):
         """
         Instructs :class:`AuiToolBar` to use art provider specified by parameter `art`
-        for all drawing calls. This allows plugable look-and-feel features.
+        for all drawing calls. This allows pluggable look-and-feel features.
 
         :param `art`: an art provider.
 
@@ -2028,26 +2032,26 @@ class AuiToolBar(wx.Control):
         self.Clear()
 
 
-    def DeleteTool(self, tool_id):
+    def DeleteTool(self, tool):
         """
         Removes the specified tool from the toolbar and deletes it.
 
-        :param integer `tool_id`: the :class:`AuiToolBarItem` identifier.
+        :param `tool`: the :class:`AuiToolBarItem` or its integer identifier.
 
         :returns: ``True`` if the tool was deleted, ``False`` otherwise.
 
         :note: Note that it is unnecessary to call :meth:`Realize` for the change to
          take place, it will happen immediately.
         """
-
-        idx = self.GetToolIndex(tool_id)
-
-        if idx >= 0 and idx < len(self._items):
-            self._items.pop(idx)
-            self.Realize()
-            return True
-
-        return False
+        if isinstance(tool, AuiToolBarItem):
+            try:
+                self._items.remove(tool)
+                self.Realize()
+                return True
+            except ValueError:
+                return False
+        # Assume tool is the id of the tool to be removed
+        return self.DeleteToolByPos(self.GetToolIndex(tool))
 
 
     def DeleteToolByPos(self, pos):
@@ -2106,6 +2110,19 @@ class AuiToolBar(wx.Control):
 
         return None
 
+
+    def FindToolByUserData(self, userData):
+        """
+        Finds a tool for the given client id.
+
+        :param PyObject `userData`: the user data object.
+        """
+
+        for item in self._items:
+            if item.user_data == userData:
+                return item
+
+        return None
 
     def FindToolForPosition(self, x, y):
         """
@@ -2603,12 +2620,7 @@ class AuiToolBar(wx.Control):
         # find out if the mouse cursor is inside the dropdown rectangle
         if overflow_rect.Contains((pt.x, pt.y)):
 
-            if _VERSION_STRING < "2.9":
-                leftDown = wx.GetMouseState().LeftDown()
-            else:
-                leftDown = wx.GetMouseState().LeftIsDown()
-
-            if leftDown:
+            if wx.GetMouseState().LeftIsDown():
                 overflow_state = AUI_BUTTON_STATE_PRESSED
             else:
                 overflow_state = AUI_BUTTON_STATE_HOVER
@@ -2992,6 +3004,8 @@ class AuiToolBar(wx.Control):
 
         # create the new sizer to add toolbar elements to
         sizer = wx.BoxSizer((horizontal and [wx.HORIZONTAL] or [wx.VERTICAL])[0])
+        # local opts
+        sizer_Add, sizer_AddSpacer, sizer_AddStretchSpacer, sizer_SetItemMinSize = sizer.Add, sizer.AddSpacer, sizer.AddStretchSpacer, sizer.SetItemMinSize
 
         # add gripper area
         separator_size = self._art.GetElementSize(AUI_TBART_SEPARATOR_SIZE)
@@ -2999,18 +3013,18 @@ class AuiToolBar(wx.Control):
 
         if gripper_size > 0 and self._gripper_visible:
             if horizontal:
-                self._gripper_sizer_item = sizer.Add((gripper_size, 1), 0, wx.EXPAND)
+                self._gripper_sizer_item = sizer_Add((gripper_size, 1), 0, wx.EXPAND)
             else:
-                self._gripper_sizer_item = sizer.Add((1, gripper_size), 0, wx.EXPAND)
+                self._gripper_sizer_item = sizer_Add((1, gripper_size), 0, wx.EXPAND)
         else:
             self._gripper_sizer_item = None
 
         # add "left" padding
         if self._left_padding > 0:
             if horizontal:
-                sizer.Add((self._left_padding, 1))
+                sizer_Add((self._left_padding, 1))
             else:
-                sizer.Add((1, self._left_padding))
+                sizer_Add((1, self._left_padding))
 
         count = len(self._items)
         for i, item in enumerate(self._items):
@@ -3021,42 +3035,41 @@ class AuiToolBar(wx.Control):
             if kind == ITEM_LABEL:
 
                 size = self._art.GetLabelSize(dc, self, item)
-                sizer_item = sizer.Add((size.x + (self._tool_border_padding*2),
+                sizer_item = sizer_Add((size.x + (self._tool_border_padding*2),
                                         size.y + (self._tool_border_padding*2)),
                                        item.proportion,
                                        item.alignment)
                 if i+1 < count:
-                    sizer.AddSpacer(self._tool_packing)
-
+                    sizer_AddSpacer(self._tool_packing)
 
             elif kind in [ITEM_CHECK, ITEM_NORMAL, ITEM_RADIO]:
 
                 size = self._art.GetToolSize(dc, self, item)
-                sizer_item = sizer.Add((size.x + (self._tool_border_padding*2),
+                sizer_item = sizer_Add((size.x + (self._tool_border_padding*2),
                                         size.y + (self._tool_border_padding*2)),
                                        0,
                                        item.alignment)
                 # add tool packing
                 if i+1 < count:
-                    sizer.AddSpacer(self._tool_packing)
+                    sizer_AddSpacer(self._tool_packing)
 
             elif kind == ITEM_SEPARATOR:
 
                 if horizontal:
-                    sizer_item = sizer.Add((separator_size, 1), 0, wx.EXPAND)
+                    sizer_item = sizer_Add((separator_size, 1), 0, wx.EXPAND)
                 else:
-                    sizer_item = sizer.Add((1, separator_size), 0, wx.EXPAND)
+                    sizer_item = sizer_Add((1, separator_size), 0, wx.EXPAND)
 
                 # add tool packing
                 if i+1 < count:
-                    sizer.AddSpacer(self._tool_packing)
+                    sizer_AddSpacer(self._tool_packing)
 
             elif kind == ITEM_SPACER:
 
                 if item.proportion > 0:
-                    sizer_item = sizer.AddStretchSpacer(item.proportion)
+                    sizer_item = sizer_AddStretchSpacer(item.proportion)
                 else:
-                    sizer_item = sizer.Add((item.spacer_pixels, 1))
+                    sizer_item = sizer_Add((item.spacer_pixels, 1))
 
             elif kind == ITEM_CONTROL:
                 if item.window and item.window.GetContainingSizer():
@@ -3078,7 +3091,7 @@ class AuiToolBar(wx.Control):
                     s = self.GetLabelSize(item.GetLabel())
                     vert_sizer.Add((1, s.y))
 
-                sizer_item = sizer.Add(vert_sizer, item.proportion, wx.EXPAND)
+                sizer_item = sizer_Add(vert_sizer, item.proportion, wx.EXPAND)
                 min_size = item.min_size
 
                 # proportional items will disappear from the toolbar if
@@ -3087,12 +3100,12 @@ class AuiToolBar(wx.Control):
                     min_size.x = 1
 
                 if min_size.IsFullySpecified():
-                    sizer.SetItemMinSize(vert_sizer, min_size)
+                    sizer_SetItemMinSize(vert_sizer, min_size)
                     vert_sizer.SetItemMinSize(item.window, min_size)
 
                 # add tool packing
                 if i+1 < count:
-                    sizer.AddSpacer(self._tool_packing)
+                    sizer_AddSpacer(self._tool_packing)
 
             item.sizer_item = sizer_item
 
@@ -3100,9 +3113,9 @@ class AuiToolBar(wx.Control):
         # add "right" padding
         if self._right_padding > 0:
             if horizontal:
-                sizer.Add((self._right_padding, 1))
+                sizer_Add((self._right_padding, 1))
             else:
-                sizer.Add((1, self._right_padding))
+                sizer_Add((1, self._right_padding))
 
         # add drop down area
         self._overflow_sizer_item = None
@@ -3117,9 +3130,9 @@ class AuiToolBar(wx.Control):
                 # min size.
 
                 if horizontal:
-                    self._overflow_sizer_item = sizer.Add((overflow_size, 1), 0, wx.EXPAND)
+                    self._overflow_sizer_item = sizer_Add((overflow_size, 1), 0, wx.EXPAND)
                 else:
-                    self._overflow_sizer_item = sizer.Add((1, overflow_size), 0, wx.EXPAND)
+                    self._overflow_sizer_item = sizer_Add((1, overflow_size), 0, wx.EXPAND)
 
             else:
 
@@ -3254,6 +3267,9 @@ class AuiToolBar(wx.Control):
     def DoIdleUpdate(self):
         """ Updates the toolbar during idle times. """
 
+        if not self:
+            return # The action Destroyed the toolbar!
+
         handler = self.GetEventHandler()
         if not handler:
             return
@@ -3339,20 +3355,22 @@ class AuiToolBar(wx.Control):
                     self.SetOverflowVisible(True)
 
             # hide all flexible items and items that do not fit into toolbar
+            self_GetToolFitsByIndex = self.GetToolFitsByIndex
             for i, item in enumerate(self._items):
-                if not item.sizer_item:
+                sizer_item = item.sizer_item
+                if not sizer_item:
                     continue
 
                 if item.proportion > 0:
-                    if item.sizer_item.IsShown():
-                        item.sizer_item.Show(False)
-                        item.sizer_item.SetProportion(0)
-                elif self.GetToolFitsByIndex(i):
-                    if not item.sizer_item.IsShown():
-                        item.sizer_item.Show(True)
+                    if sizer_item.IsShown():
+                        sizer_item.Show(False)
+                        sizer_item.SetProportion(0)
+                elif self_GetToolFitsByIndex(i):
+                    if not sizer_item.IsShown():
+                        sizer_item.Show(True)
                 else:
-                    if item.sizer_item.IsShown():
-                        item.sizer_item.Show(False)
+                    if sizer_item.IsShown():
+                        sizer_item.Show(False)
 
         else:
 
@@ -3363,13 +3381,14 @@ class AuiToolBar(wx.Control):
 
             # show all items
             for item in self._items:
-                if not item.sizer_item:
+                sizer_item = item.sizer_item
+                if not sizer_item:
                     continue
 
-                if not item.sizer_item.IsShown():
-                    item.sizer_item.Show(True)
+                if not sizer_item.IsShown():
+                    sizer_item.Show(True)
                     if item.proportion > 0:
-                        item.sizer_item.SetProportion(item.proportion)
+                        sizer_item.SetProportion(item.proportion)
 
         self._sizer.SetDimension(0, 0, x, y)
 
@@ -3481,6 +3500,11 @@ class AuiToolBar(wx.Control):
             last_extent -= dropdown_size
 
         # paint each individual tool
+        # local opts
+        _art = self._art
+        DrawSeparator, DrawLabel, DrawButton, DrawDropDownButton, DrawControlLabel = (
+            _art.DrawSeparator, _art.DrawLabel, _art.DrawButton,
+            _art.DrawDropDownButton, _art.DrawControlLabel)
         for item in self._items:
 
             if not item.sizer_item:
@@ -3493,35 +3517,36 @@ class AuiToolBar(wx.Control):
 
                 break
 
-            if item.kind == ITEM_SEPARATOR:
+            item_kind = item.kind
+            if item_kind == ITEM_SEPARATOR:
                 # draw a separator
-                self._art.DrawSeparator(dc, self, item_rect)
+                DrawSeparator(dc, self, item_rect)
 
-            elif item.kind == ITEM_LABEL:
+            elif item_kind == ITEM_LABEL:
                 # draw a text label only
-                self._art.DrawLabel(dc, self, item, item_rect)
+                DrawLabel(dc, self, item, item_rect)
 
-            elif item.kind == ITEM_NORMAL:
+            elif item_kind == ITEM_NORMAL:
                 # draw a regular button or dropdown button
                 if not item.dropdown:
-                    self._art.DrawButton(dc, self, item, item_rect)
+                    DrawButton(dc, self, item, item_rect)
                 else:
-                    self._art.DrawDropDownButton(dc, self, item, item_rect)
+                    DrawDropDownButton(dc, self, item, item_rect)
 
-            elif item.kind == ITEM_CHECK:
+            elif item_kind == ITEM_CHECK:
                 # draw a regular toggle button or a dropdown one
                 if not item.dropdown:
-                    self._art.DrawButton(dc, self, item, item_rect)
+                    DrawButton(dc, self, item, item_rect)
                 else:
-                    self._art.DrawDropDownButton(dc, self, item, item_rect)
+                    DrawDropDownButton(dc, self, item, item_rect)
 
-            elif item.kind == ITEM_RADIO:
+            elif item_kind == ITEM_RADIO:
                 # draw a toggle button
-                self._art.DrawButton(dc, self, item, item_rect)
+                DrawButton(dc, self, item, item_rect)
 
-            elif item.kind == ITEM_CONTROL:
+            elif item_kind == ITEM_CONTROL:
                 # draw the control's label
-                self._art.DrawControlLabel(dc, self, item, item_rect)
+                DrawControlLabel(dc, self, item, item_rect)
 
             # fire a signal to see if the item wants to be custom-rendered
             self.OnCustomRender(dc, item, item_rect)
@@ -3529,7 +3554,7 @@ class AuiToolBar(wx.Control):
         # paint the overflow button
         if dropdown_size > 0 and self.GetOverflowVisible():
             dropdown_rect = self.GetOverflowRect()
-            self._art.DrawOverflowButton(dc, self, dropdown_rect, self._overflow_state)
+            _art.DrawOverflowButton(dc, self, dropdown_rect, self._overflow_state)
 
 
     def OnEraseBackground(self, event):

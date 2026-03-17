@@ -45,7 +45,7 @@
 # o wxMaskedNumCtrl -> masked.NumCtrl
 #
 
-r"""
+"""
 masked.NumCtrl:
   - allows you to get and set integer or floating point numbers as value,</LI>
   - provides bounds support and optional value limiting,</LI>
@@ -89,7 +89,7 @@ masked.NumCtrl:
              emptyBackgroundColour = "White",
              validBackgroundColour = "White",
              invalidBackgroundColour = "Yellow",
-             autoSize = True
+             autoSize = True,
              )
 
 
@@ -220,7 +220,7 @@ GetValue()
     fractionWidth is 0, or a float otherwise.
 
 
-SetParameters(\*\*kwargs)
+SetParameters(**kwargs)
     Allows simultaneous setting of various attributes
     of the control after construction.  Keyword arguments
     allowed are the same parameters as supported in the constructor.
@@ -401,7 +401,6 @@ GetAutoSize()
 import  copy
 
 import  wx
-import  six
 
 from sys import maxsize
 MAXINT = maxsize     # (constants should be in upper case)
@@ -465,14 +464,14 @@ class NumCtrlAccessorsMixin:
         )
     for param in exposed_basectrl_params:
         propname = param[0].upper() + param[1:]
-        exec(f'def Set{propname}(self, value): self.SetCtrlParameters({param}=value)')
+        exec('def Set%s(self, value): self.SetCtrlParameters(%s=value)' % (propname, param))
         exec('def Get%s(self): return self.GetCtrlParameter("%s")''' % (propname, param))
 
         if param.find('Colour') != -1:
             # add non-british spellings, for backward-compatibility
             propname.replace('Colour', 'Color')
 
-            exec(f'def Set{propname}(self, value): self.SetCtrlParameters({param}=value)')
+            exec('def Set%s(self, value): self.SetCtrlParameters(%s=value)' % (propname, param))
             exec('def Get%s(self): return self.GetCtrlParameter("%s")''' % (propname, param))
 
 
@@ -929,7 +928,7 @@ class NumCtrl(BaseMaskedTextCtrl, NumCtrlAccessorsMixin):
     def _GetNumValue(self, value):
         """
         This function attempts to "clean up" a text value, providing a regularized
-        convertable string, via atol() or atof(), for any well-formed numeric text value.
+        convertible string, via atol() or atof(), for any well-formed numeric text value.
         """
         return value.replace(self._groupChar, '').replace(self._decimalChar, '.').replace('(', '-').replace(')','').strip()
 
@@ -1012,7 +1011,7 @@ class NumCtrl(BaseMaskedTextCtrl, NumCtrlAccessorsMixin):
     def _SetValue(self, value):
         """
         This routine supersedes the base masked control _SetValue().  It is
-        needed to ensure that the value of the control is always representable/convertable
+        needed to ensure that the value of the control is always representable/convertible
         to a numeric return value (via GetValue().)  This routine also handles
         automatic adjustment and grouping of the value without explicit intervention
         by the user.
@@ -1369,7 +1368,7 @@ class NumCtrl(BaseMaskedTextCtrl, NumCtrlAccessorsMixin):
         If min > the max value allowed by the width of the control,
         the function will return False, and the min will not be set.
 
-        :param `min`: Minium value for the control
+        :param `min`: Minimum value for the control
         :type `min`: integer or None
 
         """
@@ -1410,7 +1409,7 @@ class NumCtrl(BaseMaskedTextCtrl, NumCtrlAccessorsMixin):
         If max > the max value allowed by the width of the control,
         the function will return False, and the max will not be set.
 
-        :param `max`: Minium value for the control
+        :param `max`: Minimum value for the control
         :type `max`: integer or None
 
         """
@@ -1443,9 +1442,9 @@ class NumCtrl(BaseMaskedTextCtrl, NumCtrlAccessorsMixin):
 
         .. note:: leaving out an argument will remove the corresponding bound.
 
-        :param `min`: Minium value for the control
+        :param `min`: Minimum value for the control
         :type `min`: integer or None
-        :param `max`: Minium value for the control
+        :param `max`: Minimum value for the control
         :type `max`: integer or None
 
         """

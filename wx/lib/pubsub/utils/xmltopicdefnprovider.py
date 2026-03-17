@@ -56,7 +56,6 @@ from ..core.topicdefnprovider import (
     ArgSpecGiven,
     TOPIC_TREE_FROM_STRING,
     )
-from .. import py2and3
 
 try:
     from elementtree import ElementTree as ET
@@ -80,7 +79,7 @@ def _get_elem(elem):
         try:
             elem = ET.fromstring(elem)
         except:
-            py2and3.print_("Value Error", elem)
+            print("Value Error", elem)
             raise ValueError("Cannot convert to element")
     return elem
 
@@ -98,7 +97,7 @@ class XmlTopicDefnProvider(ITopicDefnProvider):
         self._topics = {}
         self._treeDoc = ''
         if format == TOPIC_TREE_FROM_FILE:
-            with open(xml) as fid:
+            with open(xml, mode="r") as fid:
                 self._parse_tree(_get_elem(fid.read()))
         elif format == TOPIC_TREE_FROM_STRING:
             self._parse_tree(_get_elem(xml))
@@ -160,7 +159,7 @@ class XmlTopicDefnProvider(ITopicDefnProvider):
         return self._topics.get(topicNameTuple, (None, None))
 
     def topicNames(self):
-        return py2and3.iterkeys(self._topics) # dict_keys iter in 3, list in 2
+        return iter(self._topics.keys())
 
     def getTreeDoc(self):
         return self._treeDoc
@@ -257,7 +256,7 @@ def exportTopicTreeSpecXml(moduleName=None, rootTopic=None, bak='bak', moduleDoc
     if rootTopic is None:
         from .. import pub
         rootTopic = pub.getDefaultTopicTreeRoot()
-    elif py2and3.isstring(rootTopic):
+    elif isinstance(rootTopic, str):
         from .. import pub
         rootTopic = pub.getTopic(rootTopic)
 

@@ -23,19 +23,22 @@ Usage:
 
 Where URL is a file URL and the optional DEST_DIR is a destination directory to
 download to, (default is to prompt the user).
-The --trusted option can be used to surpress certificate checks.
+The --trusted option can be used to suppress certificate checks.
 """
-
 import sys
 import os
 import wx
 import subprocess
 import ssl
-import pip
 
 from urllib.error import (HTTPError, URLError)
 import urllib.request as urllib2
 import urllib.parse as urlparse
+
+try:
+    import pip
+except ImportError as e:
+    pip = None
 
 def get_docs_demo_url(demo=False):
     """ Get the URL for the docs or demo."""
@@ -116,11 +119,11 @@ def download_urllib(url, filename):
         file_size = None
         if meta_length:
             file_size = int(meta_length[0])
-        message = f"Downloading: {url}\nBytes: {file_size}\n"
+        message = "Downloading: {0}\nBytes: {1}\n".format(url, file_size)
         dstyle = wx.PD_APP_MODAL | wx.PD_CAN_ABORT | wx.PD_AUTO_HIDE
         if file_size:
             progress = wx.ProgressDialog('Downloading', message,
-                                         maximum=1+file_size/block_sz, style=dstyle)
+                                         maximum=1+file_size//block_sz, style=dstyle)
         else:
             progress = wx.ProgressDialog('Downloading', message, style=dstyle)
 
@@ -128,19 +131,19 @@ def download_urllib(url, filename):
         while keep_going:
             read_buffer = url_res.read(block_sz)
             if not read_buffer:
-                progress.Update(file_size_dl / block_sz, "message+\nDONE!")
-                wx.Sleep(0.2)
+                progress.Update(file_size_dl // block_sz, "message+\nDONE!")
+                wx.MilliSleep(200)
                 break
 
             file_size_dl += len(read_buffer)
             outfile.write(read_buffer)
 
-            status = f"{file_size_dl:16}"
+            status = "{0:16}".format(file_size_dl)
             if file_size:
-                status += f"   [{file_size_dl * 100 / file_size:6.2f}%]"
-            (keep_going, dummy_skip) = progress.Update(file_size_dl / block_sz,
+                status += "   [{0:6.2f}%]".format(file_size_dl * 100 / file_size)
+            (keep_going, dummy_skip) = progress.Update(file_size_dl // block_sz,
                                                        message+status)
-            wx.Sleep(0.08)  # Give the GUI some update time
+            wx.MilliSleep(80)  # Give the GUI some update time
         progress.Destroy()
 
     result = os.path.exists(filename) and os.stat(filename).st_size > 0
@@ -189,15 +192,15 @@ def download_file(url, dest=None, force=False, trusted=False):
         success = download_wget(url, filename, trusted)  # Try wget
         if not success:
             success = download_urllib(url, filename)  # Try urllib
-        if not success:
-            success = download_pip(url, filename, force, trusted)  # Try urllib
+        if not success and pip is not None:
+            success = download_pip(url, filename, force, trusted)  # Try pip
         if not success:
             split_url = url.split('/')
             msg = '\n'.join([
                 "\n\nERROR in Web Access! - You may be behind a firewall!",
                 "-" * 52,
                 "You should be able to bybass this by using a browser to download:",
-                "\t{}\nfrom:\t{}\nthen copying the download file to:\n\t{}".format(
+                "\t%s\nfrom:\t%s\nthen copying the download file to:\n\t%s" % (
                     split_url[-1], '/'.join(split_url[:-1]), filename),
                 ])
             print(msg, '\n')

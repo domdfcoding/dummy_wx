@@ -50,7 +50,7 @@ code using the usual::
 method.
 
 The control is generic, and support theming (well, I tested it under
-Windows with the three defauls themes: grey, blue, silver and the
+Windows with the three default themes: grey, blue, silver and the
 classic look).
 
 
@@ -354,7 +354,7 @@ class BPArt:
             self._gradient_type = BP_GRADIENT_NONE
 
         self._buttontext_inactive_colour = wx.SystemSettings.GetColour(wx.SYS_COLOUR_GRAYTEXT)
-        self._selection_brush = wx.Brush(wx.Colour(225, 225, 255))
+        self._selection_brush = wx.WHITE_BRUSH
         self._selection_pen = wx.Pen(wx.SystemSettings.GetColour(wx.SYS_COLOUR_ACTIVECAPTION))
 
         sysfont = wx.SystemSettings.GetFont(wx.SYS_DEFAULT_GUI_FONT)
@@ -758,7 +758,7 @@ class BPArt:
         """
 
         if style & BP_USE_GRADIENT:
-            # Draw gradient colour in the backgroud of the panel
+            # Draw gradient colour in the background of the panel
             self.FillGradientColour(dc, rect)
 
         # Draw a rectangle around the panel
@@ -791,9 +791,9 @@ class BPArt:
         col1 = self._gradient_colour_to
 
         rf, gf, bf = 0, 0, 0
-        rstep = float(col2.Red() - col1.Red())/float(size)
-        gstep = float(col2.Green() - col1.Green())/float(size)
-        bstep = float(col2.Blue() - col1.Blue())/float(size)
+        rstep = float((col2.Red() - col1.Red()))/float(size)
+        gstep = float((col2.Green() - col1.Green()))/float(size)
+        bstep = float((col2.Blue() - col1.Blue()))/float(size)
 
         for coord in range(start, start + size):
 
@@ -939,7 +939,7 @@ class Control(wx.EvtHandler):
          done, i.e. if the window had already been in the specified state.
 
         :note: Note that when a parent window is disabled, all of its children are disabled as
-         well and they are reenabled again when the parent is.
+         well and they are re-enabled again when the parent is.
         """
 
         self.disabled = not enable
@@ -2287,7 +2287,7 @@ class ButtonPanel(wx.Panel):
 
     def LayoutItems(self):
         """
-        Layout the items using a different algorithms depending on the existance
+        Layout the items using a different algorithms depending on the existence
         of the main caption.
         """
 
@@ -2728,7 +2728,7 @@ class ButtonPanel(wx.Panel):
         def Freeze(self):
             """
             Freezes the window or, in other words, prevents any updates from taking place
-            on screen, the window is not redrawn at all. :meth:`~ButtonPanel.Thaw` must be called to reenable
+            on screen, the window is not redrawn at all. :meth:`~ButtonPanel.Thaw` must be called to re-enable
             window redrawing. Calls to these two functions may be nested.
 
             :note: This method is useful for visual appearance optimization.
@@ -2809,7 +2809,7 @@ if __name__ == '__main__':
             obj = event.GetEventObject()
 
             # This will print the button label
-            print(obj.GetText())
+            print((obj.GetText()))
 
 
     # our normal wxApp-derived class, as usual

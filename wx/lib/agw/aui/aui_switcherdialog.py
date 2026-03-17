@@ -157,12 +157,17 @@ Event handler::
 
 """
 
+import sys
 import wx
 
 from . import auibook
 from .aui_utilities import FindFocusDescendant
 from .aui_constants import SWITCHER_TEXT_MARGIN_X, SWITCHER_TEXT_MARGIN_Y
 
+if sys.version_info >= (3, 11):
+    from typing import Self
+else:
+    from typing_extensions import Self
 
 # Define a translation function
 _ = wx.GetTranslation
@@ -212,7 +217,7 @@ class SwitcherItem:
         self._window = item._window
 
 
-    def SetTitle(self, title):
+    def SetTitle(self, title) -> Self:
 
         self._title = title
         return self
@@ -223,7 +228,7 @@ class SwitcherItem:
         return self._title
 
 
-    def SetName(self, name):
+    def SetName(self, name) -> Self:
 
         self._name = name
         return self
@@ -234,7 +239,7 @@ class SwitcherItem:
         return self._name
 
 
-    def SetDescription(self, descr):
+    def SetDescription(self, descr) -> Self:
 
         self._description = descr
         return self
@@ -245,7 +250,7 @@ class SwitcherItem:
         return self._description
 
 
-    def SetId(self, id):
+    def SetId(self, id) -> Self:
 
         self._id = id
         return self
@@ -256,7 +261,7 @@ class SwitcherItem:
         return self._id
 
 
-    def SetIsGroup(self, isGroup):
+    def SetIsGroup(self, isGroup) -> Self:
 
         self._isGroup = isGroup
         return self
@@ -267,7 +272,7 @@ class SwitcherItem:
         return self._isGroup
 
 
-    def BreakColumn(self, breakCol=True):
+    def BreakColumn(self, breakCol=True) -> Self:
 
         self._breakColumn = breakCol
         return self
@@ -278,7 +283,7 @@ class SwitcherItem:
         return self._breakColumn
 
 
-    def SetRect(self, rect):
+    def SetRect(self, rect) -> Self:
 
         self._rect = rect
         return self
@@ -289,7 +294,7 @@ class SwitcherItem:
         return self._rect
 
 
-    def SetTextColour(self, colour):
+    def SetTextColour(self, colour) -> Self:
 
         self._textColour = colour
         return self
@@ -300,7 +305,7 @@ class SwitcherItem:
         return self._textColour
 
 
-    def SetFont(self, font):
+    def SetFont(self, font) -> Self:
 
         self._font = font
         return self
@@ -311,7 +316,7 @@ class SwitcherItem:
         return self._font
 
 
-    def SetBitmap(self, bitmap):
+    def SetBitmap(self, bitmap) -> Self:
 
         self._bitmap = bitmap
         return self
@@ -322,7 +327,7 @@ class SwitcherItem:
         return self._bitmap
 
 
-    def SetRowPos(self, pos):
+    def SetRowPos(self, pos) -> Self:
 
         self._rowPos = pos
         return self
@@ -333,7 +338,7 @@ class SwitcherItem:
         return self._rowPos
 
 
-    def SetColPos(self, pos):
+    def SetColPos(self, pos) -> Self:
 
         self._colPos = pos
         return self
@@ -344,7 +349,7 @@ class SwitcherItem:
         return self._colPos
 
 
-    def SetWindow(self, win):
+    def SetWindow(self, win) -> Self:
 
         self._window = win
         return self
@@ -620,12 +625,12 @@ class SwitcherItems:
                    and item.GetBitmap().GetHeight() <= 16:
                     x -= textMarginX
                     dc.DrawBitmap(item.GetBitmap(), x, item.GetRect().y + \
-                                  (item.GetRect().height - item.GetBitmap().GetHeight())/2,
+                                  (item.GetRect().height - item.GetBitmap().GetHeight())//2,
                                   True)
                     x += 16 + textMarginX
                 #x += textMarginX
 
-            y = item.GetRect().y + (item.GetRect().height - h)/2
+            y = item.GetRect().y + (item.GetRect().height - h)//2
             dc.DrawText(item.GetTitle(), x, y)
             dc.DestroyClippingRegion()
 

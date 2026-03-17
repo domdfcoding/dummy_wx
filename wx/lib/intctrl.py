@@ -41,13 +41,11 @@ import  string
 import  types
 
 import  wx
-import six
 
 #----------------------------------------------------------------------------
 
-MAXSIZE = six.MAXSIZE     # (constants should be in upper case)
-MINSIZE = -six.MAXSIZE-1
-
+MAXSIZE = sys.maxsize     # (constants should be in upper case)
+MINSIZE = -sys.maxsize-1
 LONGTYPE = int
 
 #----------------------------------------------------------------------------
@@ -395,7 +393,7 @@ class IntCtrl(wx.TextCtrl):
                 name = "integer",
                 min=None, max=None,
                 limited = 0, allow_none = 0, allow_long = 0,
-                default_color = wx.BLACK, oob_color = wx.RED,
+                default_color = wx.NullColour, oob_color = wx.RED,
         ):
         """
         Default constructor
@@ -699,7 +697,7 @@ class IntCtrl(wx.TextCtrl):
             value = self.GetValue()
 
         if( not (value is None and self.IsNoneAllowed())
-            and type(value) not in (int,) ):
+            and not isinstance(value, int) ):
             raise ValueError (
                 'IntCtrl requires integer values, passed %s'% repr(value) )
 
@@ -811,7 +809,7 @@ class IntCtrl(wx.TextCtrl):
         elif type(value) == LONGTYPE and not self.IsLongAllowed():
             raise ValueError (
                 'IntCtrl requires integer value, passed long' )
-        elif type(value) not in (int,):
+        elif not isinstance(value, int):
             raise ValueError (
                 'IntCtrl requires integer value, passed %s'% repr(value) )
 
@@ -839,7 +837,7 @@ class IntCtrl(wx.TextCtrl):
         # So, to ensure consistency and to prevent spurious ValueErrors,
         # we make the following test, and react accordingly:
         #
-        if value == '':
+        if value == '' or value == '-':
             if not self.IsNoneAllowed():
                 return 0
             else:
@@ -918,6 +916,14 @@ class IntCtrl(wx.TextCtrl):
                 wx.CallAfter(self.SetInsertionPoint, new_pos)
 
 
+    Limited     = property(IsLimited,     SetLimited)
+    LongAllowed = property(IsLongAllowed, SetLongAllowed)
+    Min         = property(GetMin,        SetMin)
+    Max         = property(GetMax,        SetMax)
+    NoneAllowed = property(IsNoneAllowed, SetNoneAllowed)
+    Value       = property(GetValue,      SetValue)
+
+
 
 #===========================================================================
 
@@ -965,11 +971,11 @@ if __name__ == '__main__':
 
         def OnClick(self, event):
             dlg = myDialog(self.panel, -1, "test IntCtrl")
-            dlg.int_ctrl.SetValue(501)
+            dlg.int_ctrl.Value = 501
             dlg.int_ctrl.SetInsertionPoint(1)
             dlg.int_ctrl.SetSelection(1,2)
             rc = dlg.ShowModal()
-            print('final value', dlg.int_ctrl.GetValue())
+            print('final value %r' % dlg.int_ctrl.Value)
             del dlg
             self.frame.Destroy()
 

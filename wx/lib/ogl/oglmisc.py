@@ -268,7 +268,7 @@ def CentreText(dc, text_list, xpos, ypos, width, height, formatMode):
 
 def DrawFormattedText(dc, text_list, xpos, ypos, width, height, formatMode):
     """
-    Draw formated text
+    Draw formatted text
 
     :param `dc`: the :class:`wx.MemoryDC`
     :param `text_list`: a list of texts
@@ -299,17 +299,17 @@ def DrawFormattedText(dc, text_list, xpos, ypos, width, height, formatMode):
         yoffset = ypos - height / 2.0
 
     # +1 to allow for rounding errors
-    dc.SetClippingRegion(xpos - width / 2.0, ypos - height / 2.0, width + 1, height + 1)
+    dc.SetClippingRegion(int(xpos - width / 2.0), int(ypos - height / 2.0), int(width + 1), int(height + 1))
 
     for line in text_list:
-        dc.DrawText(line.GetText(), xoffset + line.GetX(), yoffset + line.GetY())
+        dc.DrawText(line.GetText(), int(xoffset + line.GetX()), int(yoffset + line.GetY()))
 
     dc.DestroyClippingRegion()
 
 
 def RoughlyEqual(val1, val2, tol=0.00001):
     """
-    Check if values are roughtly equal
+    Check if values are roughly equal
 
     :param `val1`: the first value to check
     :param `val2`: the second value to check
@@ -355,7 +355,7 @@ def CheckLineIntersection(x1, y1, x2, y2, x3, y3, x4, y4):
     :param `x4`: x4 position
     :param `y4`: y4 position
 
-    :returns: a lenght ratio and a k line???
+    :returns: a length ratio and a k line???
 
     """
     denominator_term = (y4 - y3) * (x2 - x1) - (y2 - y1) * (x4 - x3)
@@ -527,7 +527,7 @@ def GetArrowPoints(x1, y1, x2, y2, length, width):
     x3 = -length * i_bar + x2
     y3 = -length * j_bar + y2
 
-    return x2, y2, width * -j_bar + x3, width * i_bar + y3, -width * -j_bar + x3, -width * i_bar + y3
+    return int(x2), int(y2), int(width * -j_bar + x3), int(width * i_bar + y3), int(-width * -j_bar + x3), int(-width * i_bar + y3)
 
 
 def DrawArcToEllipse(x1, y1, width1, height1, x2, y2, x3, y3):
@@ -553,9 +553,9 @@ def DrawArcToEllipse(x1, y1, width1, height1, x2, y2, x3, y3):
     if abs(x2 - x3) < 0.05:
         x4 = x2
         if y3 > y2:
-            y4 = y1 - math.sqrt(b1 * b1 - (((x2 - x1) * (x2 - x1)) * (b1 * b1) / (a1 * a1)))
+            y4 = y1 - math.sqrt((b1 * b1 - (((x2 - x1) * (x2 - x1)) * (b1 * b1) / (a1 * a1))))
         else:
-            y4 = y1 + math.sqrt(b1 * b1 - (((x2 - x1) * (x2 - x1)) * (b1 * b1) / (a1 * a1)))
+            y4 = y1 + math.sqrt((b1 * b1 - (((x2 - x1) * (x2 - x1)) * (b1 * b1) / (a1 * a1))))
         return x4, y4
 
     # Calculate the x and y coordinates of the point where arc intersects ellipse

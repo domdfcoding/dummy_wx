@@ -119,7 +119,7 @@ class PolyPoints:
         :type: tuple of bool, length 2
         :raises ValueError: when setting an invalid value
 
-        .. notes::
+        .. note::
 
            This is a simplified example of how SymLog works::
 
@@ -162,7 +162,7 @@ class PolyPoints:
         :type: tuple of float, length 2
         :raises ValueError: when setting an invalid value
 
-        .. notes::
+        .. note::
 
            This is a simplified example of how SymLog works::
 
@@ -220,7 +220,7 @@ class PolyPoints:
         :setter: Sets the value of points.
         :type: list of `(x, y)` pairs
 
-        .. Note::
+        .. note::
 
            Only set unscaled points - do not perform the log, abs, or symlog
            adjustments yourself.
@@ -271,7 +271,7 @@ class PolyPoints:
 
     def boundingBox(self):
         """
-        Returns the bouding box for the entire dataset as a tuple with this
+        Returns the bounding box for the entire dataset as a tuple with this
         format::
 
             ((minX, minY), (maxX, maxY))
@@ -304,7 +304,7 @@ class PolyPoints:
             # no curves to draw
             return
 
-        # TODO: Can we remove the if statement alltogether? Does
+        # TODO: Can we remove the if statement altogether? Does
         #       scaleAndShift ever get called when the current value equals
         #       the new value?
 
@@ -416,7 +416,7 @@ class PolyLine(PolyPoints):
 
         if not isinstance(colour, wx.Colour):
             colour = wx.Colour(colour)
-        pen = wx.Pen(colour, width, style)
+        pen = wx.Pen(colour, int(width), style)
         pen.SetCap(wx.CAP_BUTT)
         dc.SetPen(pen)
         if coord is None:
@@ -424,6 +424,7 @@ class PolyLine(PolyPoints):
                 for c1, c2 in zip(self.scaled, self.scaled[1:]):
                     self._path(dc, c1, c2, drawstyle)
         else:
+            coord = [(int(c[0]), int(c[1])) for c in coord]
             dc.DrawLines(coord)  # draw legend line
 
     def getSymExtent(self, printerScale):
@@ -477,6 +478,7 @@ class PolyLine(PolyPoints):
             err_txt = "Invalid drawstyle '{}'. Must be one of {}."
             raise ValueError(err_txt.format(drawstyle, self._drawstyles))
 
+        line = [(int(p[0]), int(p[1])) for p in line]
         dc.DrawLines(line)
 
 
@@ -517,13 +519,14 @@ class PolySpline(PolyLine):
         style = self.attributes['style']
         if not isinstance(colour, wx.Colour):
             colour = wx.Colour(colour)
-        pen = wx.Pen(colour, width, style)
+        pen = wx.Pen(colour, int(width), style)
         pen.SetCap(wx.CAP_ROUND)
         dc.SetPen(pen)
         if coord is None:
             if len(self.scaled) >= 3:
-                dc.DrawSpline(self.scaled)
+                dc.DrawSpline(self.scaled.astype(np.int32))
         else:
+            coord = [(int(c[0]), int(c[1])) for c in coord]
             dc.DrawLines(coord)  # draw legend line
 
 
@@ -589,7 +592,7 @@ class PolyMarker(PolyPoints):
         if fillcolour and not isinstance(fillcolour, wx.Colour):
             fillcolour = wx.Colour(fillcolour)
 
-        dc.SetPen(wx.Pen(colour, width))
+        dc.SetPen(wx.Pen(colour, int(width)))
         if fillcolour:
             dc.SetBrush(wx.Brush(fillcolour, fillstyle))
         else:
@@ -606,23 +609,24 @@ class PolyMarker(PolyPoints):
         return (s, s)
 
     def _drawmarkers(self, dc, coords, marker, size=1):
-        f = getattr(self, f"_{marker}")
+        f = getattr(self, "_{}".format(marker))
         f(dc, coords, size)
 
     def _circle(self, dc, coords, size=1):
         fact = 2.5 * size
         wh = 5.0 * size
-        rect = np.zeros((len(coords), 4), np.float) + [0.0, 0.0, wh, wh]
+        rect = np.zeros((len(coords), 4), float) + [0.0, 0.0, wh, wh]
         rect[:, 0:2] = coords - [fact, fact]
         dc.DrawEllipseList(rect.astype(np.int32))
 
     def _dot(self, dc, coords, size=1):
+        coords = [(int(c[0]), int(c[1])) for c in coords]
         dc.DrawPointList(coords)
 
     def _square(self, dc, coords, size=1):
         fact = 2.5 * size
         wh = 5.0 * size
-        rect = np.zeros((len(coords), 4), np.float) + [0.0, 0.0, wh, wh]
+        rect = np.zeros((len(coords), 4), float) + [0.0, 0.0, wh, wh]
         rect[:, 0:2] = coords - [fact, fact]
         dc.DrawRectangleList(rect.astype(np.int32))
 
@@ -678,7 +682,7 @@ class PolyBarsBase(PolyPoints):
         PolyPoints.__init__(self, points, attr)
 
     def _scaleAndShift(self, data, scale=(1, 1), shift=(0, 0)):
-        """same as override method, but retuns a value."""
+        """same as override method, but returns a value."""
         scaled = scale * data + shift
         return scaled
 
@@ -698,7 +702,7 @@ class PolyBarsBase(PolyPoints):
 
         if not isinstance(pencolour, wx.Colour):
             pencolour = wx.Colour(pencolour)
-        pen = wx.Pen(pencolour, penwidth, penstyle)
+        pen = wx.Pen(pencolour, int(penwidth), penstyle)
         pen.SetCap(wx.CAP_BUTT)
 
         if not isinstance(fillcolour, wx.Colour):
@@ -789,6 +793,7 @@ class PolyBars(PolyBarsBase):
                 raise TypeError(err_str.format(type(barwidth)))
 
             rects = [self.calc_rect(x, y, w) for x, y, w in pts]
+            rects = [(int(r[0]), int(r[1]), int(r[2]), int(r[3])) for r in rects]
             dc.DrawRectangleList(rects)
         else:
             dc.DrawLines(coord)  # draw legend line
@@ -857,6 +862,8 @@ class PolyHistogram(PolyBarsBase):
             rects = [self.calc_rect(y, low, high)
                      for y, (low, high)
                      in zip(self.hist, self.bins)]
+            rects = [(int(r[0]), int(r[1]), int(r[2]), int(r[3]))
+                     for r in rects]
 
             dc.DrawRectangleList(rects)
         else:
@@ -974,7 +981,7 @@ class PolyBoxPlot(PolyPoints):
             p = self._points
             pxy = np.array(pntXY)
 
-        # determine distnace for each point
+        # determine distance for each point
         d = np.sqrt(np.add.reduce((p - pxy) ** 2, 1))  # sqrt(dx^2+dy^2)
         pntIndex = np.argmin(d)
         dist = d[pntIndex]
@@ -1002,17 +1009,10 @@ class PolyBoxPlot(PolyPoints):
 
         outliers are outside of 1.5 * IQR
 
-        Parameters
-        ----------
-        data : array-like
-            The data to plot
-
-        Returns
-        -------
-        bpdata : collections.namedtuple
-            Descriptive statistics for data:
+        :param array-like data: The data to plot
+        :return bpdata:  Descriptive statistics for data:
             (min_data, low_whisker, q25, median, q75, high_whisker, max_data)
-
+        :rtype: collections.namedtuple
         """
         data = self._clean_data(data)
 
@@ -1049,7 +1049,7 @@ class PolyBoxPlot(PolyPoints):
         return outliers
 
     def _scaleAndShift(self, data, scale=(1, 1), shift=(0, 0)):
-        """same as override method, but retuns a value."""
+        """same as override method, but returns a value."""
         scaled = scale * data + shift
         return scaled
 
@@ -1058,20 +1058,20 @@ class PolyBoxPlot(PolyPoints):
         """
         Draws a box plot on the DC.
 
-        Notes
-        -----
-        The following draw order is required:
+        .. note::
 
-        1. First the whisker line
-        2. Then the IQR box
-        3. Lasly the median line.
+            The following draw order is required:
 
-        This is because
+            1. First the whisker line
+            2. Then the IQR box
+            3. Lasly the median line.
 
-        + The whiskers are drawn as single line rather than two lines
-        + The median line must be visable over the box if the box has a fill.
+            This is because
 
-        Other than that, the draw order can be changed.
+            + The whiskers are drawn as single line rather than two lines
+            + The median line must be visible over the box if the box has a fill.
+
+            Other than that, the draw order can be changed.
         """
         self._draw_whisker(dc, printerScale)
         self._draw_iqr_box(dc, printerScale)
@@ -1113,10 +1113,10 @@ class PolyBoxPlot(PolyPoints):
                                       self.currentShift)
 
         # rectangles are drawn (left, top, width, height) so adjust
-        iqr_box = [iqr_box[0][0],                   # X (left)
-                   iqr_box[0][1],                   # Y (top)
-                   iqr_box[1][0] - iqr_box[0][0],   # Width
-                   iqr_box[1][1] - iqr_box[0][1]]   # Height
+        iqr_box = [int(iqr_box[0][0]),                   # X (left)
+                   int(iqr_box[0][1]),                   # Y (top)
+                   int(iqr_box[1][0] - iqr_box[0][0]),   # Width
+                   int(iqr_box[1][1] - iqr_box[0][1])]   # Height
 
         box_pen = wx.Pen(wx.BLACK, 3, wx.PENSTYLE_SOLID)
         box_brush = wx.Brush(wx.GREEN, wx.BRUSHSTYLE_SOLID)
@@ -1191,7 +1191,7 @@ class PolyBoxPlot(PolyPoints):
         size = 0.5
         fact = 2.5 * size
         wh = 5.0 * size
-        rect = np.zeros((len(pt_data), 4), np.float) + [0.0, 0.0, wh, wh]
+        rect = np.zeros((len(pt_data), 4), float) + [0.0, 0.0, wh, wh]
         rect[:, 0:2] = pt_data - [fact, fact]
         dc.DrawRectangleList(rect.astype(np.int32))
 
@@ -1459,7 +1459,7 @@ class PlotPrintout(wx.Printout):
 #        print("DC GetSize", dc.GetSize())
 #        print("GetPageSizePixels", self.GetPageSizePixels())
         # Note PPIScreen does not give the correct number
-        # Calulate everything for printer and then scale for preview
+        # Calculate everything for printer and then scale for preview
         PPIPrinter = self.GetPPIPrinter()        # printer dots/inch (w,h)
         # PPIScreen= self.GetPPIScreen()          # screen dots/inch (w,h)
         dcSize = dc.GetSize()                    # DC size
@@ -1502,7 +1502,7 @@ class PlotPrintout(wx.Printout):
         self.graph._setSize(plotAreaW, plotAreaH)
 
         # Set offset and scale
-        dc.SetDeviceOrigin(pixLeft, pixTop)
+        dc.SetDeviceOrigin(int(pixLeft), int(pixTop))
 
         # Thicken up pens and increase marker size for printing
         ratioW = float(plotAreaW) / clientDcSize[0]

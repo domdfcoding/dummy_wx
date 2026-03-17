@@ -33,7 +33,9 @@ Usage: python pywxrc.py -h
 
 import sys, os, getopt, glob, re
 import xml.dom.minidom as minidom
-from six import print_, byte2int
+
+import operator
+byte2int = operator.itemgetter(0)
 
 #----------------------------------------------------------------------
 
@@ -216,7 +218,7 @@ def __init_resources():
     __res.Load('%(resourceFilename)s')"""
 
     FILE_AS_STRING = """\
-    %(filename)s = '''\\
+    %(filename)s = b'''\\
 %(fileData)s'''
 
 """
@@ -226,7 +228,7 @@ def __init_resources():
 """
 
     ADD_FILE_TO_MEMFS = """\
-    wx.MemoryFSHandler.AddFile('XRC/%(memoryPath)s/%(filename)s', %(filename)s)
+    wx.MemoryFSHandler.AddFile('XRC/%(memoryPath)s/%(filename)s', memoryview(%(filename)s))
 """
 
     LOAD_RES_MEMFS = """\
@@ -239,7 +241,7 @@ def __init_resources():
 def __gettext_strings():
     # This is a dummy function that lists all the strings that are used in
     # the XRC file in the _("a string") format to be recognized by GNU
-    # gettext utilities (specificaly the xgettext utility) and the
+    # gettext utilities (specifically the xgettext utility) and the
     # mki18n.py script.  For more information see:
     # http://wiki.wxpython.org/index.cgi/Internationalization
 
@@ -294,22 +296,22 @@ class XmlResourceCompiler:
         # allow for it here, and then let Python complain about it
         # later when they try to run the program.
         if subclasses:
-            subclasses = self.ReplaceBlocks("\n".join(subclasses))
+            subclasses = self.ReplaceBlocks(u"\n".join(subclasses))
             print(subclasses, file=outputFile)
         if classes:
-            classes = self.ReplaceBlocks("\n".join(classes))
+            classes = self.ReplaceBlocks(u"\n".join(classes))
             print(classes, file=outputFile)
 
         print(self.templates.INIT_RESOURE_HEADER, file=outputFile)
         if embedResources:
             print(self.templates.PREPARE_MEMFS, file=outputFile)
-        resources = "\n".join(resources)
+        resources = u"\n".join(resources)
         print(resources, file=outputFile)
 
         if generateGetText:
             # gettextStrings is a list of unicode strings as returned by ConvertText
-            conversions = ['    _("%s")' % s for s in gettextStrings]
-            conversion_block = "\n".join(conversions)
+            conversions = [u'    _("%s")' % s for s in gettextStrings]
+            conversion_block = u"\n".join(conversions)
             conversion_func = self.templates.GETTEXT_DUMMY_FUNC % conversion_block
             print(conversion_func, file=outputFile)
 
@@ -556,10 +558,10 @@ class XmlResourceCompiler:
                     if widgetClass == "MenuItem" and windowClass != "MenuBar":
                         if widgetName[:2] == "wx":
                             eventObject = 'id=wx.%s' % re.sub("^wx", "", widgetName)
-                        eventHandler = f"On{event[4:].capitalize()}_{widgetName}"
+                        eventHandler = "On%s_%s" % (event[4:].capitalize(), widgetName)
                         if widgetName in vars: eventObject = "self.%s" % widgetName
                     else:
-                        eventHandler = f"On{event[4:].capitalize()}_{widgetName}"
+                        eventHandler = "On%s_%s" % (event[4:].capitalize(), widgetName)
                         if widgetName in vars: eventObject = "self.%s" % widgetName
                     if not eventObject:
                         eventObject = "id=xrc.XRCID('%s')" % widgetName
@@ -633,7 +635,7 @@ class XmlResourceCompiler:
         linelng = 0
         for i in range(fileLen):
             s = buffer[i:i+1]
-            c = s[0]
+            c = byte2int(s)
             if s == b'\n':
                 tmp = s
                 linelng = 0
@@ -760,13 +762,13 @@ class XmlResourceCompiler:
     #-------------------------------------------------------------------
 
     def ConvertText(self, st):
-        """
+        r"""
         Encode special characters as escaped C/Python string characters.
 
             \n => \\n
             \r => \\r
             \t => \\t
-            \\ => \\
+            \ => \\
             " => \"
 
         Returns result as string, which is bytes in py2 or unicode in py3.
@@ -823,7 +825,7 @@ class XmlResourceCompiler:
                 mo = reEndBlock.match(l)
                 if mo:
                     if mo.groups()[0] != block:
-                        print(f"pywxrc: error: block mismatch: {block} != {mo.groups()[0]}")
+                        print("pywxrc: error: block mismatch: %s != %s" % (block, mo.groups()[0]))
                     block = None
         return ''.join(output)
 
@@ -849,14 +851,14 @@ class XmlResourceCompiler:
                         mo = reEndBlock.match(l)
                         if mo:
                             if mo.groups()[0] != block:
-                                print(f"pywxrc: error: block mismatch: {block} != {mo.groups()[0]}")
+                                print("pywxrc: error: block mismatch: %s != %s" % (block, mo.groups()[0]))
                             self.blocks[block] = "".join(blockLines)
                             block = None
 
             try:
                 outputFile = open(outputFilename, "wt")
-            except OSError:
-                raise OSError("Can't write output to '%s'" % outputFilename)
+            except IOError:
+                raise IOError("Can't write output to '%s'" % outputFilename)
         return outputFile
 
 
@@ -939,7 +941,7 @@ def main(args=None):
             sys.exit(1)
 
 
-    except OSError as exc:
+    except IOError as exc:
         print("%s." % str(exc), file=sys.stderr)
     else:
         if outputFilename != "-":

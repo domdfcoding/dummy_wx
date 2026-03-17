@@ -22,7 +22,7 @@ version of the code.
 """
 
 import wx
-import numpy as N
+import numpy as np
 
 from . import FCEvents, Resources
 from .Utilities import BBox
@@ -127,9 +127,9 @@ class ZoomWithMouseWheel():
     def OnWheel(self, event):
         point = event.Position
         if event.GetWheelRotation() < 0:
-            self.Canvas.Zoom(0.9, point, centerCoords = "pixel", keepPointInPlace=True)
+            self.Canvas.Zoom(0.9, point, centerCoords = "Pixel", keepPointInPlace=True)
         else:
-            self.Canvas.Zoom(1.1, point, centerCoords = "pixel", keepPointInPlace=True)
+            self.Canvas.Zoom(1.1, point, centerCoords = "Pixel", keepPointInPlace=True)
 
 
 class GUIMouse(GUIBase):
@@ -222,14 +222,14 @@ class GUIMove(ZoomWithMouseWheel, GUIBase):
     def OnLeftDown(self, event):
         self.Canvas.SetCursor(self.GrabCursor)
         self.Canvas.CaptureMouse()
-        self.StartMove = N.array( event.GetPosition() )
+        self.StartMove = np.array( event.GetPosition() )
         self.MidMove = self.StartMove
         self.PrevMoveXY = (0,0)
 
     def OnLeftUp(self, event):
         self.Canvas.SetCursor(self.Cursor)
         if self.StartMove is not None:
-            self.EndMove = N.array(event.GetPosition())
+            self.EndMove = np.array(event.GetPosition())
             DiffMove = self.MidMove-self.EndMove
             self.Canvas.MoveImage(DiffMove, 'Pixel', ReDraw=True)
 
@@ -237,7 +237,7 @@ class GUIMove(ZoomWithMouseWheel, GUIBase):
         # Always raise the Move event.
         self.Canvas._RaiseMouseEvent(event, FCEvents.EVT_FC_MOTION)
         if event.Dragging() and event.LeftIsDown() and not self.StartMove is None:
-            self.EndMove = N.array(event.GetPosition())
+            self.EndMove = np.array(event.GetPosition())
             self.MoveImage(event)
             DiffMove = self.MidMove-self.EndMove
             self.Canvas.MoveImage(DiffMove, 'Pixel', ReDraw=False)# reset the canvas without re-drawing
@@ -321,7 +321,7 @@ class GUIZoomIn(ZoomWithMouseWheel, GUIBase):
         self.Cursor = self.Cursors.MagPlusCursor
 
     def OnLeftDown(self, event):
-        self.StartRBBox = N.array( event.GetPosition() )
+        self.StartRBBox = np.array( event.GetPosition() )
         self.PrevRBBox = None
         self.Canvas.CaptureMouse()
 
@@ -335,7 +335,7 @@ class GUIZoomIn(ZoomWithMouseWheel, GUIBase):
                     and abs(StartRBBox[1] - EndRBBox[1]) > 10 ):
                 EndRBBox = self.Canvas.PixelToWorld(EndRBBox)
                 StartRBBox = self.Canvas.PixelToWorld(StartRBBox)
-                self.Canvas.ZoomToBB( BBox.fromPoints(N.r_[EndRBBox,StartRBBox]) )
+                self.Canvas.ZoomToBB( BBox.fromPoints(np.r_[EndRBBox,StartRBBox]) )
             else:
                 Center = self.Canvas.PixelToWorld(StartRBBox)
                 self.Canvas.Zoom(1.5,Center)
@@ -346,7 +346,7 @@ class GUIZoomIn(ZoomWithMouseWheel, GUIBase):
         self.Canvas._RaiseMouseEvent(event,FCEvents.EVT_FC_MOTION)
         if event.Dragging() and event.LeftIsDown() and not (self.StartRBBox is None):
             xy0 = self.StartRBBox
-            xy1 = N.array( event.GetPosition() )
+            xy1 = np.array( event.GetPosition() )
             wh  = abs(xy1 - xy0)
             wh[0] = max(wh[0], int(wh[1]*self.Canvas.AspectRatio))
             wh[1] = int(wh[0] / self.Canvas.AspectRatio)
@@ -374,7 +374,7 @@ class GUIZoomIn(ZoomWithMouseWheel, GUIBase):
             dc.DrawRectangle(*self.PrevRBBox)
 
     def OnRightDown(self, event):
-        self.Canvas.Zoom(1/1.5, event.GetPosition(), centerCoords="pixel")
+        self.Canvas.Zoom(1/1.5, event.GetPosition(), centerCoords="Pixel")
 
 
 class GUIZoomOut(ZoomWithMouseWheel, GUIBase):
@@ -386,10 +386,10 @@ class GUIZoomOut(ZoomWithMouseWheel, GUIBase):
         self.Cursor = self.Cursors.MagMinusCursor
 
     def OnLeftDown(self, event):
-        self.Canvas.Zoom(1/1.5, event.GetPosition(), centerCoords="pixel")
+        self.Canvas.Zoom(1/1.5, event.GetPosition(), centerCoords="Pixel")
 
     def OnRightDown(self, event):
-        self.Canvas.Zoom(1.5, event.GetPosition(), centerCoords="pixel")
+        self.Canvas.Zoom(1.5, event.GetPosition(), centerCoords="Pixel")
 
     def OnMove(self, event):
         # Always raise the Move event.

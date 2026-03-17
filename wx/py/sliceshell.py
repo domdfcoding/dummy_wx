@@ -15,7 +15,6 @@ __author__ += "Patrick K. O'Brien <pobrien@orbtech.com>"
 
 import wx
 from wx import stc
-from six import PY3
 
 import keyword
 import os
@@ -353,8 +352,8 @@ class SlicesShellFrame(frame.Frame, frame.ShellFrameMixin):
             file=wx.FileSelector('Open a PySlices File',
                                  wildcard='*.pyslices',
                                  default_path=self.currentDirectory)
-        if file!=None and file!='':
-            with open(file) as fid:
+        if file!=None and file!=u'':
+            with open(file,'r') as fid:
                 self.sliceshell.LoadPySlicesFile(fid)
 
             self.currentDirectory = os.path.split(file)[0]
@@ -980,7 +979,6 @@ class SlicesShell(editwindow.EditWindow):
 
         This sets "close", "exit" and "quit" to a helpful string.
         """
-        from six import PY3
         import builtins
         builtins.close = builtins.exit = builtins.quit = \
             'Click on the close button to leave the application.'
@@ -1930,8 +1928,8 @@ class SlicesShell(editwindow.EditWindow):
         elif controlDown and key in (ord('L'), ord('l')):
             #print('Load it')
             file = wx.FileSelector("Load File As New Slice")
-            if file != '':
-                with open(file) as fid:
+            if file != u'':
+                with open(file,'r') as fid:
                     self.LoadPyFileAsSlice(fid)
 
         elif controlDown and key in (ord('D'), ord('d')):
@@ -2135,7 +2133,7 @@ class SlicesShell(editwindow.EditWindow):
         import re
 
         #sort out only "good" words
-        newlist = re.split("[ \\.\\[\\]=}(\\)\\,0-9\"]", joined)
+        newlist = re.split(r"[ \.\[\]=}(\)\,0-9\"]", joined)
 
         #length > 1 (mix out "trash")
         thlist = []
@@ -2263,8 +2261,8 @@ class SlicesShell(editwindow.EditWindow):
         or (self.historyIndex >= len(self.history)-2):
             searchOrder = range(len(self.history))
         else:
-            searchOrder = range(self.historyIndex+1, len(self.history)) + \
-                          range(self.historyIndex)
+            ls = list(range(len(self.history)))
+            searchOrder = ls[self.historyIndex+1:] + ls[:self.historyIndex]
         for i in searchOrder:
             command = self.history[i]
             if command[:len(searchText)] == searchText:
@@ -3422,7 +3420,7 @@ class SlicesShell(editwindow.EditWindow):
         #ADD UNDO
         if self.CanPaste() and wx.TheClipboard.Open():
             ps2 = str(sys.ps2)
-            if wx.TheClipboard.IsSupported(wx.DataFormat(wx.DF_TEXT)):
+            if wx.TheClipboard.IsSupported(wx.DataFormat(wx.DF_UNICODETEXT)):
                 data = wx.TextDataObject()
                 if wx.TheClipboard.GetData(data):
                     self.ReplaceSelection('')
@@ -3452,7 +3450,7 @@ class SlicesShell(editwindow.EditWindow):
         """Replace selection with clipboard contents, run commands."""
         text = ''
         if wx.TheClipboard.Open():
-            if wx.TheClipboard.IsSupported(wx.DataFormat(wx.DF_TEXT)):
+            if wx.TheClipboard.IsSupported(wx.DataFormat(wx.DF_UNICODETEXT)):
                 data = wx.TextDataObject()
                 if wx.TheClipboard.GetData(data):
                     text = data.GetText()
@@ -3717,7 +3715,7 @@ class SlicesShell(editwindow.EditWindow):
                 fid_write(outputStartText)
                 addComment=True
             if addComment:
-                fid_write('#')
+                fid_write(u'#')
 
             fid_write(self.GetLine(i))
 
@@ -3788,7 +3786,7 @@ class SlicesShell(editwindow.EditWindow):
 ##         self.GetData()
 ##         if self.textdo.GetTextLength() > 1:
 ##             text = self.textdo.GetText()
-##             # *** Do somethign with the dragged text here...
+##             # *** Do something with the dragged text here...
 ##             self.textdo.SetText('')
 ##         else:
 ##             filenames = str(self.filename.GetFilenames())

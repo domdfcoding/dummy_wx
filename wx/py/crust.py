@@ -292,7 +292,7 @@ class DispatcherListing(wx.TextCtrl):
         if not self:
             dispatcher.disconnect(receiver=self.spy)
             return
-        text = f'{signal!r} from {sender}'
+        text = '%r from %s' % (signal, sender)
         self.SetInsertionPointEnd()
         start, end = self.GetSelection()
         if start != end:

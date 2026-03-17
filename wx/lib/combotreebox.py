@@ -178,7 +178,7 @@ class IterableTreeCtrl(wx.TreeCtrl):
         Extend GetSelection to never return the root item if the
         root item is hidden.
         """
-        selection = super().GetSelection()
+        selection = super(IterableTreeCtrl, self).GetSelection()
         if selection == self.GetRootItem() and \
             (self.GetWindowStyle() & wx.TR_HIDE_ROOT):
             return wx.TreeItemId() # Return an invalid TreeItemId
@@ -198,7 +198,7 @@ class BasePopupFrame(wx.Frame):
     """
 
     def __init__(self, parent):
-        super().__init__(parent,
+        super(BasePopupFrame, self).__init__(parent,
             style=wx.DEFAULT_FRAME_STYLE & wx.FRAME_FLOAT_ON_PARENT &
                   ~(wx.RESIZE_BORDER | wx.CAPTION))
         self._createInterior()
@@ -260,11 +260,11 @@ class BasePopupFrame(wx.Frame):
     def Show(self):
         self._bindKillFocus()
         wx.CallAfter(self._tree.SetFocus)
-        super().Show()
+        super(BasePopupFrame, self).Show()
 
     def Hide(self):
         self._unbindKillFocus()
-        super().Hide()
+        super(BasePopupFrame, self).Hide()
 
     def GetTree(self):
         return self._tree
@@ -278,7 +278,7 @@ class MSWPopupFrame(BasePopupFrame):
         # is selected.
         if not self._tree.GetSelection():
             self._tree.SelectItem(self._tree.GetFirstItem())
-        super().Show()
+        super(MSWPopupFrame, self).Show()
 
 
 class MACPopupFrame(BasePopupFrame):
@@ -302,7 +302,7 @@ class GTKPopupFrame(BasePopupFrame):
     """GTKPopupFrame is the base class GTK PopupFrame."""
     def _keyShouldHidePopup(self, keyEvent):
         # On wxGTK, Alt-Up also closes the popup:
-        return super()._keyShouldHidePopup(keyEvent) or \
+        return super(GTKPopupFrame, self)._keyShouldHidePopup(keyEvent) or \
             (keyEvent.AltDown() and keyEvent.GetKeyCode() == wx.WXK_UP)
 
 
@@ -327,7 +327,7 @@ class BaseComboTreeBox:
             self._sort = True
         else:
             self._sort = False
-        super().__init__(style=style, *args, **kwargs)
+        super(BaseComboTreeBox, self).__init__(style=style, *args, **kwargs)
         self._createInterior()
         self._layoutInterior()
         self._bindEventHandlers()
@@ -661,7 +661,7 @@ class BaseComboTreeBox:
         :rtype: integer
 
         """
-        # Note: We don't need to substract 1 for the hidden root item,
+        # Note: We don't need to subtract 1 for the hidden root item,
         # because the TreeCtrl does that for us
         return self._tree.GetCount()
 
@@ -739,7 +739,7 @@ class BaseComboTreeBox:
 
         """
         if self._text == self:
-            return super().GetValue()
+            return super(BaseComboTreeBox, self).GetValue()
         else:
             return self._text.GetValue()
 
@@ -760,7 +760,7 @@ class BaseComboTreeBox:
         if self._readOnly and not item:
             return
         if self._text == self:
-            super().SetValue(value)
+            super(BaseComboTreeBox, self).SetValue(value)
         else:
             self._text.SetValue(value)
         if item:
@@ -778,7 +778,7 @@ class NativeComboTreeBox(BaseComboTreeBox, wx.ComboBox):
     """
 
     def _eventsToBind(self):
-        events = super()._eventsToBind()
+        events = super(NativeComboTreeBox, self)._eventsToBind()
         # Bind all mouse click events to self.OnMouseClick so we can
         # intercept those events and prevent the native Combobox from
         # popping up its list of choices.
@@ -812,7 +812,7 @@ class MSWComboTreeBox(NativeComboTreeBox):
         return MSWPopupFrame(self)
 
     def _eventsToBind(self):
-        events = super()._eventsToBind()
+        events = super(MSWComboTreeBox, self)._eventsToBind()
         events.append((self._tree, wx.EVT_TREE_SEL_CHANGED,
             self.OnSelectionChangedInTree))
         return events
@@ -828,7 +828,7 @@ class MSWComboTreeBox(NativeComboTreeBox):
         event.Skip()
 
     def _keyShouldPopUpTree(self, keyEvent):
-        return super()._keyShouldPopUpTree(keyEvent) or \
+        return super(MSWComboTreeBox, self)._keyShouldPopUpTree(keyEvent) or \
             (keyEvent.GetKeyCode() == wx.WXK_F4 and not keyEvent.HasModifiers()) or \
             ((keyEvent.AltDown() or keyEvent.MetaDown()) and \
               keyEvent.GetKeyCode() == wx.WXK_UP)
@@ -841,7 +841,7 @@ class MSWComboTreeBox(NativeComboTreeBox):
         :param string `value`: set the value and select it
 
         """
-        super().SetValue(value)
+        super(MSWComboTreeBox, self).SetValue(value)
         # We select the text in the ComboTreeBox's text field.
         # There is a slight complication, however. When the control is
         # deleted, SetValue is called. But if we call SetMark at that
@@ -859,7 +859,7 @@ class MSWComboTreeBox(NativeComboTreeBox):
         browses through the items in the popped up tree.
         """
         self._previousValue = self.GetValue()
-        super().Popup(*args, **kwargs)
+        super(MSWComboTreeBox, self).Popup(*args, **kwargs)
 
     def NotifyNoItemSelected(self, *args, **kwargs):
         """
@@ -867,7 +867,7 @@ class MSWComboTreeBox(NativeComboTreeBox):
         not selected a new value.
         """
         self.SetValue(self._previousValue)
-        super().NotifyNoItemSelected(*args, **kwargs)
+        super(MSWComboTreeBox, self).NotifyNoItemSelected(*args, **kwargs)
 
 
 class GTKComboTreeBox(BaseComboTreeBox, wx.Panel):

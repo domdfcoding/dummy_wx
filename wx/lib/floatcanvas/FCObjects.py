@@ -11,15 +11,14 @@
 # Tags:         phoenix-port, unittest, documented, py3-port
 #----------------------------------------------------------------------------
 """
-This is where FloatCanvas defines its drawings objects.
+This is where FloatCanvas defines its drawing objects.
 """
 
 import sys
 
 import wx
-import six
 
-import numpy as N
+import numpy as np
 
 from .Utilities import BBox
 from wx.lib.floatcanvas.Utilities import Colors
@@ -290,7 +289,7 @@ class DrawObject:
         else:
             self.Pen = self.PenList.setdefault(
                 (LineColor, LineStyle, LineWidth),
-                wx.Pen(LineColor, LineWidth, self.LineStyleList[LineStyle]))
+                wx.Pen(LineColor, int(LineWidth), self.LineStyleList[LineStyle]))
 
     def SetHitBrush(self, HitColor):
         """
@@ -455,7 +454,7 @@ class ColorOnlyMixin:
         self.SetPen(Color,"Solid",1)
         self.SetBrush(Color,"Solid")
 
-    SetFillColor = SetColor # Just to provide a consistant interface
+    SetFillColor = SetColor # Just to provide a consistent interface
 
 
 class LineOnlyMixin:
@@ -560,7 +559,7 @@ class XYObjectMixin:
          array of shape (2, )
 
         """
-        Delta = N.asarray(Delta, N.float)
+        Delta = np.asarray(Delta, float)
         self.XY += Delta
         self.BoundingBox += Delta
 
@@ -573,7 +572,7 @@ class XYObjectMixin:
         self.BoundingBox = BBox.asBBox((self.XY, self.XY))
 
     def SetPoint(self, xy):
-        xy = N.array(xy, N.float)
+        xy = np.array(xy, float)
         xy.shape = (2,)
 
         self.XY = xy
@@ -597,7 +596,7 @@ class PointsObjectMixin:
          array of shape (2, )
 
         """
-        Delta = N.asarray(Delta, N.float)
+        Delta = np.asarray(Delta, float)
         Delta.shape = (2,)
         self.Points += Delta
         self.BoundingBox += Delta
@@ -631,10 +630,10 @@ class PointsObjectMixin:
 
         """
         if copy:
-            self.Points = N.array(Points, N.float)
+            self.Points = np.array(Points, float)
             self.Points.shape = (-1, 2) # Make sure it is a NX2 array, even if there is only one point
         else:
-            self.Points = N.asarray(Points, N.float)
+            self.Points = np.asarray(Points, float)
         self.CalcBoundingBox()
 
 
@@ -671,7 +670,7 @@ class Polygon(PointsObjectMixin, LineAndFillMixin, DrawObject):
 
         """
         DrawObject.__init__(self, InForeground)
-        self.Points = N.array(Points ,N.float) # this DOES need to make a copy
+        self.Points = np.array(Points ,float) # this DOES need to make a copy
         self.CalcBoundingBox()
 
         self.LineColor = LineColor
@@ -686,7 +685,7 @@ class Polygon(PointsObjectMixin, LineAndFillMixin, DrawObject):
         self.SetBrush(FillColor,FillStyle)
 
     def _Draw(self, dc , WorldToPixel, ScaleWorldToPixel = None, HTdc=None):
-        Points = WorldToPixel(self.Points)#.tolist()
+        Points = WorldToPixel(self.Points)
         dc.SetPen(self.Pen)
         dc.SetBrush(self.Brush)
         dc.DrawPolygon(Points)
@@ -722,7 +721,7 @@ class Line(PointsObjectMixin, LineOnlyMixin, DrawObject):
         DrawObject.__init__(self, InForeground)
 
 
-        self.Points = N.array(Points,N.float)
+        self.Points = np.array(Points,float)
         self.CalcBoundingBox()
 
         self.LineColor = LineColor
@@ -799,7 +798,7 @@ class Arrow(XYObjectMixin, LineOnlyMixin, DrawObject):
 
         DrawObject.__init__(self, InForeground)
 
-        self.XY = N.array(XY, N.float)
+        self.XY = np.array(XY, float)
         self.XY.shape = (2,) # Make sure it is a length 2 vector
         self.Length = Length
         self.Direction = float(Direction)
@@ -841,7 +840,7 @@ class Arrow(XYObjectMixin, LineOnlyMixin, DrawObject):
 
     def SetLengthDirection(self, Length, Direction):
         """
-        Set the lenght and direction
+        Set the length and direction
 
         :param integer `Length`: length of arrow in pixels
         :param integer `Direction`: angle of arrow in degrees, zero is straight
@@ -859,10 +858,10 @@ class Arrow(XYObjectMixin, LineOnlyMixin, DrawObject):
 ##        theta = (self.Direction-90.0) * N.pi / 180
 ##        ArrowPoints = N.array( ( (0, L, L - S*N.cos(phi),L, L - S*N.cos(phi) ),
 ##                               (0, 0, S*N.sin(phi),    0, -S*N.sin(phi)    ) ),
-##                             N.float )
+##                             float )
 ##        RotationMatrix = N.array( ( ( N.cos(theta), -N.sin(theta) ),
 ##                                  ( N.sin(theta), N.cos(theta) ) ),
-##                                N.float
+##                                float
 ##                                )
 ##        ArrowPoints = N.matrixmultiply(RotationMatrix, ArrowPoints)
 ##        self.ArrowPoints = N.transpose(ArrowPoints)
@@ -871,23 +870,23 @@ class Arrow(XYObjectMixin, LineOnlyMixin, DrawObject):
         """Calculate the arrow points."""
         L = self.Length
         S = self.ArrowHeadSize
-        phi = self.ArrowHeadAngle * N.pi / 360
-        theta = (270 - self.Direction) * N.pi / 180
-        AP = N.array( ( (0,0),
+        phi = self.ArrowHeadAngle * np.pi / 360
+        theta = (270 - self.Direction) * np.pi / 180
+        AP = np.array( ( (0,0),
                         (0,0),
-                        (N.cos(theta - phi), -N.sin(theta - phi) ),
+                        (np.cos(theta - phi), -np.sin(theta - phi) ),
                         (0,0),
-                        (N.cos(theta + phi), -N.sin(theta + phi) ),
-                        ), N.float )
+                        (np.cos(theta + phi), -np.sin(theta + phi) ),
+                        ), float )
         AP *= S
-        shift = (-L*N.cos(theta), L*N.sin(theta) )
+        shift = (-L*np.cos(theta), L*np.sin(theta) )
         AP[1:,:] += shift
         self.ArrowPoints = AP
 
     def _Draw(self, dc , WorldToPixel, ScaleWorldToPixel, HTdc=None):
         dc.SetPen(self.Pen)
         xy = WorldToPixel(self.XY)
-        ArrowPoints = xy + self.ArrowPoints
+        ArrowPoints = (xy + self.ArrowPoints).astype(int)
         dc.DrawLines(ArrowPoints)
         if HTdc and self.HitAble:
             HTdc.SetPen(self.HitPen)
@@ -928,7 +927,7 @@ class ArrowLine(PointsObjectMixin, LineOnlyMixin, DrawObject):
 
         DrawObject.__init__(self, InForeground)
 
-        self.Points = N.asarray(Points,N.float)
+        self.Points = np.asarray(Points,float)
         self.Points.shape = (-1,2) # Make sure it is a NX2 array, even if there is only one point
         self.ArrowHeadSize = ArrowHeadSize
         self.ArrowHeadAngle = float(ArrowHeadAngle)
@@ -947,29 +946,29 @@ class ArrowLine(PointsObjectMixin, LineOnlyMixin, DrawObject):
     def CalcArrowPoints(self):
         """Calculate the arrow points."""
         S = self.ArrowHeadSize
-        phi = self.ArrowHeadAngle * N.pi / 360
+        phi = self.ArrowHeadAngle * np.pi / 360
         Points = self.Points
         n = Points.shape[0]
-        self.ArrowPoints = N.zeros((n-1, 3, 2), N.float)
+        self.ArrowPoints = np.zeros((n-1, 3, 2), float)
         for i in range(n-1):
             dx, dy = self.Points[i] - self.Points[i+1]
-            theta = N.arctan2(dy, dx)
-            AP = N.array( (
-                            (N.cos(theta - phi), -N.sin(theta-phi)),
+            theta = np.arctan2(dy, dx)
+            AP = np.array( (
+                            (np.cos(theta - phi), -np.sin(theta-phi)),
                             (0,0),
-                            (N.cos(theta + phi), -N.sin(theta + phi))
+                            (np.cos(theta + phi), -np.sin(theta + phi))
                             ),
-                          N.float )
+                          float )
             self.ArrowPoints[i,:,:] = AP
         self.ArrowPoints *= S
 
     def _Draw(self, dc , WorldToPixel, ScaleWorldToPixel, HTdc=None):
         Points = WorldToPixel(self.Points)
-        ArrowPoints = Points[1:,N.newaxis,:] + self.ArrowPoints
+        ArrowPoints = (Points[1:,np.newaxis,:] + self.ArrowPoints).astype(int)
         dc.SetPen(self.Pen)
         dc.DrawLines(Points)
         for arrow in ArrowPoints:
-                dc.DrawLines(arrow)
+            dc.DrawLines(arrow)
         if HTdc and self.HitAble:
             HTdc.SetPen(self.HitPen)
             HTdc.DrawLines(Points)
@@ -990,7 +989,7 @@ class PointSet(PointsObjectMixin, ColorOnlyMixin, DrawObject):
     Each point will be drawn the same color and Diameter. The Diameter
     is in screen pixels, not world coordinates.
 
-    The hit-test code does not distingish between the points, you will
+    The hit-test code does not distinguish between the points, you will
     only know that one of the points got hit, not which one. You can use
     PointSet.FindClosestPoint(WorldPoint) to find out which one
 
@@ -1010,7 +1009,7 @@ class PointSet(PointsObjectMixin, ColorOnlyMixin, DrawObject):
         """
         DrawObject.__init__(self, InForeground)
 
-        self.Points = N.array(Points,N.float)
+        self.Points = np.array(Points,float)
         self.Points.shape = (-1,2) # Make sure it is a NX2 array, even if there is only one point
         self.CalcBoundingBox()
         self.Diameter = Diameter
@@ -1042,7 +1041,7 @@ class PointSet(PointsObjectMixin, ColorOnlyMixin, DrawObject):
 
         """
         d = self.Points - XY
-        return N.argmin(N.hypot(d[:,0],d[:,1]))
+        return np.argmin(np.hypot(d[:,0],d[:,1]))
 
 
     def DrawD2(self, dc, Points):
@@ -1065,8 +1064,8 @@ class PointSet(PointsObjectMixin, ColorOnlyMixin, DrawObject):
             ##fixme: I really should add a DrawCircleList to wxPython
             if len(Points) > 100:
                 xy = Points
-                xywh = N.concatenate((xy-radius, N.ones(xy.shape) * self.Diameter ), 1 )
-                dc.DrawEllipseList(xywh)
+                xywh = np.concatenate((xy-radius, np.ones(xy.shape) * self.Diameter ), 1 )
+                dc.DrawEllipseList(xywh.astype(int))
             else:
                 for xy in Points:
                     dc.DrawCircle(xy[0],xy[1], radius)
@@ -1080,8 +1079,8 @@ class PointSet(PointsObjectMixin, ColorOnlyMixin, DrawObject):
             else:
                 if len(Points) > 100:
                     xy = Points
-                    xywh = N.concatenate((xy-radius, N.ones(xy.shape) * self.Diameter ), 1 )
-                    HTdc.DrawEllipseList(xywh)
+                    xywh = np.concatenate((xy-radius, np.ones(xy.shape) * self.Diameter ), 1 )
+                    HTdc.DrawEllipseList(xywh.astype(int))
                 else:
                     for xy in Points:
                         HTdc.DrawCircle(xy[0],xy[1], radius)
@@ -1111,7 +1110,7 @@ class Point(XYObjectMixin, ColorOnlyMixin, DrawObject):
 
         DrawObject.__init__(self, InForeground)
 
-        self.XY = N.array(XY, N.float)
+        self.XY = np.array(XY, float)
         self.XY.shape = (2,) # Make sure it is a length 2 vector
         self.CalcBoundingBox()
         self.SetColor(Color)
@@ -1168,7 +1167,7 @@ class SquarePoint(XYObjectMixin, ColorOnlyMixin, DrawObject):
         """
         DrawObject.__init__(self, InForeground)
 
-        self.XY = N.array(Point, N.float)
+        self.XY = np.array(Point, float)
         self.XY.shape = (2,) # Make sure it is a length 2 vector
         self.CalcBoundingBox()
         self.SetColor(Color)
@@ -1196,14 +1195,14 @@ class SquarePoint(XYObjectMixin, ColorOnlyMixin, DrawObject):
             x = xc - Size/2.0
             y = yc - Size/2.0
             dc.SetBrush(self.Brush)
-            dc.DrawRectangle(x, y, Size, Size)
+            dc.DrawRectangle(int(x), int(y), Size, Size)
         if HTdc and self.HitAble:
             HTdc.SetPen(self.HitPen)
             if self.Size <= 1:
                 HTdc.DrawPoint(xc, xc)
             else:
                 HTdc.SetBrush(self.HitBrush)
-                HTdc.DrawRectangle(x, y, Size, Size)
+                HTdc.DrawRectangle(int(x), int(y), Size, Size)
 
 class RectEllipse(XYObjectMixin, LineAndFillMixin, DrawObject):
     """A RectEllipse draw object."""
@@ -1256,16 +1255,16 @@ class RectEllipse(XYObjectMixin, LineAndFillMixin, DrawObject):
         :param `WH`: a tuple with the Width and Height for the object
 
         """
-        self.XY = N.array( XY, N.float)
+        self.XY = np.array( XY, float)
         self.XY.shape = (2,)
-        self.WH = N.array( WH, N.float)
+        self.WH = np.array( WH, float)
         self.WH.shape = (2,)
         self.CalcBoundingBox()
 
     def CalcBoundingBox(self):
         """Calculate the bounding box."""
         # you need this in case Width or Height are negative
-        corners = N.array((self.XY, (self.XY + self.WH) ), N.float)
+        corners = np.array((self.XY, (self.XY + self.WH) ), float)
         self.BoundingBox = BBox.fromPoints(corners)
         if self._Canvas:
             self._Canvas.BoundingBoxDirty = True
@@ -1278,8 +1277,8 @@ class Rectangle(RectEllipse):
                                     WorldToPixel,
                                     ScaleWorldToPixel,
                                     HTdc)
-        WH[N.abs(WH) < self.MinSize] = self.MinSize
-        if not( self.DisappearWhenSmall and N.abs(WH).min() <=  self.MinSize) : # don't try to draw it too tiny
+        WH[np.abs(WH) < self.MinSize] = self.MinSize
+        if not( self.DisappearWhenSmall and np.abs(WH).min() <=  self.MinSize) : # don't try to draw it too tiny
             dc.DrawRectangle(XY, WH)
             if HTdc and self.HitAble:
                 HTdc.DrawRectangle(XY, WH)
@@ -1292,8 +1291,8 @@ class Ellipse(RectEllipse):
                                     WorldToPixel,
                                     ScaleWorldToPixel,
                                     HTdc)
-        WH[N.abs(WH) < self.MinSize] = self.MinSize
-        if not( self.DisappearWhenSmall and N.abs(WH).min() <=  self.MinSize) : # don't try to draw it too tiny
+        WH[np.abs(WH) < self.MinSize] = self.MinSize
+        if not( self.DisappearWhenSmall and np.abs(WH).min() <=  self.MinSize) : # don't try to draw it too tiny
             dc.DrawEllipse(XY, WH)
             if HTdc and self.HitAble:
                 HTdc.DrawEllipse(XY, WH)
@@ -1323,8 +1322,8 @@ class Circle(XYObjectMixin, LineAndFillMixin, DrawObject):
         """
         DrawObject.__init__(self, InForeground)
 
-        self.XY = N.array(XY, N.float)
-        self.WH = N.array((Diameter/2, Diameter/2), N.float) # just to keep it compatible with others
+        self.XY = np.array(XY, float)
+        self.WH = np.array((Diameter/2, Diameter/2), float) # just to keep it compatible with others
         self.CalcBoundingBox()
 
         self.LineColor = LineColor
@@ -1349,7 +1348,7 @@ class Circle(XYObjectMixin, LineAndFillMixin, DrawObject):
         :param integer `Diameter`: the diameter for the object
 
         """
-        self.WH = N.array((Diameter/2, Diameter/2), N.float) # just to keep it compatible with others
+        self.WH = np.array((Diameter/2, Diameter/2), float) # just to keep it compatible with others
 
     def CalcBoundingBox(self):
         """Calculate the bounding box of the object."""
@@ -1364,8 +1363,8 @@ class Circle(XYObjectMixin, LineAndFillMixin, DrawObject):
                                     ScaleWorldToPixel,
                                     HTdc)
 
-        WH[N.abs(WH) < self.MinSize] = self.MinSize
-        if not( self.DisappearWhenSmall and N.abs(WH).min() <=  self.MinSize) : # don't try to draw it too tiny
+        WH[np.abs(WH) < self.MinSize] = self.MinSize
+        if not( self.DisappearWhenSmall and np.abs(WH).min() <=  self.MinSize) : # don't try to draw it too tiny
             dc.DrawCircle(XY, WH[0])
             if HTdc and self.HitAble:
                 HTdc.DrawCircle(XY, WH[0])
@@ -1435,13 +1434,13 @@ class TextObjectMixin(XYObjectMixin):
     ## pad is the extra space around the text
     ## if world = 1, the vertical shift is done in y-up coordinates
     ShiftFunDict = {'tl': lambda x, y, w, h, world=0, pad=0: (x + pad,     y + pad - 2*world*pad),
-                    'tc': lambda x, y, w, h, world=0, pad=0: (x - w/2,     y + pad - 2*world*pad),
+                    'tc': lambda x, y, w, h, world=0, pad=0: (x - w//2,    y + pad - 2*world*pad),
                     'tr': lambda x, y, w, h, world=0, pad=0: (x - w - pad, y + pad - 2*world*pad),
-                    'cl': lambda x, y, w, h, world=0, pad=0: (x + pad,     y - h/2 + world*h),
-                    'cc': lambda x, y, w, h, world=0, pad=0: (x - w/2,     y - h/2 + world*h),
-                    'cr': lambda x, y, w, h, world=0, pad=0: (x - w - pad, y - h/2 + world*h),
+                    'cl': lambda x, y, w, h, world=0, pad=0: (x + pad,     y - h//2 + world*h),
+                    'cc': lambda x, y, w, h, world=0, pad=0: (x - w//2,    y - h//2 + world*h),
+                    'cr': lambda x, y, w, h, world=0, pad=0: (x - w - pad, y - h//2 + world*h),
                     'bl': lambda x, y, w, h, world=0, pad=0: (x + pad,     y - h + 2*world*h - pad + world*2*pad) ,
-                    'bc': lambda x, y, w, h, world=0, pad=0: (x - w/2,     y - h + 2*world*h - pad + world*2*pad) ,
+                    'bc': lambda x, y, w, h, world=0, pad=0: (x - w//2,    y - h + 2*world*h - pad + world*2*pad) ,
                     'br': lambda x, y, w, h, world=0, pad=0: (x - w - pad, y - h + 2*world*h - pad + world*2*pad)}
 
 class Text(TextObjectMixin, DrawObject):
@@ -1527,7 +1526,7 @@ class Text(TextObjectMixin, DrawObject):
 
         self.BoundingBox = BBox.asBBox((xy, xy))
 
-        self.XY = N.asarray(xy)
+        self.XY = np.asarray(xy)
         self.XY.shape = (2,)
 
         (self.TextWidth, self.TextHeight) = (None, None)
@@ -1553,11 +1552,11 @@ class Text(TextObjectMixin, DrawObject):
 
 class ScaledText(TextObjectMixin, DrawObject):
     """
-    ##fixme: this can be depricated and jsut use ScaledTextBox with different defaults.
+    ##fixme: this can be deprecated and just use ScaledTextBox with different defaults.
 
     This class creates a text object that is scaled when zoomed.  It is
     placed at the coordinates, x,y. the "Position" argument is a two
-    charactor string, indicating where in relation to the coordinates
+    character string, indicating where in relation to the coordinates
     the string should be oriented.
 
     The first letter is: t, c, or b, for top, center and bottom The
@@ -1594,7 +1593,7 @@ class ScaledText(TextObjectMixin, DrawObject):
     Bugs/Limitations:
 
     As fonts are scaled, the do end up a little different, so you don't
-    get exactly the same picture as you scale up and doen, but it's
+    get exactly the same picture as you scale up and done, but it's
     pretty darn close.
 
     On wxGTK1 on my Linux system, at least, using a font of over about
@@ -1627,7 +1626,7 @@ class ScaledText(TextObjectMixin, DrawObject):
         DrawObject.__init__(self,InForeground)
 
         self.String = String
-        self.XY = N.array( XY, N.float)
+        self.XY = np.array( XY, float)
         self.XY.shape = (2,)
         self.Size = Size
         self.Color = Color
@@ -1683,7 +1682,7 @@ class ScaledText(TextObjectMixin, DrawObject):
         self.BoundingBox = BBox.asBBox(((x, y-h ),(x + w, y)))
 
     def _Draw(self, dc , WorldToPixel, ScaleWorldToPixel, HTdc=None):
-        (X,Y) = WorldToPixel( self.XY )
+        (X,Y) = WorldToPixel( (self.XY) )
 
         # compute the font size:
         Size = abs( ScaleWorldToPixel( (self.Size, self.Size) )[1] ) # only need a y coordinate length
@@ -1704,7 +1703,7 @@ class ScaledText(TextObjectMixin, DrawObject):
             else:
                 dc.SetBackgroundMode(wx.TRANSPARENT)
             (w,h) = dc.GetTextExtent(self.String)
-            # compute the shift, and adjust the coordinates, if neccesary
+            # compute the shift, and adjust the coordinates, if necessary
             # This had to be put in here, because it changes with Zoom, as
             # fonts don't scale exactly.
             xy = self.ShiftFun(X, Y, w, h)
@@ -1804,7 +1803,7 @@ class ScaledTextBox(TextObjectMixin, DrawObject):
         """
         DrawObject.__init__(self,InForeground)
 
-        self.XY = N.array(Point, N.float)
+        self.XY = np.array(Point, float)
         self.Size = Size
         self.Color = Color
         self.BackgroundColor = BackgroundColor
@@ -1920,7 +1919,7 @@ class ScaledTextBox(TextObjectMixin, DrawObject):
         SpaceWidth = dc.GetTextExtent(" ")[0]
         LineHeight = TextHeight * self.LineSpacing
 
-        LineWidths = N.zeros((len(self.Strings),), N.float)
+        LineWidths = np.zeros((len(self.Strings),), float)
         y = 0
         Words = []
         AllLinePoints = []
@@ -1928,7 +1927,7 @@ class ScaledTextBox(TextObjectMixin, DrawObject):
         for i, s in enumerate(self.Strings):
             LineWidths[i] = 0
             LineWords = s.split(" ")
-            LinePoints = N.zeros((len(LineWords),2), N.float)
+            LinePoints = np.zeros((len(LineWords),2), float)
             for j, word in enumerate(LineWords):
                 if j > 0:
                     LineWidths[i] += SpaceWidth
@@ -1938,14 +1937,14 @@ class ScaledTextBox(TextObjectMixin, DrawObject):
                 LineWidths[i] += w
             y -= LineHeight
             AllLinePoints.append(LinePoints)
-        TextWidth = N.maximum.reduce(LineWidths)
+        TextWidth = np.maximum.reduce(LineWidths)
         self.Words = Words
 
         if self.Width is None:
             BoxWidth = TextWidth * ScaleFactor + 2*self.PadSize
         else: # use the defined Width
             BoxWidth = self.Width
-        Points = N.zeros((0,2), N.float)
+        Points = np.zeros((0,2), float)
 
         for i, LinePoints in enumerate(AllLinePoints):
             ## Scale to World Coords.
@@ -1956,7 +1955,7 @@ class ScaledTextBox(TextObjectMixin, DrawObject):
                 LinePoints[:,0] += (BoxWidth - LineWidths[i]*ScaleFactor)/2.0
             elif self.Alignment == 'right':
                 LinePoints[:,0] += (BoxWidth - LineWidths[i]*ScaleFactor-self.PadSize)
-            Points = N.concatenate((Points, LinePoints))
+            Points = np.concatenate((Points, LinePoints))
 
         BoxHeight = -(Points[-1,1] - (TextHeight * ScaleFactor)) + 2*self.PadSize
         #(x,y) = self.ShiftFun(self.XY[0], self.XY[1], BoxWidth, BoxHeight, world=1)
@@ -2140,6 +2139,7 @@ class ScaledBitmap(TextObjectMixin, DrawObject):
         self.CalcBoundingBox()
         self.ScaledBitmap = None
         self.ScaledHeight = None
+        self.MaxSize = 20e6  # cf. FHD 1,920 x 1,080
 
     def CalcBoundingBox(self):
         """Calculate the bounding box."""
@@ -2152,14 +2152,17 @@ class ScaledBitmap(TextObjectMixin, DrawObject):
     def _Draw(self, dc , WorldToPixel, ScaleWorldToPixel, HTdc=None):
         XY = WorldToPixel(self.XY)
         H = ScaleWorldToPixel(self.Height)[0]
-        W = H * (self.bmpWidth / self.bmpHeight)
-        if (self.ScaledBitmap is None) or (H != self.ScaledHeight) :
-            self.ScaledHeight = H
-            Img = self.Image.Scale(W, H)
-            self.ScaledBitmap = wx.Bitmap(Img)
-
+        W = int(H * (self.bmpWidth / self.bmpHeight))
         XY = self.ShiftFun(XY[0], XY[1], W, H)
-        dc.DrawBitmap(self.ScaledBitmap, XY, True)
+        if 0 < H * float(W) < self.MaxSize:
+            if (self.ScaledBitmap is None) or (H != self.ScaledHeight):
+                Img = self.Image.Scale(W, H)
+                self.ScaledHeight = H
+                self.ScaledBitmap = wx.Bitmap(Img)
+            dc.DrawBitmap(self.ScaledBitmap, XY, True)
+        else:
+            gc = wx.GraphicsContext.Create(dc)
+            gc.DrawBitmap(self.ScaledBitmap, *XY, W, H)
         if HTdc and self.HitAble:
             HTdc.SetPen(self.HitPen)
             HTdc.SetBrush(self.HitBrush)
@@ -2219,15 +2222,15 @@ class ScaledBitmap2(TextObjectMixin, DrawObject, ):
         elif type(Bitmap) == wx.Image:
             self.Image = Bitmap
 
-        self.XY = N.array(XY, N.float)
+        self.XY = np.array(XY, float)
         self.Height = Height
         (self.bmpWidth, self.bmpHeight) = float(self.Image.GetWidth()), float(self.Image.GetHeight())
-        self.bmpWH = N.array((self.bmpWidth, self.bmpHeight), N.int32)
+        self.bmpWH = np.array((self.bmpWidth, self.bmpHeight), np.int32)
         ## fixme: this should all accommodate different scales for X and Y
         if Width is None:
             self.BmpScale = float(self.bmpHeight) / Height
             self.Width = self.bmpWidth / self.BmpScale
-        self.WH = N.array((self.Width, Height), N.float)
+        self.WH = np.array((self.Width, Height), float)
         ##fixme: should this have a y = -1 to shift to y-up?
         self.BmpScale = self.bmpWH / self.WH
 
@@ -2252,7 +2255,7 @@ class ScaledBitmap2(TextObjectMixin, DrawObject, ):
         Pb *= (1, -1) ##fixme: this may only works for Yup projection!
                       ##       and may only work for top left position
 
-        return Pb.astype(N.int_)
+        return Pb.astype(np.int_)
 
     def _DrawEntireBitmap(self, dc , WorldToPixel, ScaleWorldToPixel, HTdc):
         """
@@ -2263,7 +2266,7 @@ class ScaledBitmap2(TextObjectMixin, DrawObject, ):
         """
         XY = WorldToPixel(self.XY)
         H = ScaleWorldToPixel(self.Height)[0]
-        W = H * (self.bmpWidth / self.bmpHeight)
+        W = int(H * (self.bmpWidth / self.bmpHeight))
         if (self.ScaledBitmap is None) or (self.ScaledBitmap[0] != (0, 0, self.bmpWidth, self.bmpHeight, W, H) ):
         #if True: #fixme: (self.ScaledBitmap is None) or (H != self.ScaledHeight) :
             self.ScaledHeight = H
@@ -2382,7 +2385,7 @@ class DotGrid:
     """
     def __init__(self, Spacing, Size = 2, Color = "Black", Cross=False, CrossThickness = 1):
 
-        self.Spacing = N.array(Spacing, N.float)
+        self.Spacing = np.array(Spacing, float)
         self.Spacing.shape = (2,)
         self.Size = Size
         self.Color = Color
@@ -2394,13 +2397,13 @@ class DotGrid:
 
         Spacing = self.Spacing
 
-        minx, miny = N.floor(ViewPortBB[0] / Spacing) * Spacing
-        maxx, maxy = N.ceil(ViewPortBB[1] / Spacing) * Spacing
+        minx, miny = np.floor(ViewPortBB[0] / Spacing) * Spacing
+        maxx, maxy = np.ceil(ViewPortBB[1] / Spacing) * Spacing
 
         ##fixme: this could use vstack or something with numpy
-        x = N.arange(minx, maxx+Spacing[0], Spacing[0]) # making sure to get the last point
-        y = N.arange(miny, maxy+Spacing[1], Spacing[1]) # an extra is OK
-        Points = N.zeros((len(y), len(x), 2), N.float)
+        x = np.arange(minx, maxx+Spacing[0], Spacing[0]) # making sure to get the last point
+        y = np.arange(miny, maxy+Spacing[1], Spacing[1]) # an extra is OK
+        Points = np.zeros((len(y), len(x), 2), float)
         x.shape = (1,-1)
         y.shape = (-1,1)
         Points[:,:,0] += x
@@ -2418,10 +2421,10 @@ class DotGrid:
 
         if self.Cross: # Use cross shaped markers
             #Horizontal lines
-            LinePoints = N.concatenate((Points + (self.Size,0),Points + (-self.Size,0)),1)
+            LinePoints = np.concatenate((Points + (self.Size,0),Points + (-self.Size,0)),1)
             dc.DrawLineList(LinePoints)
             # Vertical Lines
-            LinePoints = N.concatenate((Points + (0,self.Size),Points + (0,-self.Size)),1)
+            LinePoints = np.concatenate((Points + (0,self.Size),Points + (0,-self.Size)),1)
             dc.DrawLineList(LinePoints)
             pass
         else: # use dots
@@ -2439,8 +2442,8 @@ class DotGrid:
                 ##fixme: I really should add a DrawCircleList to wxPython
                 if len(Points) > 100:
                     xy = Points
-                    xywh = N.concatenate((xy-radius, N.ones(xy.shape) * self.Size ), 1 )
-                    dc.DrawEllipseList(xywh)
+                    xywh = np.concatenate((xy-radius, np.ones(xy.shape) * self.Size ), 1 )
+                    dc.DrawEllipseList(xywh.astype(int))
                 else:
                     for xy in Points:
                         dc.DrawCircle(xy[0],xy[1], radius)
@@ -2487,7 +2490,7 @@ class Arc(XYObjectMixin, LineAndFillMixin, DrawObject):
         # There is probably a more elegant way to do this next section
         # The bounding box just gets set to the WH of a circle, with center at CenterXY
         # This is suitable for a pie chart as it will be a circle anyway
-        radius = N.sqrt( (StartXY[0]-CenterXY[0])**2 + (StartXY[1]-CenterXY[1])**2 )
+        radius = np.sqrt( (StartXY[0]-CenterXY[0])**2 + (StartXY[1]-CenterXY[1])**2 )
         minX = CenterXY[0]-radius
         minY = CenterXY[1]-radius
         maxX = CenterXY[0]+radius
@@ -2495,12 +2498,12 @@ class Arc(XYObjectMixin, LineAndFillMixin, DrawObject):
         XY = [minX,minY]
         WH = [maxX-minX,maxY-minY]
 
-        self.XY = N.asarray( XY, N.float).reshape((2,))
-        self.WH = N.asarray( WH, N.float).reshape((2,))
+        self.XY = np.asarray( XY, float).reshape((2,))
+        self.WH = np.asarray( WH, float).reshape((2,))
 
-        self.StartXY = N.asarray(StartXY, N.float).reshape((2,))
-        self.CenterXY = N.asarray(CenterXY, N.float).reshape((2,))
-        self.EndXY = N.asarray(EndXY, N.float).reshape((2,))
+        self.StartXY = np.asarray(StartXY, float).reshape((2,))
+        self.CenterXY = np.asarray(CenterXY, float).reshape((2,))
+        self.EndXY = np.asarray(EndXY, float).reshape((2,))
 
         #self.BoundingBox = array((self.XY, (self.XY + self.WH)), Float)
         self.CalcBoundingBox()
@@ -2526,7 +2529,7 @@ class Arc(XYObjectMixin, LineAndFillMixin, DrawObject):
 
         """
 
-        Delta = N.asarray(Delta, N.float)
+        Delta = np.asarray(Delta, float)
         self.XY += Delta
         self.StartXY += Delta
         self.CenterXY += Delta
@@ -2548,8 +2551,8 @@ class Arc(XYObjectMixin, LineAndFillMixin, DrawObject):
 
     def CalcBoundingBox(self):
         """Calculate the bounding box."""
-        self.BoundingBox = BBox.asBBox( N.array((self.XY, (self.XY + self.WH) ),
-                                                N.float) )
+        self.BoundingBox = BBox.asBBox( np.array((self.XY, (self.XY + self.WH) ),
+                                                float) )
         if self._Canvas:
             self._Canvas.BoundingBoxDirty = True
 
@@ -2583,7 +2586,7 @@ class PieChart(XYObjectMixin, LineOnlyMixin, DrawObject):
         Default class constructor.
 
         :param `XY`: The (x,y) coords of the center of the chart
-        :param `Diameter`: The diamter of the chart in worls coords, unless you
+        :param `Diameter`: The diameter of the chart in world coords, unless you
                  set "Scaled" to False, in which case it's in pixel coords.
         :param `Values`: sequence of values you want to make the chart of.
         :param `FillColors`: sequence of colors you want the slices. If
@@ -2598,9 +2601,9 @@ class PieChart(XYObjectMixin, LineOnlyMixin, DrawObject):
         """
         DrawObject.__init__(self, InForeground)
 
-        self.XY = N.asarray(XY, N.float).reshape( (2,) )
+        self.XY = np.asarray(XY, float).reshape( (2,) )
         self.Diameter = Diameter
-        self.Values = N.asarray(Values, dtype=N.float).reshape((-1,1))
+        self.Values = np.asarray(Values, dtype=float).reshape((-1,1))
         if FillColors is None:
             FillColors = self.DefaultColorList[:len(Values)]
         if FillStyles is None:
@@ -2628,7 +2631,7 @@ class PieChart(XYObjectMixin, LineOnlyMixin, DrawObject):
 
     def SetFillStyles(self, FillStyles):
         """
-        Set te FillStyles and update the Brushes.
+        Set the FillStyles and update the Brushes.
 
         :param `FillStyles`: Fill style you want ("Solid", "Hash", etc)
         """
@@ -2641,14 +2644,14 @@ class PieChart(XYObjectMixin, LineOnlyMixin, DrawObject):
 
         :param `Values`: sequence of values you want to use for the chart
         """
-        Values = N.asarray(Values, dtype=N.float).reshape((-1,1))
+        Values = np.asarray(Values, dtype=float).reshape((-1,1))
         self.Values = Values
         self.CalculatePoints()
 
     def CalculatePoints(self):
         """Calculate the points."""
         # add the zero point to start
-        Values = N.vstack( ( (0,), self.Values) )
+        Values = np.vstack( ( (0,), self.Values) )
         self.Angles = 360. * Values.cumsum()/Values.sum()
         self.CalcBoundingBox()
 
@@ -2678,12 +2681,12 @@ class PieChart(XYObjectMixin, LineOnlyMixin, DrawObject):
             Diameter = ScaleWorldToPixel( (self.Diameter,self.Diameter) )[0]
         else:
             Diameter = self.Diameter
-        WH = N.array((Diameter,Diameter), dtype = N.float)
+        WH = np.array((Diameter,Diameter), dtype = float)
         Corner = CenterXY - (WH / 2)
         dc.SetPen(self.Pen)
         for i, brush in enumerate(self.Brushes):
             dc.SetBrush( brush )
-            dc.DrawEllipticArc(Corner[0], Corner[1], WH[0], WH[1], self.Angles[i], self.Angles[i+1])
+            dc.DrawEllipticArc(int(Corner[0]), int(Corner[1]), int(WH[0]), int(WH[1]), self.Angles[i], self.Angles[i+1])
         if HTdc and self.HitAble:
             if self.Scaled:
                 radius = (ScaleWorldToPixel(self.Diameter)/2)[0]# just the x-coord
@@ -2691,7 +2694,7 @@ class PieChart(XYObjectMixin, LineOnlyMixin, DrawObject):
                 radius = self.Diameter/2
             HTdc.SetPen(self.HitPen)
             HTdc.SetBrush(self.HitBrush)
-            HTdc.DrawCircle(CenterXY, radius)
+            HTdc.DrawCircle(CenterXY.tolist(), int(radius))
 
 
 class Group(DrawObject):
@@ -2716,7 +2719,7 @@ class Group(DrawObject):
         self.ObjectList = []
         DrawObject.__init__(self, InForeground, IsVisible)
 
-        # this one uses a proprty for _Canvas...
+        # this one uses a property for _Canvas...
         self._Actual_Canvas = None
 
         self.CalcBoundingBox()

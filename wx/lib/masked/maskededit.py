@@ -117,7 +117,7 @@ mask
         X       Allow string.letters, string.punctuation, string.digits
         &       Allow string.punctuation only (doesn't include all unicode symbols)
         \*      Allow any visible character
-        |       explicit field boundary (takes no space in the control; allows mix
+        \|      Explicit field boundary (takes no space in the control; allows mix
                 of adjacent mask characters to be treated as separate fields,
                 eg: '&|###' means "field 0 = '&', field 1 = '###'", but there's
                 no fixed characters in between.
@@ -189,59 +189,67 @@ defaultEncoding
 formatcodes
   These other properties can be passed to the class when instantiating it:
     Formatcodes are specified as a string of single character formatting
-    codes that modify  behavior of the control::
+    codes that modify  behavior of the control:
 
-            _  Allow spaces
-            !  Force upper
-            ^  Force lower
-            R  Right-align field(s)
-            r  Right-insert in field(s) (implies R)
-            <  Stay in field until explicit navigation out of it
+    =======  ==========================================================
+      _       Allow spaces
+      !       Force upper
+      ^       Force lower
+      R       Right-align field(s)
+      r       Right-insert in field(s) (implies R)
+      <       Stay in field until explicit navigation out of it
 
-            >  Allow insert/delete within partially filled fields (as
-               opposed to the default "overwrite" mode for fixed-width
-               masked edit controls.)  This allows single-field controls
-               or each field within a multi-field control to optionally
-               behave more like standard text controls.
-               (See EMAIL or phone number autoformat examples.)
+      >       Allow insert/delete within partially filled fields (as
+              opposed to the default "overwrite" mode for fixed-width
+              masked edit controls.)  This allows single-field controls
+              or each field within a multi-field control to optionally
+              behave more like standard text controls.
+              (See EMAIL or phone number autoformat examples.)
 
-               *Note: This also governs whether backspace/delete operations
-               shift contents of field to right of cursor, or just blank the
-               erased section.
+              .. note::
 
-               Also, when combined with 'r', this indicates that the field
-               or control allows right insert anywhere within the current
-               non-empty value in the field.  (Otherwise right-insert behavior
-               is only performed to when the entire right-insertable field is
-               selected or the cursor is at the right edge of the field.*
+                  This also governs whether backspace/delete operations
+                  shift contents of field to right of cursor, or just blank
+                  the erased section.
+
+                  Also, when combined with 'r', this indicates that the field
+                  or control allows right insert anywhere within the current
+                  non-empty value in the field.  (Otherwise right-insert behavior
+                  is only performed to when the entire right-insertable field is
+                  selected or the cursor is at the right edge of the field.
 
 
-            ,  Allow grouping character in integer fields of numeric controls
-               and auto-group/regroup digits (if the result fits) when leaving
-               such a field.  (If specified, .SetValue() will attempt to
-               auto-group as well.)
-               ',' is also the default grouping character.  To change the
-               grouping character and/or decimal character, use the groupChar
-               and decimalChar parameters, respectively.
-               Note: typing the "decimal point" character in such fields will
-               clip the value to that left of the cursor for integer
-               fields of controls with "integer" or "floating point" masks.
-               If the ',' format code is specified, this will also cause the
-               resulting digits to be regrouped properly, using the current
-               grouping character.
-            -  Prepend and reserve leading space for sign to mask and allow
-               signed values (negative #s shown in red by default.) Can be
-               used with argument useParensForNegatives (see below.)
-            0  integer fields get leading zeros
-            D  Date[/time] field
-            T  Time field
-            F  Auto-Fit: the control calulates its size from
-               the length of the template mask
-            V  validate entered chars against validRegex before allowing them
-               to be entered vs. being allowed by basic mask and then having
-               the resulting value just colored as invalid.
-               (See USSTATE autoformat demo for how this can be used.)
-            S  select entire field when navigating to new field
+      ,       Allow grouping character in integer fields of numeric controls
+              and auto-group/regroup digits (if the result fits) when leaving
+              such a field.  (If specified, .SetValue() will attempt to
+              auto-group as well.)
+              ',' is also the default grouping character.  To change the
+              grouping character and/or decimal character, use the groupChar
+              and decimalChar parameters, respectively.
+
+              .. note::
+
+                  Typing the "decimal point" character in such fields will
+                  clip the value to that left of the cursor for integer
+                  fields of controls with "integer" or "floating point" masks.
+
+              If the ',' format code is specified, this will also cause the
+              resulting digits to be regrouped properly, using the current
+              grouping character.
+      \-      Prepend and reserve leading space for sign to mask and allow
+              signed values (negative #s shown in red by default.) Can be
+              used with argument useParensForNegatives (see below.)
+      0       Integer fields get leading zeros
+      D       Date[/time] field
+      T       Time field
+      F       Auto-Fit: the control calculates its size from
+              the length of the template mask
+      V       Validate entered chars against validRegex before allowing them
+              to be entered vs. being allowed by basic mask and then having
+              the resulting value just colored as invalid.
+              (See USSTATE autoformat demo for how this can be used.)
+      S       Select entire field when navigating to new field
+    =======  ==========================================================
 
 fillChar
 
@@ -813,7 +821,6 @@ import  string
 import  sys
 
 import  wx
-import  six
 
 # jmg 12/9/03 - when we cut ties with Py 2.2 and earlier, this would
 # be a good place to implement the 2.3 logger class
@@ -993,7 +1000,7 @@ masktags = {
            'excludeChars': am_pm_exclude,
            'formatcodes': 'DF!',
            'validRegex': '^' + months + '-' + days + '-' + r'\d{4} ' + hours + ':' + minutes + ':' + seconds + ' (A|P)M',
-           'description': "US Date + Time\n(w/hypens)"
+           'description': "US Date + Time\n(w/hyphens)"
            },
        "USDATE24HRTIMEMMDDYYYY/HHMMSS": {
            'mask': "##/##/#### ##:##:##",
@@ -1005,7 +1012,7 @@ masktags = {
            'mask': "##-##-#### ##:##:##",
            'formatcodes': 'DF',
            'validRegex': '^' + months + '-' + days + '-' + r'\d{4} ' + milhours + ':' + minutes + ':' + seconds,
-           'description': "US Date + 24Hr Time\n(w/hypens)"
+           'description': "US Date + 24Hr Time\n(w/hyphens)"
            },
        "USDATETIMEMMDDYYYY/HHMM": {
            'mask': "##/##/#### ##:## AM",
@@ -1025,7 +1032,7 @@ masktags = {
            'excludeChars': am_pm_exclude,
            'formatcodes': 'DF!',
            'validRegex': '^' + months + '-' + days + '-' + r'\d{4} ' + hours + ':' + minutes + ' (A|P)M',
-           'description': "US Date + Time\n(w/hypens and w/o secs)"
+           'description': "US Date + Time\n(w/hyphens and w/o secs)"
            },
        "USDATE24HRTIMEMMDDYYYY-HHMM": {
            'mask': "##-##-#### ##:##",
@@ -1048,7 +1055,7 @@ masktags = {
        "USDATEMMDDYYYY-": {
            'mask': "##-##-####",
            'formatcodes': 'DF',
-           'validRegex': '^' + months + '-' + days + '-' +r'\d{4}',
+           'validRegex': '^' + months + '-' + days + '-' + r'\d{4}',
            'description': "MM-DD-YYYY"
            },
 
@@ -1316,7 +1323,7 @@ class Field:
               'choiceRequired': False,          ## If choices supplied this specifies if valid value must be in the list
               'compareNoCase': False,           ## Optional flag to indicate whether or not to use case-insensitive list search
               'autoSelect': False,              ## Set to True to try auto-completion on each keystroke:
-              'validFunc': None,                ## Optional function for defining additional, possibly dynamic validation constraints on contrl
+              'validFunc': None,                ## Optional function for defining additional, possibly dynamic validation constraints on control
               'validRequired': False,           ## Set to True to disallow input that results in an invalid value
               'emptyInvalid':  False,           ## Set to True to make EMPTY = INVALID
               'description': "",                ## primarily for autoformats, but could be useful elsewhere
@@ -1439,7 +1446,7 @@ class Field:
         # Verify proper numeric format params:
         if self._groupdigits and self._groupChar == self._decimalChar:
 ##            dbg(indent=0, suspend=0)
-            ae = AttributeError(f"groupChar '{self._groupChar}' cannot be the same as decimalChar '{self._decimalChar}'")
+            ae = AttributeError("groupChar '%s' cannot be the same as decimalChar '%s'" % (self._groupChar, self._decimalChar))
             ae.attribute = self._groupChar
             raise ae
 
@@ -1465,7 +1472,7 @@ class Field:
                         self._filter = re.compile(self._validRegex)
                 except:
 ##                    dbg(indent=0, suspend=0)
-                    raise TypeError(f'{str(self._index)}: validRegex "{self._validRegex}" not a legal regular expression')
+                    raise TypeError('%s: validRegex "%s" not a legal regular expression' % (str(self._index), self._validRegex))
             else:
                 self._filter = None
 
@@ -1514,7 +1521,7 @@ class Field:
                             continue
                         if not self.IsValid(choice):
 ##                            dbg(indent=0, suspend=0)
-                            ve = ValueError(f'{str(self._index)}: "{choice}" is not a valid value for the control as specified.')
+                            ve = ValueError('%s: "%s" is not a valid value for the control as specified.' % (str(self._index), choice))
                             ve.value = choice
                             raise ve
                 self._hasList = True
@@ -1750,7 +1757,7 @@ class MaskedEditMixin:
         valid_parameters = list(MaskedEditMixin.valid_ctrl_params) + list(Field.valid_params)
         for key in kwargs:
             if key.replace('Color', 'Colour') not in valid_parameters:
-                raise TypeError(f'{name}: invalid parameter "{key}"')
+                raise TypeError('%s: invalid parameter "%s"' % (name, key))
 
         ## Set up dictionary that can be used by subclasses to override or add to default
         ## behavior for individual characters.  Derived subclasses needing to change
@@ -1863,7 +1870,7 @@ class MaskedEditMixin:
             key = key.replace('Color', 'Colour')    # for b-c, and standard wxPython spelling
             if key not in valid_parameters:
 ##                dbg(indent=0, suspend=0)
-                ae = AttributeError(f'Invalid keyword argument "{key}" for control "{self.name}"')
+                ae = AttributeError('Invalid keyword argument "%s" for control "%s"' % (key, self.name))
                 ae.attribute = key
                 raise ae
             elif key in Field.valid_params:
@@ -1957,7 +1964,7 @@ class MaskedEditMixin:
                 if isinstance(ctrl_kwargs[key], str):
                     c = wx.Colour(ctrl_kwargs[key])
                     if c.Get() == (-1, -1, -1):
-                        raise TypeError(f'{repr(ctrl_kwargs[key])} not a legal color specification for {key}')
+                        raise TypeError('%s not a legal color specification for %s' % (repr(ctrl_kwargs[key]), key))
                     else:
                         # replace attribute with wxColour object:
                         setattr(self, '_' + key, c)
@@ -1965,7 +1972,7 @@ class MaskedEditMixin:
                         c._name = ctrl_kwargs[key]
 
                 elif type(ctrl_kwargs[key]) != type(wx.BLACK):
-                    raise TypeError(f'{repr(ctrl_kwargs[key])} not a legal color specification for {key}')
+                    raise TypeError('%s not a legal color specification for %s' % (repr(ctrl_kwargs[key]), key))
 
 
 ##        dbg('self._retainFieldValidation:', self._retainFieldValidation)
@@ -2089,7 +2096,7 @@ class MaskedEditMixin:
         elif paramname in Field.valid_params:
             return self._ctrl_constraints._GetParameter(paramname)
         else:
-            TypeError(f'"{self.name}".GetCtrlParameter: invalid parameter "{paramname}"')
+            TypeError('"%s".GetCtrlParameter: invalid parameter "%s"' % (self.name, paramname))
 
     def GetMaskParameter(self, paramname):
         """ old name for the GetCtrlParameters function  (DEPRECATED)"""
@@ -2132,7 +2139,7 @@ class MaskedEditMixin:
         parameters.)
         """
         if field_index not in self._field_indices:
-            ie = IndexError(f'{str(field_index)} is not a valid field for control "{self.name}".')
+            ie = IndexError('%s is not a valid field for control "%s".' % (str(field_index), self.name))
             ie.index = field_index
             raise ie
         # set parameters as requested:
@@ -2175,13 +2182,13 @@ class MaskedEditMixin:
         Routine provided for getting a parameter of an individual field.
         """
         if field_index not in self._field_indices:
-            ie = IndexError(f'{str(field_index)} is not a valid field for control "{self.name}".')
+            ie = IndexError('%s is not a valid field for control "%s".' % (str(field_index), self.name))
             ie.index = field_index
             raise ie
         elif paramname in Field.valid_params:
             return self._fields[field_index]._GetParameter(paramname)
         else:
-            ae = AttributeError(f'"{self.name}".GetFieldParameter: invalid parameter "{paramname}"')
+            ae = AttributeError('"%s".GetFieldParameter: invalid parameter "%s"' % (self.name, paramname))
             ae.attribute = paramname
             raise ae
 
@@ -2551,7 +2558,7 @@ class MaskedEditMixin:
 ##            dbg('self._defaultValue:', self._defaultValue)
             if not self.IsEmpty(self._defaultValue) and not self.IsValid(self._defaultValue):
 ####                dbg(indent=0)
-                ve = ValueError(f'Default value of "{self._defaultValue}" is not a valid value for control "{self.name}"')
+                ve = ValueError('Default value of "%s" is not a valid value for control "%s"' % (self._defaultValue, self.name))
                 ve.value = self._defaultValue
                 raise ve
 
@@ -3062,13 +3069,11 @@ class MaskedEditMixin:
 
             if key < 256:
                 char = chr(key) # (must work if we got this far)
-                if not six.PY3:
-                    char = char.decode(self._defaultEncoding)
             else:
                 char = unichr(event.GetUnicodeKey())
 ##                dbg('unicode char:', char)
 
-            excludes = ''
+            excludes = str()
             if not isinstance(field._excludeChars, str):
                 excludes += field._excludeChars
             if not isinstance(self._ctrl_constraints, str):
@@ -3226,11 +3231,11 @@ class MaskedEditMixin:
         return self._fields[self._lookupField[pos]]
 
     def SetForegroundColour(self, colour):
-        super().SetForegroundColour(colour)
+        super(MaskedEditMixin, self).SetForegroundColour(colour)
         self._foregroundColour = colour
 
     def SetBackgroundColour(self, colour):
-        super().SetBackgroundColour(colour)
+        super(MaskedEditMixin, self).SetBackgroundColour(colour)
         self._validBackgroundColour = colour
 
     def ClearValue(self):
@@ -3339,7 +3344,7 @@ class MaskedEditMixin:
         """ Default Ctrl-S handler; prints value information if demo enabled. """
 ##        dbg("MaskedEditMixin::_OnCtrl_S")
         if self._demo:
-            print(f'MaskedEditMixin.GetValue()       = "{self.GetValue()}"\nMaskedEditMixin.GetPlainValue() = "{self.GetPlainValue()}"')
+            print('MaskedEditMixin.GetValue()       = "%s"\nMaskedEditMixin.GetPlainValue() = "%s"' % (self.GetValue(), self.GetPlainValue()))
             print("Valid? => " + str(self.IsValid()))
             print("Current field, start, end, value =", str( self._FindFieldExtent(getslice=True)))
         return False
@@ -4174,7 +4179,7 @@ class MaskedEditMixin:
                 self._SetValue(newvalue)
                 self._SetInsertionPoint(min(edit_end, len(newvalue.rstrip())))
                 self._OnAutoSelect(field, match_index)
-                self._CheckValid()  # recolor as appopriate
+                self._CheckValid()  # recolor as appropriate
 
 
         if keycode in (wx.WXK_UP, wx.WXK_DOWN, wx.WXK_LEFT, wx.WXK_RIGHT,
@@ -4628,11 +4633,6 @@ class MaskedEditMixin:
         maskChar = self.maskdict[pos]
         okchars = self.maskchardict[maskChar]    ## entry, get mask approved characters
 
-        # convert okchars to unicode if required; will force subsequent appendings to
-        # result in unicode strings
-        if not six.PY3 and not isinstance(okchars, str):
-            okchars = okchars.decode(self._defaultEncoding)
-
         field = self._FindField(pos)
         if okchars and field._okSpaces:          ## Allow spaces?
             okchars += " "
@@ -4768,7 +4768,7 @@ class MaskedEditMixin:
     def _applyFormatting(self):
         """ Apply formatting depending on the control's state.
             Need to find a way to call this whenever the value changes, in case the control's
-            value has been changed or set programatically.
+            value has been changed or set programmatically.
         """
 ##        dbg(suspend=1)
 ##        dbg('MaskedEditMixin::_applyFormatting', indent=1)
@@ -5219,12 +5219,6 @@ class MaskedEditMixin:
                 left  = text[0:pos]
                 right   = text[pos+1:]
 
-            if not isinstance(char, str):
-                # convert the keyboard constant to a unicode value, to
-                # ensure it can be concatenated into the control value:
-                if not six.PY3:
-                    char = char.decode(self._defaultEncoding)
-
             newtext = left + char + right
 ####            dbg('left:    "%s"' % left)
 ####            dbg('right:   "%s"' % right)
@@ -5585,7 +5579,7 @@ class MaskedEditMixin:
 
         The trouble is that, a priori, there's no explicit notification of
         why the focus event we received.  However, the whole reason we need to
-        do this is because the default behavior on TAB traveral in a wx.TextCtrl is
+        do this is because the default behavior on TAB traversal in a wx.TextCtrl is
         now to select the entire contents of the window, something we don't want.
         So we can *now* test the selection range, and if it's "the whole text"
         we can assume the cause, change the insertion point to the start of
@@ -5758,8 +5752,6 @@ class MaskedEditMixin:
         else:
             item = 'selection'
 ##        dbg('maxlength:', maxlength)
-        if not six.PY3 and not isinstance(paste_text, str):
-            paste_text = paste_text.decode(self._defaultEncoding)
 
         length_considered = len(paste_text)
         if length_considered > maxlength:
@@ -5767,7 +5759,7 @@ class MaskedEditMixin:
             if raise_on_invalid:
 ##                dbg(indent=0, suspend=0)
                 if item == 'control':
-                    ve = ValueError(f'"{paste_text}" will not fit into the control "{self.name}"')
+                    ve = ValueError('"%s" will not fit into the control "%s"' % (paste_text, self.name))
                     ve.value = paste_text
                     raise ve
                 else:
@@ -5828,7 +5820,7 @@ class MaskedEditMixin:
 
         if not valid_paste and raise_on_invalid:
 ##            dbg('raising exception', indent=0, suspend=0)
-            ve = ValueError(f'"{paste_text}" cannot be inserted into the control "{self.name}"')
+            ve = ValueError('"%s" cannot be inserted into the control "%s"' % (paste_text, self.name))
             ve.value = paste_text
             raise ve
 
@@ -5837,7 +5829,7 @@ class MaskedEditMixin:
             valid_paste = False
             if raise_on_invalid:
 ##                dbg('raising exception', indent=0, suspend=0)
-                ve = ValueError(f'"{paste_text}" will not fit into the control "{self.name}"')
+                ve = ValueError('"%s" will not fit into the control "%s"' % (paste_text, self.name))
                 ve.value = paste_text
                 raise ve
 
@@ -5864,9 +5856,6 @@ class MaskedEditMixin:
             paste_text = value
 
         if paste_text is not None:
-
-            if not six.PY3 and not isinstance(paste_text, str):
-                paste_text = paste_text.decode(self._defaultEncoding)
 
 ##            dbg('paste text: "%s"' % paste_text)
             # (conversion will raise ValueError if paste isn't legal)
@@ -6390,14 +6379,14 @@ class MaskedEditAccessorsMixin:
 
     for param in exposed_basectrl_params:
         propname = param[0].upper() + param[1:]
-        exec(f'def Set{propname}(self, value): self.SetCtrlParameters({param}=value)')
+        exec('def Set%s(self, value): self.SetCtrlParameters(%s=value)' % (propname, param))
         exec('def Get%s(self): return self.GetCtrlParameter("%s")''' % (propname, param))
 
         if param.find('Colour') != -1:
             # add non-british spellings, for backward-compatibility
             propname.replace('Colour', 'Color')
 
-            exec(f'def Set{propname}(self, value): self.SetCtrlParameters({param}=value)')
+            exec('def Set%s(self, value): self.SetCtrlParameters(%s=value)' % (propname, param))
             exec('def Get%s(self): return self.GetCtrlParameter("%s")''' % (propname, param))
 
 
@@ -6451,7 +6440,7 @@ def _isTimeType( fmtstring ):
 
 
 def _isFloatingPoint( fmtstring):
-    filter = re.compile("[ ]?[#]+\\.[#]+\n")
+    filter = re.compile(r"[ ]?[#]+\.[#]+\n")
     if re.match(filter,fmtstring+"\n"): return True
     return False
 
@@ -6493,11 +6482,11 @@ def _getDateSepChar(dateStr):
 def _makeDate( year, month, day, dateFmt, dateStr):
     sep    = _getDateSepChar( dateStr)
     if dateFmt == "MDY":
-        return f"{month}{sep}{day}{sep}{year}"  ## year, month, date parts
+        return "%s%s%s%s%s" % (month,sep,day,sep,year)  ## year, month, date parts
     elif dateFmt == "DMY":
-        return f"{day}{sep}{month}{sep}{year}"  ## year, month, date parts
+        return "%s%s%s%s%s" % (day,sep,month,sep,year)  ## year, month, date parts
     elif dateFmt == "YMD":
-        return f"{year}{sep}{month}{sep}{day}"  ## year, month, date parts
+        return "%s%s%s%s%s" % (year,sep,month,sep,day)  ## year, month, date parts
     else:
         return None
 
@@ -6752,7 +6741,7 @@ To see a great example of validations in action, try entering a bad email addres
         def onClickPrint(self, event):
             for format in masktags:
                 sep = "+------------------------+"
-                print("{}\n{}  \n  Mask: {} \n  RE Validation string: {}\n".format(sep,format, masktags[format]['mask'], masktags[format]['validRegex']))
+                print("%s\n%s  \n  Mask: %s \n  RE Validation string: %s\n" % (sep,format, masktags[format]['mask'], masktags[format]['validRegex']))
 
 ## ---------- ---------- ---------- ---------- ---------- ---------- ----------
 
@@ -7035,7 +7024,7 @@ __i=0
 ##
 ##  Version 1.0
 ##   1. Decimal point behavior restored for decimal and integer type controls:
-##      decimal point now trucates the portion > 0.
+##      decimal point now truncates the portion > 0.
 ##   2. Return key now works like the tab character and moves to the next field,
 ##      provided no default button is set for the form panel on which the control
 ##      resides.
@@ -7221,7 +7210,7 @@ __i=0
 ##   5. Decimal values now collapse to decimal with '.00' on losefocus if the user never
 ##      presses the decimal point.
 ##   6. Cursor now goes to the beginning of the field if the user clicks in an
-##      "empty" field intead of leaving the insertion point in the middle of the
+##      "empty" field instead of leaving the insertion point in the middle of the
 ##      field.
 ##   7. New "N" mask type includes upper and lower chars plus digits. a-zA-Z0-9.
 ##   8. New formatcodes init parameter replaces other init params and adds functions.

@@ -224,13 +224,13 @@ class LabelShape(RectangleShape):
         :param `parent`: the parent an instance of :class:`Line`
         :param `region`: the shape region an instance of :class:`~lib.ogl.ShapeRegion`
         :param `w`: width in points
-        :param `h`: heigth in points
+        :param `h`: height in points
 
         """
         RectangleShape.__init__(self, w, h)
         self._lineShape = parent
         self._shapeRegion = region
-        self.SetPen(wx.Pen(wx.Colour(0, 0, 0), 1, wx.PENSTYLE_DOT))
+        self.SetPen(wx.Pen(wx.BLACK, 1, wx.PENSTYLE_DOT))
 
     def OnDraw(self, dc):
         """The draw handler."""
@@ -439,7 +439,7 @@ class LineShape(Shape):
         self._lineControlPoints.insert(len(self._lineControlPoints)-1, point)
 
     def DeleteLineControlPoint(self):
-        """Delete an arbitary point on the line."""
+        """Delete an arbitrary point on the line."""
         if len(self._lineControlPoints) < 3:
             return False
 
@@ -970,8 +970,8 @@ class LineShape(Shape):
         # Drawing over the line only seems to work if the line has a thickness
         # of 1.
         if old_pen and old_pen.GetWidth() > 1:
-            dc.DrawRectangle(self._xpos - bound_x / 2.0 - 2, self._ypos - bound_y / 2.0 - 2,
-                             bound_x + 4, bound_y + 4)
+            dc.DrawRectangle(int(self._xpos - bound_x / 2.0 - 2), int(self._ypos - bound_y / 2.0 - 2),
+                             int(bound_x + 4), int(bound_y + 4))
         else:
             self._erasing = True
             self.GetEventHandler().OnDraw(dc)
@@ -1051,7 +1051,7 @@ class LineShape(Shape):
         old_pen = self._pen
         old_brush = self._brush
 
-        dottedPen = wx.Pen(wx.Colour(0, 0, 0), 1, wx.PENSTYLE_DOT)
+        dottedPen = wx.Pen(wx.BLACK, 1, wx.PENSTYLE_DOT)
         self.SetPen(dottedPen)
         self.SetBrush(wx.TRANSPARENT_BRUSH)
 
@@ -1089,7 +1089,7 @@ class LineShape(Shape):
         return True
 
     def OnMoveLink(self, dc, moveControlPoints = True):
-        """The move linke handler, called when a connected object has moved, to move the link to
+        """The move link handler, called when a connected object has moved, to move the link to
         correct position.
         """
         if not self._from or not self._to:
@@ -1199,7 +1199,7 @@ class LineShape(Shape):
 
         points = []
         for point in self._lineControlPoints:
-            points.append(wx.Point(point[0], point[1]))
+            points.append(wx.Point(int(point[0]), int(point[1])))
 
         if self._isSpline:
             dc.DrawSpline(points)
@@ -1342,7 +1342,7 @@ class LineShape(Shape):
         self.GetCanvas().PrepareDC(dc)
         dc.SetLogicalFunction(OGLRBLF)
 
-        dottedPen = wx.Pen(wx.Colour(0, 0, 0), 1, wx.PENSTYLE_DOT)
+        dottedPen = wx.Pen(wx.BLACK, 1, wx.PENSTYLE_DOT)
         dc.SetPen(dottedPen)
         dc.SetBrush(wx.TRANSPARENT_BRUSH)
 
@@ -1395,7 +1395,7 @@ class LineShape(Shape):
             old_pen = self.GetPen()
             old_brush = self.GetBrush()
 
-            dottedPen = wx.Pen(wx.Colour(0, 0, 0), 1, wx.PENSTYLE_DOT)
+            dottedPen = wx.Pen(wx.BLACK, 1, wx.PENSTYLE_DOT)
             self.SetPen(dottedPen)
             self.SetBrush(wx.TRANSPARENT_BRUSH)
 
@@ -1486,7 +1486,7 @@ class LineShape(Shape):
          `ARROW_POSITION_START`                   arrow appears at the start
          ======================================== ==================================
 
-        :param `size`: specifies the lenght of the arrow
+        :param `size`: specifies the length of the arrow
         :param `xOffset`: specifies the offset from the end of the line
         :param `name`: specifies a name
         :param `mf`: mf can be a wxPseduoMetaFile, perhaps loaded from a simple Windows

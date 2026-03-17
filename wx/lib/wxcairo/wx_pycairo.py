@@ -16,7 +16,6 @@ wx.lib.wxcairo implementation functions using PyCairo.
 """
 
 import wx
-from six import PY3
 
 import cairo
 import ctypes
@@ -112,7 +111,7 @@ def _FontFaceFromFont(font):
 
     elif 'wxMSW' in wx.PlatformInfo:
         fontfaceptr = voidp( cairoLib.cairo_win32_font_face_create_for_hfont(
-            ctypes.c_ulong(font.GetHFONT())) )
+            ctypes.c_ulong(int(font.GetHFONT()))) )
         fontface = pycairoAPI.FontFace_FromFontFace(fontfaceptr)
 
     elif 'wxGTK' in wx.PlatformInfo:

@@ -8,7 +8,6 @@ __author__ = "Patrick K. O'Brien <pobrien@orbtech.com>"
 
 import wx
 from wx import stc
-from six import PY3
 
 import keyword
 import os
@@ -305,7 +304,6 @@ class Shell(editwindow.EditWindow):
 
         # Assign handler for the context menu
         self.Bind(wx.EVT_CONTEXT_MENU, self.OnContextMenu)
-        self.Bind(wx.EVT_UPDATE_UI, self.OnUpdateUI)
 
         # add the option to not use the stock IDs; otherwise the context menu
         # may not work on Mac without adding the proper IDs to the menu bar
@@ -337,6 +335,14 @@ class Shell(editwindow.EditWindow):
         self.Bind(wx.EVT_MENU, lambda evt: self.Undo(), id=self.ID_UNDO)
         self.Bind(wx.EVT_MENU, lambda evt: self.Redo(), id=self.ID_REDO)
 
+        self.Bind(wx.EVT_UPDATE_UI, lambda evt: evt.Enable(self.CanCut()), id=self.ID_CUT)
+        self.Bind(wx.EVT_UPDATE_UI, lambda evt: evt.Enable(self.CanCut()), id=self.ID_CLEAR)
+        self.Bind(wx.EVT_UPDATE_UI, lambda evt: evt.Enable(self.CanCopy()), id=self.ID_COPY)
+        self.Bind(wx.EVT_UPDATE_UI, lambda evt: evt.Enable(self.CanCopy()), id=frame.ID_COPY_PLUS)
+        self.Bind(wx.EVT_UPDATE_UI, lambda evt: evt.Enable(self.CanPaste()), id=self.ID_PASTE)
+        self.Bind(wx.EVT_UPDATE_UI, lambda evt: evt.Enable(self.CanPaste()), id=frame.ID_PASTE_PLUS)
+        self.Bind(wx.EVT_UPDATE_UI, lambda evt: evt.Enable(self.CanUndo()), id=self.ID_UNDO)
+        self.Bind(wx.EVT_UPDATE_UI, lambda evt: evt.Enable(self.CanRedo()), id=self.ID_REDO)
 
         # Assign handler for idle time.
         self.waiting = False
@@ -403,7 +409,7 @@ class Shell(editwindow.EditWindow):
 
         This sets "close", "exit" and "quit" to a helpful string.
         """
-        from six.moves import builtins
+        import builtins
         builtins.close = builtins.exit = builtins.quit = \
             'Click on the close button to leave the application.'
         builtins.cd = cd
@@ -758,7 +764,7 @@ class Shell(editwindow.EditWindow):
         import re
 
         #sort out only "good" words
-        newlist = re.split("[ \\.\\[\\]=}(\\)\\,0-9\"]", joined)
+        newlist = re.split(r"[ \.\[\]=}(\)\,0-9\"]", joined)
 
         #length > 1 (mix out "trash")
         thlist = []
@@ -844,8 +850,8 @@ class Shell(editwindow.EditWindow):
         or (self.historyIndex >= len(self.history)-2):
             searchOrder = range(len(self.history))
         else:
-            searchOrder = range(self.historyIndex+1, len(self.history)) + \
-                          range(self.historyIndex)
+            ls = list(range(len(self.history)))
+            searchOrder = ls[self.historyIndex+1:] + ls[:self.historyIndex]
         for i in searchOrder:
             command = self.history[i]
             if command[:len(searchText)] == searchText:
@@ -936,7 +942,7 @@ class Shell(editwindow.EditWindow):
             startpos = self.GetCurrentPos() + ps1size
             line += 1
             self.GotoLine(line)
-            while self.GetCurLine()[0][:ps2size] == ps2:
+            while self.GetCurLine()[0][:ps2size] == ps2 and line < self.LineCount:
                 line += 1
                 self.GotoLine(line)
             stoppos = self.GetCurrentPos()
@@ -1084,7 +1090,7 @@ class Shell(editwindow.EditWindow):
             else:
                 indent=previousLine[:(len(previousLine)-len(lstrip))]
                 if pstrip[-1]==':' and \
-                    first_word in ['if','else','elif','for','while',
+                    first_word in ['if','else','elif','for','while','with',
                                    'def','class','try','except','finally']:
                     indent+=' '*4
 
@@ -1358,7 +1364,7 @@ class Shell(editwindow.EditWindow):
         """Replace selection with clipboard contents."""
         if self.CanPaste() and wx.TheClipboard.Open():
             ps2 = str(sys.ps2)
-            if wx.TheClipboard.IsSupported(wx.DataFormat(wx.DF_TEXT)):
+            if wx.TheClipboard.IsSupported(wx.DataFormat(wx.DF_UNICODETEXT)):
                 data = wx.TextDataObject()
                 if wx.TheClipboard.GetData(data):
                     self.ReplaceSelection('')
@@ -1377,7 +1383,7 @@ class Shell(editwindow.EditWindow):
         """Replace selection with clipboard contents, run commands."""
         text = ''
         if wx.TheClipboard.Open():
-            if wx.TheClipboard.IsSupported(wx.DataFormat(wx.DF_TEXT)):
+            if wx.TheClipboard.IsSupported(wx.DataFormat(wx.DF_UNICODETEXT)):
                 data = wx.TextDataObject()
                 if wx.TheClipboard.GetData(data):
                     text = data.GetText()
@@ -1413,7 +1419,8 @@ class Shell(editwindow.EditWindow):
             lstrip = line.lstrip()
             if line.strip() != '' and lstrip == line and \
                     lstrip[:4] not in ['else','elif'] and \
-                    lstrip[:6] != 'except':
+                    lstrip[:6] != 'except' and \
+                    lstrip[:7] != 'finally':
                 # New command.
                 if command:
                     # Add the previous command to the list.
@@ -1433,10 +1440,7 @@ class Shell(editwindow.EditWindow):
 
     def wrap(self, wrap=True):
         """Sets whether text is word wrapped."""
-        try:
-            self.SetWrapMode(wrap)
-        except AttributeError:
-            return 'Wrapping is not available in this version.'
+        self.SetWrapMode(wrap)
 
     def zoom(self, points=0):
         """Set the zoom level.
@@ -1510,19 +1514,6 @@ class Shell(editwindow.EditWindow):
         menu = self.GetContextMenu()
         self.PopupMenu(menu)
 
-    def OnUpdateUI(self, evt):
-        id = evt.Id
-        if id in (self.ID_CUT, self.ID_CLEAR):
-            evt.Enable(self.CanCut())
-        elif id in (self.ID_COPY, frame.ID_COPY_PLUS):
-            evt.Enable(self.CanCopy())
-        elif id in (self.ID_PASTE, frame.ID_PASTE_PLUS):
-            evt.Enable(self.CanPaste())
-        elif id == self.ID_UNDO:
-            evt.Enable(self.CanUndo())
-        elif id == self.ID_REDO:
-            evt.Enable(self.CanRedo())
-
 
 
 
@@ -1569,7 +1560,7 @@ class Shell(editwindow.EditWindow):
 ##         self.GetData()
 ##         if self.textdo.GetTextLength() > 1:
 ##             text = self.textdo.GetText()
-##             # *** Do somethign with the dragged text here...
+##             # *** Do something with the dragged text here...
 ##             self.textdo.SetText('')
 ##         else:
 ##             filenames = str(self.filename.GetFilenames())

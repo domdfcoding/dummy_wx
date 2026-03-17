@@ -58,7 +58,6 @@ import math
 import sys
 
 import wx
-import six
 
 import xml.parsers.expat
 
@@ -255,8 +254,6 @@ class Renderer:
     def renderCharacterData(self, data, x, y):
         raise NotImplementedError()
 
-from six import PY3
-
 def _addGreek():
     alpha = 0xE1
     Alpha = 0xC1
@@ -332,14 +329,14 @@ class DCRenderer(Renderer):
         width, height, descent, leading = self.dc.GetFullTextExtent("M")
         width = max(width, 10)
         height = max(height, width / 2)
-        self.dc.SetPen(wx.Pen(self.getCurrentColor(), max(1, width/10)))
+        self.dc.SetPen(wx.Pen(self.getCurrentColor(), int(max(1, width/10))))
         self.dc.SetBrush(wx.TRANSPARENT_BRUSH)
         y = self.y + self.offsets[-1]
         r = iround( 0.95 * width / 4)
         xc = (2*self.x + width) / 2
         yc = iround(y-1.5*r)
-        self.dc.DrawCircle(xc - r, yc, r)
-        self.dc.DrawCircle(xc + r, yc, r)
+        self.dc.DrawCircle(int(xc - r), yc, r)
+        self.dc.DrawCircle(int(xc + r), yc, r)
         self.updateDims(width, height, 0, 0)
 
     def start_times(self, attrs):
@@ -360,14 +357,12 @@ def RenderToRenderer(str, renderer, enclose=True):
         if enclose:
             str = '<?xml version="1.0"?><FancyText>%s</FancyText>' % str
         p = xml.parsers.expat.ParserCreate()
-        if six.PY2:
-            p.returns_unicode = 0
         p.StartElementHandler = renderer.startElement
         p.EndElementHandler = renderer.endElement
         p.CharacterDataHandler = renderer.characterData
         p.Parse(str, 1)
     except xml.parsers.expat.error as err:
-        raise ValueError(f'error parsing text text "{str}": {err}')
+        raise ValueError('error parsing text text "%s": %s' % (str, err))
 
 
 # Public interface
@@ -387,7 +382,7 @@ def GetFullExtent(str, dc=None, enclose=True):
 
 
 def RenderToBitmap(str, background=None, enclose=1):
-    "Return str rendered on a minumum size bitmap"
+    "Return str rendered on a minimum size bitmap"
     dc = wx.MemoryDC()
     # Chicken and egg problem, we need a bitmap in the DC in order to
     # measure how big the bitmap should be...

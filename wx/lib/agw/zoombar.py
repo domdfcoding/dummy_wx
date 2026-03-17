@@ -133,8 +133,6 @@ Version 0.1
 import wx
 import sys
 
-import six
-
 from wx.lib.embeddedimage import PyEmbeddedImage
 
 zoombackgrey = PyEmbeddedImage(
@@ -375,7 +373,7 @@ class ZoomBarImage:
         self._oldHeight = 0
         self._vCenter = 0
         self._hCenter = 0
-        self._oldInc = -six.MAXSIZE
+        self._oldInc = -sys.maxsize
         self._isSeparator = False
         self._enabled = True
 
@@ -463,7 +461,7 @@ class ZoomBarImage:
     def GetPosition(self):
         """ Returns the button position. """
 
-        return wx.Point(self._left, self._top)
+        return wx.Point(int(self._left), int(self._top))
 
 
     def GetSize(self):
@@ -601,7 +599,7 @@ class ImageBar:
     def GetPosition(self):
         """ Returns the position of :class:`wx.ImageBar`, as a :class:`wx.Point`. """
 
-        return wx.Point(self._left, self._top)
+        return wx.Point(int(self._left), int(self._top))
 
 
     def GetSize(self):
@@ -660,7 +658,7 @@ class ImageBar:
         if xSize is not None:
             self._size = wx.Size(xSize, ySize)
 
-        bitmap.Rescale(self._size.width, self._size.height/2)
+        bitmap.Rescale(self._size.width, self._size.height//2)
 
         r1, g1, b1 = self._startColour.Red(), self._startColour.Green(), self._startColour.Blue()
         r2, g2, b2 = colour.Red(), colour.Green(), colour.Blue()
@@ -1065,7 +1063,7 @@ class ZoomBar(wx.Control):
             ySize += yextent
 
         if self._showReflections:
-            ySize += self._buttonSize/2
+            ySize += self._buttonSize//2
         if self._centerZoom:
             ySize += self._buttonSize
 
@@ -1240,7 +1238,7 @@ class ZoomBar(wx.Control):
             textWidth, textHeight = dc.GetTextExtent(label)
             buttonPos = button.GetPosition()
             buttonSize = button.GetSize()
-            xpos = buttonPos.x + (buttonSize.width - textWidth)/2
+            xpos = buttonPos.x + (buttonSize.width - textWidth)//2
             ypos = buttonPos.y - textHeight - 2
 
             dc.DrawRectangle(xpos-2, ypos-1, textWidth+4, textHeight+2)

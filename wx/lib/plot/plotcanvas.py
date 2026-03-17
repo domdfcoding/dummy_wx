@@ -70,6 +70,7 @@ class PlotCanvas(wx.Panel):
         self.border = (1, 1)
 
         self.SetBackgroundColour("white")
+        self.SetForegroundColour("black")
 
         # Create some mouse events for zooming
         self.canvas.Bind(wx.EVT_LEFT_DOWN, self.OnMouseLeftDown)
@@ -85,7 +86,7 @@ class PlotCanvas(wx.Panel):
         self.Bind(wx.EVT_SCROLL_LINEUP, self.OnScroll)
         self.Bind(wx.EVT_SCROLL_LINEDOWN, self.OnScroll)
 
-        # set curser as cross-hairs
+        # set cursor as cross-hairs
         self.defaultCursor = wx.Cursor(wx.CURSOR_ARROW)
         self.HandCursor = wx.Cursor(wx.CURSOR_SIZING)
         self.GrabHandCursor = wx.Cursor(wx.CURSOR_SIZING)
@@ -173,24 +174,24 @@ class PlotCanvas(wx.Panel):
 
         # Default Pens
         self._gridPen = wx.Pen(wx.Colour(180, 180, 180, 255),
-                               self._pointSize[0],
+                               int(self._pointSize[0]),
                                wx.PENSTYLE_DOT)
 
         self._centerLinePen = wx.Pen(wx.RED,
-                                     self._pointSize[0],
+                                     int(self._pointSize[0]),
                                      wx.PENSTYLE_SHORT_DASH)
 
         self._axesPen = wx.Pen(wx.BLACK,
-                               self._pointSize[0],
+                               int(self._pointSize[0]),
                                wx.PENSTYLE_SOLID)
 
         self._tickPen = wx.Pen(wx.BLACK,
-                               self._pointSize[0],
+                               int(self._pointSize[0]),
                                wx.PENSTYLE_SOLID)
         self._tickLength = tuple(-x * 2 for x in self._pointSize)
 
         self._diagonalPen = wx.Pen(wx.BLUE,
-                                   self._pointSize[0],
+                                   int(self._pointSize[0]),
                                    wx.PENSTYLE_DOT_DASH)
 
     def SetCursor(self, cursor):
@@ -324,7 +325,7 @@ class PlotCanvas(wx.Panel):
         """
         Saves the file to the type specified in the extension. If no file
         name is specified a dialog box is provided.  Returns True if
-        sucessful, otherwise False.
+        successful, otherwise False.
 
         .bmp  Save a Windows bitmap file.
         .xbm  Save an X bitmap file.
@@ -705,7 +706,8 @@ class PlotCanvas(wx.Panel):
 
         def _do_update():
             self.Layout()
-            self._adjustScrollbars()
+            if self.last_draw is not None:
+                self._adjustScrollbars()
         wx.CallAfter(_do_update)
 
     def SetUseScientificNotation(self, useScientificNotation):
@@ -1453,6 +1455,10 @@ class PlotCanvas(wx.Panel):
             xAxis = (xAxis[0] + units, xAxis[1] + units)
             self._Draw(graphics, xAxis, yAxis)
 
+    def ScrollLeft(self, units):
+        """Move view left number of axis units."""
+        self.ScrollRight(-units)
+
     def ScrollUp(self, units):
         """Move view up number of axis units."""
         self.last_PointLabel = None  # reset pointLabel
@@ -1460,6 +1466,10 @@ class PlotCanvas(wx.Panel):
             graphics, xAxis, yAxis = self.last_draw
             yAxis = (yAxis[0] + units, yAxis[1] + units)
             self._Draw(graphics, xAxis, yAxis)
+
+    def ScrollDown(self, units):
+        """Move view down number of axis units."""
+        self.ScrollUp(-units)
 
     def GetXY(self, event):
         """Wrapper around _getXY, which handles log scales"""
@@ -1924,10 +1934,10 @@ class PlotCanvas(wx.Panel):
         # set clipping area so drawing does not occur outside axis box
         ptx, pty, rectWidth, rectHeight = self._point2ClientCoord(p1, p2)
         # allow graph to overlap axis lines by adding units to w and h
-        dc.SetClippingRegion(ptx * self._pointSize[0],
-                             pty * self._pointSize[1],
-                             rectWidth * self._pointSize[0] + 2,
-                             rectHeight * self._pointSize[1] + 1)
+        dc.SetClippingRegion(int(ptx * self._pointSize[0]),
+                             int(pty * self._pointSize[1]),
+                             int(rectWidth * self._pointSize[0] + 2),
+                             int(rectHeight * self._pointSize[1] + 1))
         # Draw the lines and markers
 #        start = _time.perf_counter()
         graphics.draw(dc)
@@ -2041,7 +2051,7 @@ class PlotCanvas(wx.Panel):
         """
         if self.last_PointLabel is not None:
             # compare pointXY
-            if np.sometrue(
+            if np.any(
                     mDataDict["pointXY"] != self.last_PointLabel["pointXY"]):
                 # closest changed
                 self._drawPointLabel(self.last_PointLabel)  # erase old
@@ -2225,7 +2235,7 @@ class PlotCanvas(wx.Panel):
         """Draws and erases pointLabels"""
         width = self._Buffer.GetWidth()
         height = self._Buffer.GetHeight()
-        if sys.platform != "darwin":
+        if sys.platform not in ("darwin", "linux"):
             tmp_Buffer = wx.Bitmap(width, height)
             dcs = wx.MemoryDC()
             dcs.SelectObject(tmp_Buffer)
@@ -2239,7 +2249,7 @@ class PlotCanvas(wx.Panel):
         dc = wx.BufferedDC(dc, self._Buffer)
         # this will erase if called twice
         dc.Blit(0, 0, width, height, dcs, 0, 0, self._logicalFunction)
-        if sys.platform == "darwin":
+        if sys.platform in ("darwin", "linux"):
             self._Buffer = tmp_Buffer
 
     def _drawLegend(self, dc, graphics, rhsW, topH, legendBoxWH,
@@ -2279,7 +2289,7 @@ class PlotCanvas(wx.Panel):
             pnt = ((trhc[0] + legendLHS + legendSymExt[0]
                     + 5 * self._pointSize[0]),
                    trhc[1] + s + lineHeight / 2. - legendTextExt[1] / 2)
-            dc.DrawText(o.getLegend(), pnt[0], pnt[1])
+            dc.DrawText(o.getLegend(), int(pnt[0]), int(pnt[1]))
         dc.SetFont(self._getFont(self._fontSizeAxis))  # reset
 
     def _titleLablesWH(self, dc, graphics):
@@ -2328,7 +2338,7 @@ class PlotCanvas(wx.Panel):
         dc.SetPen(wx.Pen(wx.BLACK))
         dc.SetBrush(wx.Brush(wx.WHITE, wx.BRUSHSTYLE_TRANSPARENT))
         dc.SetLogicalFunction(wx.INVERT)
-        dc.DrawRectangle(ptx, pty, rectWidth, rectHeight)
+        dc.DrawRectangle(int(ptx), int(pty), int(rectWidth), int(rectHeight))
         dc.SetLogicalFunction(wx.COPY)
 
     def _getFont(self, size):
@@ -2422,7 +2432,7 @@ class PlotCanvas(wx.Panel):
         # increases thickness for printing only
         pen = self.gridPen
         penWidth = self.printerScale * pen.GetWidth()
-        pen.SetWidth(penWidth)
+        pen.SetWidth(int(penWidth))
         dc.SetPen(pen)
 
         x, y, width, height = self._point2ClientCoord(p1, p2)
@@ -2431,13 +2441,13 @@ class PlotCanvas(wx.Panel):
             if self.enableGrid[0]:
                 for x, _ in xticks:
                     pt = scale_and_shift_point(x, p1[1], scale, shift)
-                    dc.DrawLine(pt[0], pt[1], pt[0], pt[1] - height)
+                    dc.DrawLine(int(pt[0]), int(pt[1]), int(pt[0]), int(pt[1] - height))
 
         if self._ySpec != 'none':
             if self.enableGrid[1]:
                 for y, label in yticks:
                     pt = scale_and_shift_point(p1[0], y, scale, shift)
-                    dc.DrawLine(pt[0], pt[1], pt[0] + width, pt[1])
+                    dc.DrawLine(int(pt[0]), int(pt[1]), int(pt[0] + width), int(pt[1]))
 
     @TempStyle('pen')
     def _drawTicks(self, dc, p1, p2, scale, shift, xticks, yticks):
@@ -2470,7 +2480,7 @@ class PlotCanvas(wx.Panel):
         # increases thickness for printing only
         pen = self.tickPen
         penWidth = self.printerScale * pen.GetWidth()
-        pen.SetWidth(penWidth)
+        pen.SetWidth(int(penWidth))
         dc.SetPen(pen)
 
         # lengthen lines for printing
@@ -2483,13 +2493,13 @@ class PlotCanvas(wx.Panel):
                 lines = []
                 for x, label in xticks:
                     pt = scale_and_shift_point(x, p1[1], scale, shift)
-                    lines.append((pt[0], pt[1], pt[0], pt[1] - xTickLength))
+                    lines.append((int(pt[0]), int(pt[1]), int(pt[0]), int(pt[1] - xTickLength)))
                 dc.DrawLineList(lines)
             if ticks.top:
                 lines = []
                 for x, label in xticks:
                     pt = scale_and_shift_point(x, p2[1], scale, shift)
-                    lines.append((pt[0], pt[1], pt[0], pt[1] + xTickLength))
+                    lines.append((int(pt[0]), int(pt[1]), int(pt[0]), int(pt[1] + xTickLength)))
                 dc.DrawLineList(lines)
 
         if self.ySpec != 'none':
@@ -2497,13 +2507,13 @@ class PlotCanvas(wx.Panel):
                 lines = []
                 for y, label in yticks:
                     pt = scale_and_shift_point(p1[0], y, scale, shift)
-                    lines.append((pt[0], pt[1], pt[0] + yTickLength, pt[1]))
+                    lines.append((int(pt[0]), int(pt[1]), int(pt[0] + yTickLength), int(pt[1])))
                 dc.DrawLineList(lines)
             if ticks.right:
                 lines = []
                 for y, label in yticks:
                     pt = scale_and_shift_point(p2[0], y, scale, shift)
-                    lines.append((pt[0], pt[1], pt[0] - yTickLength, pt[1]))
+                    lines.append((int(pt[0]), int(pt[1]), int(pt[0] - yTickLength), int(pt[1])))
                 dc.DrawLineList(lines)
 
     @TempStyle('pen')
@@ -2530,25 +2540,25 @@ class PlotCanvas(wx.Panel):
         # increases thickness for printing only
         pen = self.centerLinePen
         penWidth = self.printerScale * pen.GetWidth()
-        pen.SetWidth(penWidth)
+        pen.SetWidth(int(penWidth))
         dc.SetPen(pen)
 
         if self._centerLinesEnabled in ('Horizontal', True):
             y1 = scale[1] * p1[1] + shift[1]
             y2 = scale[1] * p2[1] + shift[1]
             y = (y1 - y2) / 2.0 + y2
-            dc.DrawLine(scale[0] * p1[0] + shift[0],
-                        y,
-                        scale[0] * p2[0] + shift[0],
-                        y)
+            dc.DrawLine(int(scale[0] * p1[0] + shift[0]),
+                        int(y),
+                        int(scale[0] * p2[0] + shift[0]),
+                        int(y))
         if self._centerLinesEnabled in ('Vertical', True):
             x1 = scale[0] * p1[0] + shift[0]
             x2 = scale[0] * p2[0] + shift[0]
             x = (x1 - x2) / 2.0 + x2
-            dc.DrawLine(x,
-                        scale[1] * p1[1] + shift[1],
-                        x,
-                        scale[1] * p2[1] + shift[1])
+            dc.DrawLine(int(x),
+                        int(scale[1] * p1[1] + shift[1]),
+                        int(x),
+                        int(scale[1] * p2[1] + shift[1]))
 
     @TempStyle('pen')
     def _drawDiagonals(self, dc, p1, p2, scale, shift):
@@ -2574,19 +2584,19 @@ class PlotCanvas(wx.Panel):
         """
         pen = self.diagonalPen
         penWidth = self.printerScale * pen.GetWidth()
-        pen.SetWidth(penWidth)
+        pen.SetWidth(int(penWidth))
         dc.SetPen(pen)
 
         if self._diagonalsEnabled in ('Bottomleft-Topright', True):
-            dc.DrawLine(scale[0] * p1[0] + shift[0],
-                        scale[1] * p1[1] + shift[1],
-                        scale[0] * p2[0] + shift[0],
-                        scale[1] * p2[1] + shift[1])
+            dc.DrawLine(int(scale[0] * p1[0] + shift[0]),
+                        int(scale[1] * p1[1] + shift[1]),
+                        int(scale[0] * p2[0] + shift[0]),
+                        int(scale[1] * p2[1] + shift[1]))
         if self._diagonalsEnabled in ('Bottomright-Topleft', True):
-            dc.DrawLine(scale[0] * p1[0] + shift[0],
-                        scale[1] * p2[1] + shift[1],
-                        scale[0] * p2[0] + shift[0],
-                        scale[1] * p1[1] + shift[1])
+            dc.DrawLine(int(scale[0] * p1[0] + shift[0]),
+                        int(scale[1] * p2[1] + shift[1]),
+                        int(scale[0] * p2[0] + shift[0]),
+                        int(scale[1] * p1[1] + shift[1]))
 
     @TempStyle('pen')
     def _drawAxes(self, dc, p1, p2, scale, shift):
@@ -2613,7 +2623,7 @@ class PlotCanvas(wx.Panel):
         # increases thickness for printing only
         pen = self.axesPen
         penWidth = self.printerScale * pen.GetWidth()
-        pen.SetWidth(penWidth)
+        pen.SetWidth(int(penWidth))
         dc.SetPen(pen)
 
         axes = self.enableAxes
@@ -2622,24 +2632,24 @@ class PlotCanvas(wx.Panel):
                 lower, upper = p1[0], p2[0]
                 a1 = scale_and_shift_point(lower, p1[1], scale, shift)
                 a2 = scale_and_shift_point(upper, p1[1], scale, shift)
-                dc.DrawLine(a1[0], a1[1], a2[0], a2[1])
+                dc.DrawLine(int(a1[0]), int(a1[1]), int(a2[0]), int(a2[1]))
             if axes.top:
                 lower, upper = p1[0], p2[0]
                 a1 = scale_and_shift_point(lower, p2[1], scale, shift)
                 a2 = scale_and_shift_point(upper, p2[1], scale, shift)
-                dc.DrawLine(a1[0], a1[1], a2[0], a2[1])
+                dc.DrawLine(int(a1[0]), int(a1[1]), int(a2[0]), int(a2[1]))
 
         if self.ySpec != 'none':
             if axes.left:
                 lower, upper = p1[1], p2[1]
                 a1 = scale_and_shift_point(p1[0], lower, scale, shift)
                 a2 = scale_and_shift_point(p1[0], upper, scale, shift)
-                dc.DrawLine(a1[0], a1[1], a2[0], a2[1])
+                dc.DrawLine(int(a1[0]), int(a1[1]), int(a2[0]), int(a2[1]))
             if axes.right:
                 lower, upper = p1[1], p2[1]
                 a1 = scale_and_shift_point(p2[0], lower, scale, shift)
                 a2 = scale_and_shift_point(p2[0], upper, scale, shift)
-                dc.DrawLine(a1[0], a1[1], a2[0], a2[1])
+                dc.DrawLine(int(a1[0]), int(a1[1]), int(a2[0]), int(a2[1]))
 
     @TempStyle('pen')
     def _drawAxesValues(self, dc, p1, p2, scale, shift, xticks, yticks):
@@ -2685,8 +2695,8 @@ class PlotCanvas(wx.Panel):
                     w = dc.GetTextExtent(label)[0]
                     pt = scale_and_shift_point(x, p1[1], scale, shift)
                     coords.append(
-                        (pt[0] - w/2,
-                         pt[1] + 2 * self._pointSize[1] - xTickLength)
+                        (int(pt[0] - w/2),
+                         int(pt[1] + 2 * self._pointSize[1] - xTickLength))
                     )
                 dc.DrawTextList(labels, coords)
 
@@ -2697,8 +2707,8 @@ class PlotCanvas(wx.Panel):
                     w, h = dc.GetTextExtent(label)
                     pt = scale_and_shift_point(x, p2[1], scale, shift)
                     coords.append(
-                        (pt[0] - w/2,
-                         pt[1] - 2 * self._pointSize[1] - h - xTickLength)
+                        (int(pt[0] - w/2),
+                         int(pt[1] - 2 * self._pointSize[1] - h - xTickLength))
                     )
                 dc.DrawTextList(labels, coords)
 
@@ -2711,8 +2721,8 @@ class PlotCanvas(wx.Panel):
                     w = dc.GetTextExtent(label)[0]
                     pt = scale_and_shift_point(p1[0], y, scale, shift)
                     coords.append(
-                        (pt[0] - w - 3 * self._pointSize[0] + yTickLength,
-                         pt[1] - 0.5 * h)
+                        (int(pt[0] - w - 3 * self._pointSize[0] + yTickLength),
+                         int(pt[1] - 0.5 * h))
                     )
                 dc.DrawTextList(labels, coords)
 
@@ -2724,8 +2734,8 @@ class PlotCanvas(wx.Panel):
                     w = dc.GetTextExtent(label)[0]
                     pt = scale_and_shift_point(p2[0], y, scale, shift)
                     coords.append(
-                        (pt[0] + 3 * self._pointSize[0] + yTickLength,
-                         pt[1] - 0.5 * h)
+                        (int(pt[0] + 3 * self._pointSize[0] + yTickLength),
+                         int(pt[1] - 0.5 * h))
                     )
                 dc.DrawTextList(labels, coords)
 
@@ -2784,7 +2794,7 @@ class PlotCanvas(wx.Panel):
             + (self.plotbox_size[0] - lhsW - rhsW) / 2. - titleWH[0] / 2.,
             self.plotbox_origin[1] - self.plotbox_size[1]
         )
-        dc.DrawText(graphics.title, titlePos[0], titlePos[1])
+        dc.DrawText(graphics.title, int(titlePos[0]), int(titlePos[1]))
 
     def _drawAxesLabels(self, dc, graphics, lhsW, rhsW, bottomH, topH,
                         xLabelWH, yLabelWH):
@@ -2805,7 +2815,7 @@ class PlotCanvas(wx.Panel):
             + (self.plotbox_size[0] - lhsW - rhsW) / 2. - xLabelWH[0] / 2.,
             self.plotbox_origin[1] - xLabelWH[1] - yTickLength
         )
-        dc.DrawText(graphics.xLabel, xLabelPos[0], xLabelPos[1])
+        dc.DrawText(graphics.xLabel, int(xLabelPos[0]), int(xLabelPos[1]))
         yLabelPos = (
             self.plotbox_origin[0] - 3 * self._pointSize[0] + xTickLength,
             self.plotbox_origin[1] - bottomH
@@ -2813,7 +2823,7 @@ class PlotCanvas(wx.Panel):
         )
         if graphics.yLabel:  # bug fix for Linux
             dc.DrawRotatedText(
-                graphics.yLabel, yLabelPos[0], yLabelPos[1], 90)
+                graphics.yLabel, int(yLabelPos[0]), int(yLabelPos[1]), 90)
 
     @TempStyle('pen')
     def _drawPlotAreaLabels(self, dc, graphics, lhsW, rhsW, titleWH,
@@ -2941,7 +2951,7 @@ class PlotCanvas(wx.Panel):
         if pos >= 0:
             pagesize = int((r_current[1] - r_current[0]) / unit)
 
-            self.sb_hor.SetScrollbar(pos, pagesize, sbfullrange, pagesize)
+            self.sb_hor.SetScrollbar(pos, pagesize, int(sbfullrange), pagesize)
             self._sb_xunit = unit
             needScrollbars = needScrollbars or (pagesize != sbfullrange)
         else:
@@ -2963,7 +2973,7 @@ class PlotCanvas(wx.Panel):
         if pos >= 0:
             pagesize = int((r_current[1] - r_current[0]) / unit)
             pos = (sbfullrange - 1 - pos - pagesize)
-            self.sb_vert.SetScrollbar(pos, pagesize, sbfullrange, pagesize)
+            self.sb_vert.SetScrollbar(int(pos), pagesize, int(sbfullrange), pagesize)
             self._sb_yunit = unit
             needScrollbars = needScrollbars or (pagesize != sbfullrange)
         else:

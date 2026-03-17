@@ -21,7 +21,6 @@
 
 import wx
 
-import six
 MV_HOR = 0
 MV_VER = not MV_HOR
 
@@ -264,7 +263,7 @@ class MultiSplit(wx.Window):
         w,h = self.GetSize()
 
         if v1x != v2x:
-            ratio = float(w) / float(v1w + v2w)
+            ratio = float(w) / float((v1w + v2w))
             v1w *= ratio
             v2w = w - v1w
             v2x = v1w
@@ -272,7 +271,7 @@ class MultiSplit(wx.Window):
             v1w = v2w = w
 
         if v1y != v2y:
-            ratio = float(h) / float(v1h + v2h)
+            ratio = float(h) / float((v1h + v2h))
             v1h *= ratio
             v2h = h - v1h
             v2y = v1h
@@ -405,7 +404,7 @@ class MultiClient(wx.Window):
     def Select(self):
         self.GetParent().multiView.UnSelect()
         self.selected = True
-        self.SetBackgroundColour(wx.Colour(255,255,0)) # Yellow
+        self.SetBackgroundColour(wx.YELLOW)
         self.Refresh()
 
     def CalcSize(self,parent):
@@ -712,7 +711,7 @@ def DrawSash(win,x,y,direction):
             if ((i + j) & 1):
                 bdc.DrawPoint(i,j)
 
-    brush = wx.Brush(wx.Colour(0,0,0))
+    brush = wx.BLACK_BRUSH
     brush.SetStipple(bmp)
 
     dc.SetBrush(brush)

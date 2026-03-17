@@ -10,7 +10,7 @@ from .callables import ListenerMismatchError
 
 
 class Listener(ListenerBase):
-    r"""
+    """
     Wraps a callable so it can be stored by weak reference and introspected
     to verify that it adheres to a topic's MDS.
 
@@ -21,7 +21,7 @@ class Listener(ListenerBase):
     be given the Topic object for the message sent by sendMessage().
     Such a Listener will have wantsTopicObjOnCall() True.
 
-    Callables that have a '\**kargs' argument will receive all message
+    Callables that have a '**kargs' argument will receive all message
     data, not just that for the topic they are subscribed to. Such a listener
     will have wantsAllMessageData() True.
     """
@@ -88,5 +88,5 @@ class ListenerValidator(ValidatorBase):
         # now make sure listener doesn't require params that are optional in TMS:
         extraArgs = set( paramsInfo.getRequiredArgs() ) - self._topicArgs
         if extraArgs:
-            msg = 'params ({}) missing default values'.format(','.join(extraArgs))
+            msg = 'params (%s) missing default values' % (','.join(extraArgs),)
             raise ListenerMismatchError(msg, listener, extraArgs)

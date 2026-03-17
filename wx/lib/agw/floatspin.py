@@ -177,8 +177,6 @@ import wx
 import locale
 from math import ceil, floor
 
-# Python 2/3 compatibility helper
-import six
 long = int
 
 # Set The Styles For The Underline wx.TextCtrl
@@ -335,7 +333,7 @@ class FloatSpin(wx.Control):
     """
 
     def __init__(self, parent, id=wx.ID_ANY, pos=wx.DefaultPosition,
-                 size=(95,-1), style=0, value=0.0, min_val=None, max_val=None,
+                 size=wx.DefaultSize, style=0, value=0.0, min_val=None, max_val=None,
                  increment=1.0, digits=-1, agwStyle=FS_LEFT,
                  name="FloatSpin"):
         """
@@ -1147,6 +1145,22 @@ class FloatSpin(wx.Control):
         return self._min
 
 
+    def SetMin(self, min_val):
+        """
+        Sets the minimum value for :class:`FloatSpin`.
+
+        :param `min_val`: the minimum value for :class:`FloatSpin`. If it is ``None`` it is
+         ignored.
+
+        :note: This method doesn't modify the current value.
+        """
+
+        if (min_val is not None):
+            self._min = FixedPoint(str(min_val), 20)
+        else:
+            self._min = None
+
+
     def GetMax(self):
         """
         Returns the maximum value for :class:`FloatSpin`. It can be a
@@ -1154,6 +1168,22 @@ class FloatSpin(wx.Control):
         """
 
         return self._max
+
+
+    def SetMax(self, max_val):
+        """
+        Sets the maximum value for :class:`FloatSpin`.
+
+        :param `max_val`: the maximum value for :class:`FloatSpin`. If it is ``None`` it is
+         ignored.
+
+        :note: This method doesn't modify the current value.
+        """
+
+        if (max_val is not None):
+            self._max = FixedPoint(str(max_val), 20)
+        else:
+            self._max = None
 
 
     def HasRange(self):
@@ -1201,6 +1231,16 @@ class FloatSpin(wx.Control):
             snap_value = None
 
         return finite, snap_value
+
+
+    DefaultValue = property(GetDefaultValue, SetDefaultValue)
+    Digits       = property(GetDigits,       SetDigits)
+    Font         = property(GetFont,         SetFont)
+    Format       = property(GetFormat,       SetFormat)
+    Increment    = property(GetIncrement,    SetIncrement)
+    Min          = property(GetMin,          SetMin)
+    Max          = property(GetMax,          SetMax)
+    Value        = property(GetValue,        SetValue)
 
 
 
@@ -1284,7 +1324,7 @@ class FixedPoint:
         >>>
 
 
-    The string produced by `str(x)` (implictly invoked by `print`) always
+    The string produced by `str(x)` (implicitly invoked by `print`) always
     contains at least one digit before the decimal point, followed by a
     decimal point, followed by exactly `x.get_precision()` digits.  If `x` is
     negative, `str(x)[0] == "-"`.
@@ -1433,7 +1473,7 @@ class FixedPoint:
         try:
             p = int(precision)
         except:
-            raise TypeError("precision not convertable to int: " +
+            raise TypeError("precision not convertible to int: " +
                             repr(precision))
         if p < 0:
             raise ValueError("precision must be >= 0: " + repr(precision))
@@ -1760,8 +1800,12 @@ if __name__ == '__main__':
 
             floatspin = FloatSpin(panel, -1, pos=(50, 50), min_val=0, max_val=1,
                                   increment=0.01, value=0.1, agwStyle=FS_LEFT)
-            floatspin.SetFormat("%f")
-            floatspin.SetDigits(2)
+            floatspin.Format = "%f"
+            floatspin.Digits = 2
+            floatspin.Min = -1
+            floatspin.Max = 10
+            floatspin.Increment = 0.02
+            floatspin.Value = 0.2
 
 
     # our normal wxApp-derived class, as usual

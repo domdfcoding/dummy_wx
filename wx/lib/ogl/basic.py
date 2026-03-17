@@ -304,7 +304,7 @@ class Shape(ShapeEvtHandler):
 
     The :class:`Shape` is the top-level, abstract object that all other objects
     are derived from. All common functionality is represented by :class:`Shape`
-    members, and overriden members that appear in derived classes and have
+    members, and overridden members that appear in derived classes and have
     behaviour as documented for :class:`Shape`, are not documented separately.
     """
     GraphicsInSizeToContents = False
@@ -375,7 +375,7 @@ class Shape(ShapeEvtHandler):
         self._regions.append(region)
 
     def __str__(self):
-        return f"<{self.__class__.__module__}.{self.__class__.__name__}>"
+        return "<%s.%s>" % (self.__class__.__module__, self.__class__.__name__)
 
     def GetClassName(self):
         return str(self.__class__).split(".")[-1][:-2]
@@ -702,7 +702,7 @@ class Shape(ShapeEvtHandler):
         actualW = w
         actualH = h
         # Don't try to resize an object with more than one image (this
-        # case should be dealt with by overriden handlers)
+        # case should be dealt with by overridden handlers)
         if (region.GetFormatMode() & FORMAT_SIZE_TO_CONTENTS) and \
            len(region.GetFormattedText()) and \
            len(self._regions) == 1 and \
@@ -1050,7 +1050,7 @@ class Shape(ShapeEvtHandler):
         dc.SetPen(self.GetBackgroundPen())
         dc.SetBrush(self.GetBackgroundBrush())
 
-        dc.DrawRectangle(topLeftX - penWidth, topLeftY - penWidth, maxX + penWidth * 2 + 4, maxY + penWidth * 2 + 4)
+        dc.DrawRectangle(int(topLeftX - penWidth), int(topLeftY - penWidth), int(maxX + penWidth * 2 + 4), int(maxY + penWidth * 2 + 4))
 
     def EraseLinks(self, dc, attachment = -1, recurse = False):
         """
@@ -1278,7 +1278,7 @@ class Shape(ShapeEvtHandler):
         self.GetCanvas().PrepareDC(dc)
         dc.SetLogicalFunction(OGLRBLF)
 
-        dottedPen = wx.Pen(wx.Colour(0, 0, 0), 1, wx.PENSTYLE_DOT)
+        dottedPen = wx.Pen(wx.BLACK, 1, wx.PENSTYLE_DOT)
 
         dc.SetPen(dottedPen)
         dc.SetBrush(wx.TRANSPARENT_BRUSH)
@@ -1315,7 +1315,7 @@ class Shape(ShapeEvtHandler):
         yy = y + DragOffsetY
         xx, yy = self._canvas.Snap(xx, yy)
 
-        dottedPen = wx.Pen(wx.Colour(0, 0, 0), 1, wx.PENSTYLE_DOT)
+        dottedPen = wx.Pen(wx.BLACK, 1, wx.PENSTYLE_DOT)
         dc.SetPen(dottedPen)
         dc.SetBrush(wx.TRANSPARENT_BRUSH)
 
@@ -1376,11 +1376,11 @@ class Shape(ShapeEvtHandler):
 
     def OnDrawOutline(self, dc, x, y, w, h):
         """The draw outline handler."""
-        points = [[x - w / 2.0, y - h / 2.0],
-                [x + w / 2.0, y - h / 2.0],
-                [x + w / 2.0, y + h / 2.0],
-                [x - w / 2.0, y + h / 2.0],
-                [x - w / 2.0, y - h / 2.0],
+        points = [[int(x - w / 2.0), int(y - h / 2.0)],
+                [int(x + w / 2.0), int(y - h / 2.0)],
+                [int(x + w / 2.0), int(y + h / 2.0)],
+                [int(x - w / 2.0), int(y + h / 2.0)],
+                [int(x - w / 2.0), int(y - h / 2.0)],
                 ]
 
         dc.DrawLines(points)
@@ -1900,7 +1900,7 @@ class Shape(ShapeEvtHandler):
         Assuming the attachment lies along a vertical or horizontal line,
         calculate the position on that point.
 
-        :param `pt1`: The first point of the line repesenting the edge of
+        :param `pt1`: The first point of the line representing the edge of
          the shape
         :param `pt2`: The second point of the line representing the edge of
          the shape
@@ -2511,7 +2511,7 @@ class Shape(ShapeEvtHandler):
         self.GetCanvas().PrepareDC(dc)
         dc.SetLogicalFunction(OGLRBLF)
 
-        dottedPen = wx.Pen(wx.Colour(0, 0, 0), 1, wx.PENSTYLE_DOT)
+        dottedPen = wx.Pen(wx.BLACK, 1, wx.PENSTYLE_DOT)
         dc.SetPen(dottedPen)
         dc.SetBrush(wx.TRANSPARENT_BRUSH)
 
@@ -2617,7 +2617,7 @@ class Shape(ShapeEvtHandler):
         pt._controlPointDragStartWidth = bound_x
         pt._controlPointDragStartHeight = bound_y
 
-        dottedPen = wx.Pen(wx.Colour(0, 0, 0), 1, wx.PENSTYLE_DOT)
+        dottedPen = wx.Pen(wx.BLACK, 1, wx.PENSTYLE_DOT)
         dc.SetPen(dottedPen)
         dc.SetBrush(wx.TRANSPARENT_BRUSH)
 
@@ -2755,9 +2755,9 @@ class RectangleShape(Shape):
             dc.SetPen(TransparentPen)
 
             if self._cornerRadius:
-                dc.DrawRoundedRectangle(x1 + self._shadowOffsetX, y1 + self._shadowOffsetY, self._width, self._height, self._cornerRadius)
+                dc.DrawRoundedRectangle(int(x1 + self._shadowOffsetX), int(y1 + self._shadowOffsetY), int(self._width), int(self._height), self._cornerRadius)
             else:
-                dc.DrawRectangle(x1 + self._shadowOffsetX, y1 + self._shadowOffsetY, self._width, self._height)
+                dc.DrawRectangle(int(x1 + self._shadowOffsetX), int(y1 + self._shadowOffsetY), int(self._width), int(self._height))
 
         if self._pen:
             if self._pen.GetWidth() == 0:
@@ -2768,9 +2768,9 @@ class RectangleShape(Shape):
             dc.SetBrush(self._brush)
 
         if self._cornerRadius:
-            dc.DrawRoundedRectangle(x1, y1, self._width, self._height, self._cornerRadius)
+            dc.DrawRoundedRectangle(int(x1), int(y1), int(self._width), int(self._height), self._cornerRadius)
         else:
-            dc.DrawRectangle(x1, y1, self._width, self._height)
+            dc.DrawRectangle(int(x1), int(y1), int(self._width), int(self._height))
 
     def GetBoundingBoxMin(self):
         """Get the bounding box minimum."""
@@ -2838,9 +2838,9 @@ class RectangleShape(Shape):
 
     def SetHeight(self, h):
         """
-        Set the heigth.
+        Set the height.
 
-        :param `h`: heigth to be set
+        :param `h`: height to be set
 
         """
         self._height = h
@@ -2881,7 +2881,7 @@ class PolygonShape(Shape):
             # Duplicate the list of points
             self._points = []
             for point in the_points:
-                new_point = wx.Point(point[0], point[1])
+                new_point = wx.Point(int(point[0]), int(point[1]))
                 self._points.append(new_point)
             self.CalculateBoundingBox()
             self._originalWidth = self._boundWidth
@@ -3173,7 +3173,7 @@ class PolygonShape(Shape):
                 dc.SetPen(self._pen)
         if self._brush:
             dc.SetBrush(self._brush)
-        dc.DrawPolygon(self._points, self._xpos, self._ypos)
+        dc.DrawPolygon(self._points, int(self._xpos), int(self._ypos))
 
     def OnDrawOutline(self, dc, x, y, w, h):
         """The draw outline handler."""
@@ -3184,8 +3184,8 @@ class PolygonShape(Shape):
 
         intPoints = []
         for point in self._originalPoints:
-            intPoints.append(wx.Point(x_proportion * point[0], y_proportion * point[1]))
-        dc.DrawPolygon(intPoints, x, y)
+            intPoints.append(wx.Point(int(x_proportion * point[0]), int(y_proportion * point[1])))
+        dc.DrawPolygon(intPoints, int(x), int(y))
 
     # Make as many control points as there are vertices
     def MakeControlPoints(self):
@@ -3297,7 +3297,7 @@ class PolygonShape(Shape):
         self.GetCanvas().PrepareDC(dc)
         dc.SetLogicalFunction(OGLRBLF)
 
-        dottedPen = wx.Pen(wx.Colour(0, 0, 0), 1, wx.PENSTYLE_DOT)
+        dottedPen = wx.Pen(wx.BLACK, 1, wx.PENSTYLE_DOT)
         dc.SetPen(dottedPen)
         dc.SetBrush(wx.TRANSPARENT_BRUSH)
 
@@ -3327,7 +3327,7 @@ class PolygonShape(Shape):
         if pt._originalDistance == 0:
             pt._originalDistance = 0.0001
 
-        dottedPen = wx.Pen(wx.Colour(0, 0, 0), 1, wx.PENSTYLE_DOT)
+        dottedPen = wx.Pen(wx.BLACK, 1, wx.PENSTYLE_DOT)
         dc.SetPen(dottedPen)
         dc.SetBrush(wx.TRANSPARENT_BRUSH)
 
@@ -3443,7 +3443,7 @@ class EllipseShape(Shape):
                 dc.SetPen(self._pen)
         if self._brush:
             dc.SetBrush(self._brush)
-        dc.DrawEllipse(self._xpos - self.GetWidth() / 2.0, self._ypos - self.GetHeight() / 2.0, self.GetWidth(), self.GetHeight())
+        dc.DrawEllipse(int(self._xpos - self.GetWidth() / 2.0), int(self._ypos - self.GetHeight() / 2.0), int(self.GetWidth()), int(self.GetHeight()))
 
     def SetSize(self, x, y, recursive = True):
         """
@@ -3644,7 +3644,7 @@ class ShapeRegion:
 
     def SetMinSize(self, w, h):
         """
-        Set the minumum size.
+        Set the minimum size.
 
         :param `w`: the minimum width
         :Param `h`: the minimum height

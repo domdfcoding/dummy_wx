@@ -557,7 +557,7 @@ class DocMDIParentFrameMixIn:
                         window.SetDefaultSize((window._sizeBeforeHidden[0], window._sizeBeforeHidden[0] - self.GetEmbeddedWindow(EMBEDDED_WINDOW_BOTTOMRIGHT).GetSize()[1]))
                 else:
                     window.SetDefaultSize(window._sizeBeforeHidden)
-                    # If it is not the size of the full parent sashwindow set the other window's size so that if it gets shown it will have a cooresponding size
+                    # If it is not the size of the full parent sashwindow set the other window's size so that if it gets shown it will have a corresponding size
                     if window._sizeBeforeHidden[1] < parentSashWindow.GetClientSize()[1]:
                         otherWindowSize = (-1, parentSashWindow.GetClientSize()[1] - window._sizeBeforeHidden[1])
                         if window == self.GetEmbeddedWindow(EMBEDDED_WINDOW_BOTTOMLEFT):
@@ -1863,7 +1863,7 @@ class DocApp(wx.App):
         """
         Returns the instance of a particular type of service that has been installed
         into the DocApp.  For example, "wx.GetApp().GetService(pydocview.OptionsService)"
-        returns the isntance of the OptionsService that is running within the DocApp.
+        returns the instance of the OptionsService that is running within the DocApp.
         """
         for service in self._services:
             if isinstance(service, type):
@@ -2211,7 +2211,7 @@ class _DocFrameFileDropTarget(wx.FileDropTarget):
             msgTitle = wx.GetApp().GetAppName()
             if not msgTitle:
                 msgTitle = _("File Error")
-            wx.MessageBox(f"Could not open '{wx.lib.docview.FileNameFromPath(file)}'.  '{sys.exc_value}'",
+            wx.MessageBox("Could not open '%s'.  '%s'" % (wx.lib.docview.FileNameFromPath(file), sys.exc_value),
                           msgTitle,
                           wx.OK | wx.ICON_EXCLAMATION,
                           self._docManager.FindSuitableParent())
@@ -3063,7 +3063,7 @@ class WindowMenuService(DocService):
                 if i == 0 and not self._sep:
                     self._sep = windowMenu.AppendSeparator()
                 if i < 9:
-                    menuLabel = f"{notebook.GetPageText(i)}\tCtrl+{i+1}"
+                    menuLabel = "%s\tCtrl+%s" % (notebook.GetPageText(i), i+1)
                 else:
                     menuLabel = notebook.GetPageText(i)
                 windowMenu.Append(self._selectWinIds[i], menuLabel)

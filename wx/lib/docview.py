@@ -320,7 +320,7 @@ class Document(wx.EvtHandler):
         Calls :meth:`View.Close` and deletes each view. Deleting the final view will
         implicitly delete the document itself, because the wxView destructor
         calls RemoveView. This in turn calls :meth:`Document.OnChangedViewList`,
-        whose default implemention is to save and delete the document if no
+        whose default implementation is to save and delete the document if no
         views exist.
         """
         manager = self.GetDocumentManager()
@@ -465,10 +465,10 @@ class Document(wx.EvtHandler):
                     return False
 
                 i = 1
-                backupFilename = f"{filename}.bak{i}"
+                backupFilename = "%s.bak%s" % (filename, i)
                 while os.path.exists(backupFilename):
                     i += 1
-                    backupFilename = f"{filename}.bak{i}"
+                    backupFilename = "%s.bak%s" % (filename, i)
                 shutil.copy(filename, backupFilename)
                 copied = True
 
@@ -491,7 +491,7 @@ class Document(wx.EvtHandler):
             if backupFilename and copied:
                 os.remove(backupFilename)
 
-            wx.MessageBox(f"Could not save '{FileNameFromPath(filename)}'.  {sys.exc_value}",
+            wx.MessageBox("Could not save '%s'.  %s" % (FileNameFromPath(filename), sys.exc_value),
                           msgTitle,
                           wx.OK | wx.ICON_EXCLAMATION,
                           self.GetDocumentWindow())
@@ -535,7 +535,7 @@ class Document(wx.EvtHandler):
             if fileObject:
                 fileObject.close()  # file is still open, close it
 
-            wx.MessageBox(f"Could not open '{FileNameFromPath(filename)}'.  {sys.exc_value}",
+            wx.MessageBox("Could not open '%s'.  %s" % (FileNameFromPath(filename), sys.exc_value),
                           msgTitle,
                           wx.OK | wx.ICON_EXCLAMATION,
                           self.GetDocumentWindow())
@@ -2112,7 +2112,7 @@ class DocManager(wx.EvtHandler):
         only an approximate method of finding a template for creating a
         document.
 
-        Note this wxPython verson looks for and returns a default template
+        Note this wxPython version looks for and returns a default template
         if no specific template is found.
         """
         default = None

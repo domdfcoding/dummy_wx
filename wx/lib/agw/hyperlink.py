@@ -122,7 +122,7 @@ Version 0.7
 """
 
 import wx
-from wx.lib.stattext import GenStaticText as StaticText
+from wx import StaticText
 
 # Import the useful webbrowser module for platform-independent results
 import webbrowser
@@ -283,7 +283,7 @@ class HyperLinkCtrl(StaticText):
 
         :param `URL`: the url link we wish to navigate;
         :param `ReportErrors`: Use ``True`` to display error dialog if an error
-         occurrs navigating to the URL;
+         occurs navigating to the URL;
         :param `NotSameWinIfPossible`: Use ``True`` to attempt to open the URL
          in new browser window.
         """
@@ -435,7 +435,7 @@ class HyperLinkCtrl(StaticText):
         :class:`MessageBox`.
 
         :param `ErrorMessage`: a string representing the error to display;
-        :param `ReportErrors`: ``True`` to display error dialog if an error occurrs
+        :param `ReportErrors`: ``True`` to display error dialog if an error occurs
          navigating to the URL.
         """
 
@@ -443,8 +443,8 @@ class HyperLinkCtrl(StaticText):
             wx.MessageBox(ErrorMessage, "HyperLinks Error", wx.OK | wx.CENTRE | wx.ICON_ERROR)
 
 
-    def SetColours(self, link=wx.Colour(0, 0, 255), visited=wx.Colour(79, 47, 79),
-                   rollover=wx.Colour(0, 0, 255)):
+    def SetColours(self, link=wx.BLUE, visited=wx.Colour(79, 47, 79),
+                   rollover=wx.BLUE):
         """
         Sets the colours for the link, the visited link and the mouse rollover.
 
@@ -592,7 +592,7 @@ class HyperLinkCtrl(StaticText):
         Set whether to report browser errors or not.
 
         :param `ReportErrors`: Use ``True`` to display error dialog if an error
-         occurrs navigating to the URL;
+         occurs navigating to the URL;
         """
 
         self._ReportErrors = ReportErrors

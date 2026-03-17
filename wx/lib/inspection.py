@@ -28,7 +28,6 @@ import wx.py
 import wx.stc
 #import wx.aui as aui
 import wx.lib.agw.aui as aui
-import six
 import wx.lib.utils as utils
 import sys
 import inspect
@@ -88,7 +87,7 @@ class InspectionTool:
     def Show(self, selectObj=None, refreshTree=False):
         """
         Creates the inspection frame if it hasn't been already, and
-        raises it if neccessary.
+        raises it if necessary.
 
         :param `selectObj`: Pass a widget or sizer to have that object be
                      preselected in widget tree.
@@ -208,15 +207,15 @@ class InspectionFrame(wx.Frame):
         tbar = self.CreateToolBar(wx.TB_HORIZONTAL | wx.TB_FLAT | wx.TB_TEXT | wx.NO_BORDER )
         tbar.SetToolBitmapSize((24,24))
 
-        refreshBmp = Refresh.GetBitmap()
-        findWidgetBmp = Find.GetBitmap()
-        showSizersBmp = ShowSizers.GetBitmap()
-        expandTreeBmp = ExpandTree.GetBitmap()
-        collapseTreeBmp = CollapseTree.GetBitmap()
-        highlightItemBmp = HighlightItem.GetBitmap()
-        evtWatcherBmp = EvtWatcher.GetBitmap()
+        refreshBmp = wx.BitmapBundle(Refresh.GetBitmap())
+        findWidgetBmp = wx.BitmapBundle(Find.GetBitmap())
+        showSizersBmp = wx.BitmapBundle(ShowSizers.GetBitmap())
+        expandTreeBmp = wx.BitmapBundle(ExpandTree.GetBitmap())
+        collapseTreeBmp = wx.BitmapBundle(CollapseTree.GetBitmap())
+        highlightItemBmp = wx.BitmapBundle(HighlightItem.GetBitmap())
+        evtWatcherBmp = wx.BitmapBundle(EvtWatcher.GetBitmap())
 
-        toggleFillingBmp = ShowFilling.GetBitmap()
+        toggleFillingBmp = wx.BitmapBundle(ShowFilling.GetBitmap())
 
         refreshTool = tbar.AddTool(-1, 'Refresh', refreshBmp,
                                    shortHelp = 'Refresh widget tree (F1)')
@@ -405,11 +404,11 @@ class InspectionFrame(wx.Frame):
         rect = utils.AdjustRectToScreen(self.GetRect())
         self.SetRect(rect)
 
-        perspective = config.Read('perspective', '')
+        perspective = config.Read('perspective1', '')
         if perspective:
             try:
                 self.mgr.LoadPerspective(perspective)
-            except wx.PyAssertionError:
+            except Exception:
                 # ignore bad perspective string errors
                 pass
         self.includeSizers = config.ReadBool('includeSizers', False)
@@ -430,7 +429,7 @@ class InspectionFrame(wx.Frame):
 
         if hasattr(self, "mgr"):
             perspective = self.mgr.SavePerspective()
-            config.Write('perspective', perspective)
+            config.Write('perspective1', perspective)
             config.WriteBool('includeSizers', self.includeSizers)
 
 #---------------------------------------------------------------------------
@@ -559,7 +558,7 @@ class InspectionTree(TreeBaseClass):
         Returns the string to be used in the tree for a widget
         """
         if hasattr(widget, 'GetName'):
-            return f"{widget.__class__.__name__} (\"{widget.GetName()}\")"
+            return "%s (\"%s\")" % (widget.__class__.__name__, widget.GetName())
         return widget.__class__.__name__
 
 
@@ -636,9 +635,9 @@ class InspectionInfoPanel(wx.stc.StyledTextCtrl):
 
     def Fmt(self, name, value):
         if isinstance(value, str):
-            return f"    {name} = '{value}'"
+            return "    %s = '%s'" % (name, value)
         else:
-            return f"    {name} = {value}"
+            return "    %s = %s" % (name, value)
 
 
     def FmtWidget(self, obj):
@@ -1052,7 +1051,7 @@ class _InspectionHighlighter:
 
     def FlickerTLW(self, tlw):
         """
-        Use a timer to alternate a TLW between shown and hidded state a
+        Use a timer to alternate a TLW between shown and hidden state a
         few times.  Use to highlight a TLW since drawing and clearing an
         outline is trickier.
         """

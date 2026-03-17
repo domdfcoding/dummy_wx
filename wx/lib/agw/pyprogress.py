@@ -358,15 +358,15 @@ class ProgressGauge(wx.Window):
         r1, g1, b1 = int(col1.Red()), int(col1.Green()), int(col1.Blue())
         r2, g2, b2 = int(col2.Red()), int(col2.Green()), int(col2.Blue())
 
-        rstep = float(r2 - r1) / interval
-        gstep = float(g2 - g1) / interval
-        bstep = float(b2 - b1) / interval
+        rstep = float((r2 - r1)) / interval
+        gstep = float((g2 - g1)) / interval
+        bstep = float((b2 - b1)) / interval
 
         rf, gf, bf = 0, 0, 0
         dc.SetBrush(wx.TRANSPARENT_BRUSH)
 
         for ii in range(int(self._pos), int(self._pos+interval)):
-            currCol = (r1 + rf, g1 + gf, b1 + bf)
+            currCol = [int(x) for x in (r1 + rf, g1 + gf, b1 + bf)]
             dc.SetPen(wx.Pen(currCol, 2))
             dc.DrawLine(ii, 1, ii, ysize-2)
             rf = rf + rstep
@@ -481,9 +481,9 @@ class PyProgress(wx.Dialog):
         sizeDlgModified = False
 
         if wx.Platform == "__WXMSW__":
-            sizerFlags = wx.ALIGN_RIGHT|wx.ALL
+            sizerFlags = wx.ALL
         else:
-            sizerFlags = wx.ALIGN_CENTER_HORIZONTAL|wx.BOTTOM|wx.TOP
+            sizerFlags = wx.ALIGN_CENTER|wx.BOTTOM|wx.TOP
 
         if self._hasAbortButton:
             buttonSizer = wx.BoxSizer(wx.HORIZONTAL)
@@ -497,7 +497,6 @@ class PyProgress(wx.Dialog):
             if not sizeDlgModified:
                 sizeDlg.y += 2*LAYOUT_MARGIN + wx.Button.GetDefaultSize().y
 
-        if self._hasAbortButton:
             sizer.Add(buttonSizer, 0, sizerFlags, LAYOUT_MARGIN )
 
         self.Bind(wx.EVT_CLOSE, self.OnClose)
@@ -613,7 +612,7 @@ class PyProgress(wx.Dialog):
                 return False
 
             else:
-                # reenable other windows before hiding this one because otherwise
+                # re-enable other windows before hiding this one because otherwise
                 # Windows wouldn't give the focus back to the window which had
                 # been previously focused because it would still be disabled
                 self.ReenableOtherWindows()
@@ -724,7 +723,7 @@ class PyProgress(wx.Dialog):
          ``False`` otherwise.
         """
 
-        # reenable other windows before hiding this one because otherwise
+        # re-enable other windows before hiding this one because otherwise
         # Windows wouldn't give the focus back to the window which had
         # been previously focused because it would still be disabled
         if not show:

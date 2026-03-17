@@ -8,7 +8,7 @@
 infoframe.py
 Released under wxWindows license etc.
 
-This is a fairly rudimentary, but slightly fancier tha
+This is a fairly rudimentary, but slightly fancier than
 wxPyOnDemandOutputWindow (on which it's based; thanks Robin), version
 of the same sort of thing: a file-like class called
 wxInformationalMessagesFrame. This window also has a status bar with a
@@ -228,7 +228,7 @@ class PyInformationalMessagesFrame:
             self.othermenu.Enable(i,1)
 
         self.frame  = None
-        self.title  = f"{progname} {text}"
+        self.title  = "%s %s" % (progname,text)
         self.parent = None # use the SetParent method if desired...
         self.softspace = 1 # of rather limited use
 
@@ -256,7 +256,7 @@ class PyInformationalMessagesFrame:
 
     def write(self, string):
         if not wx.Thread_IsMain():
-            # Aquire the GUI mutex before making GUI calls.  Mutex is released
+            # Acquire the GUI mutex before making GUI calls.  Mutex is released
             # when locker is deleted at the end of this function.
             #
             # TODO: This should be updated to use wx.CallAfter similarly to how
@@ -309,7 +309,7 @@ class PyInformationalMessagesFrame:
                         filename = os.path.abspath(self.f.name)
 
                         self.frame.sb.SetStatusText("File '%s' opened..." % filename, 0)
-                    except OSError:
+                    except EnvironmentError:
                         self.frame.sb.SetStatusText("File creation failed "
                                                     "(filename '%s')..." % filename, 0)
                     self.text.AppendText(
@@ -417,7 +417,7 @@ class PyInformationalMessagesFrame:
         else:
             try:
                 self.f = open(os.path.abspath(dlg.GetPath()),'w')
-            except OSError:
+            except EnvironmentError:
                 dlg.Destroy()
                 return 0
             dlg.Destroy()

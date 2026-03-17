@@ -25,7 +25,7 @@ def get_acroversion():
         acrokeys, acroversions = [], []
         try:
             adobesoft = _winreg.OpenKey(regKey, r'Software\Adobe')
-        except OSError:
+        except WindowsError:
             regKey = _winreg.HKEY_CURRENT_USER
             adobesoft = _winreg.OpenKey(regKey, r'Software\Adobe')
 
@@ -61,7 +61,7 @@ def get_acroversion():
 # http://partners.adobe.com/public/developer/en/acrobat/sdk/pdf/iac/IACOverview.pdf
 # http://partners.adobe.com/public/developer/en/acrobat/sdk/pdf/iac/IACReference.pdf
 #
-# Co-ordinates passed as parameters are in points (1/72 inch).
+# Coordinates passed as parameters are in points (1/72 inch).
 
 
 if get_acroversion() >= 7.0:
@@ -531,10 +531,10 @@ elif get_acroversion() is not None:
 #  PROPERTIES
 #  --------------------
 #  src
-#  #    type:string  arg:string  canGet:True  canSet:True
+#      type:string  arg:string  canGet:True  canSet:True
 #
 #  messagehandler
-#  #    type:VT_VARIANT  arg:VT_VARIANT  canGet:True  canSet:True
+#      type:VT_VARIANT  arg:VT_VARIANT  canGet:True  canSet:True
 #
 #
 #

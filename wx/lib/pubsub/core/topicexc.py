@@ -9,7 +9,7 @@ class TopicNameError(ValueError):
     """Raised when the topic name is not properly formatted or
     no corresponding Topic object found. """
     def __init__(self, name, msg):
-        ValueError.__init__(self, f'Topic name "{name}": {msg}')
+        ValueError.__init__(self, 'Topic name "%s": %s' % (name, msg))
 
 
 class TopicDefnError(RuntimeError):

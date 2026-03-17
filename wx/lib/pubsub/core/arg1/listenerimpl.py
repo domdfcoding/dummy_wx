@@ -78,7 +78,7 @@ class ListenerValidator(ValidatorBase):
         numReqdArgs = paramsInfo.numRequired
         if numReqdArgs > 1:
             allReqd = paramsInfo.getRequiredArgs()
-            msg = f'only one of {allReqd} can be a required agument'
+            msg = 'only one of %s can be a required agument' % (allReqd,)
             raise ListenerMismatchError(msg, listener, allReqd)
 
         # if no required args but listener has *args, then we
@@ -90,6 +90,6 @@ class ListenerValidator(ValidatorBase):
         needArgName = policies.msgDataArgName
         firstArgName = paramsInfo.allParams[0]
         if (needArgName is not None) and firstArgName != needArgName:
-            msg = f'listener arg name must be "{needArgName}" (is "{firstArgName}")'
+            msg = 'listener arg name must be "%s" (is "%s")' % (needArgName, firstArgName)
             effTopicArgs = [needArgName]
             raise ListenerMismatchError(msg, listener, effTopicArgs)

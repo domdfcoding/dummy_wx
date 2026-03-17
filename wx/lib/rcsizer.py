@@ -33,7 +33,6 @@ encouraged to switch.
 import  operator
 import  wx
 
-import six
 from functools import reduce as reduce
 
 # After the lib and demo no longer uses this sizer enable this warning...

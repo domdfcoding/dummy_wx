@@ -11,13 +11,14 @@ CallArgsInfo regarding its autoTopicArgName data member.
 :license: BSD, see LICENSE_BSD_Simple.txt for details.
 
 """
+import sys
 
-from inspect import getargspec, ismethod, isfunction
-
-from .. import py2and3
+from inspect import ismethod, isfunction, signature, Parameter
 
 AUTO_TOPIC    = '## your listener wants topic name ## (string unlikely to be used by caller)'
 
+def getexcobj():
+    return sys.exc_info()[1]
 
 def getModule(obj):
     """Get the module in which an object was defined. Returns '__main__'
@@ -38,7 +39,7 @@ def getID(callable_):
     sc = callable_
     if ismethod(sc):
         module = getModule(sc.__self__)
-        id = f'{sc.__self__.__class__.__name__}.{sc.__func__.__name__}'
+        id = '%s.%s' % (sc.__self__.__class__.__name__, sc.__func__.__name__)
     elif isfunction(sc):
         module = getModule(sc)
         id = sc.__name__
@@ -87,7 +88,7 @@ class ListenerMismatchError(ValueError):
 
     def __init__(self, msg, listener, *args):
         idStr, module = getID(listener)
-        msg = f'Listener "{idStr}" (from module "{module}") inadequate: {msg}'
+        msg = 'Listener "%s" (from module "%s") inadequate: %s' % (idStr, module, msg)
         ValueError.__init__(self, msg)
         self.msg    = msg
         self.args   = args
@@ -133,19 +134,26 @@ class CallArgsInfo:
         self.autoTopicArgName = None."""
 
         #args, firstArgIdx, defaultVals, acceptsAllKwargs
-        (allParams, varParamName, varOptParamName, defaultVals) = getargspec(func)
-        if defaultVals is None:
-            defaultVals = []
-        else:
-            defaultVals = list(defaultVals)
+        allParams = []
+        defaultVals = []
+        varParamName = None
+        varOptParamName = None
+        for argName, param in signature(func).parameters.items():
+            if param.default != Parameter.empty:
+                defaultVals.append(param.default)
+            if param.kind == Parameter.VAR_POSITIONAL:
+                varParamName = argName
+            elif param.kind == Parameter.VAR_KEYWORD:
+                varOptParamName = argName
+            else:
+                allParams.append(argName)
 
         self.acceptsAllKwargs      = (varOptParamName is not None)
         self.acceptsAllUnnamedArgs = (varParamName    is not None)
-
         self.allParams = allParams
-        del self.allParams[0:firstArgIdx] # does nothing if firstArgIdx == 0
 
         self.numRequired = len(self.allParams) - len(defaultVals)
+        assert len(self.allParams) >= len(defaultVals)
         assert self.numRequired >= 0
 
         # if listener wants topic, remove that arg from args/defaultVals
@@ -182,8 +190,7 @@ def getArgs(callable_):
     try:
         func, firstArgIdx = getRawFunction(callable_)
     except ValueError:
-        from .. import py2and3
-        exc = py2and3.getexcobj()
+        exc = getexcobj()
         raise ListenerMismatchError(str(exc), callable_)
 
     return CallArgsInfo(func, firstArgIdx)

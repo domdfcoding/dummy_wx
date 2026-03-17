@@ -178,9 +178,9 @@ class Frame(wx.Frame):
                  'Include attributes visible to __getattr__ and __setattr__',
                  wx.ITEM_CHECK)
         m.Append(ID_AUTOCOMP_SINGLE, 'Include Single &Underscores\tCtrl+Shift+U',
-                 'Include attibutes prefixed by a single underscore', wx.ITEM_CHECK)
+                 'Include attributes prefixed by a single underscore', wx.ITEM_CHECK)
         m.Append(ID_AUTOCOMP_DOUBLE, 'Include &Double Underscores\tCtrl+Shift+D',
-                 'Include attibutes prefixed by a double underscore', wx.ITEM_CHECK)
+                 'Include attributes prefixed by a double underscore', wx.ITEM_CHECK)
         m = self.calltipsMenu = wx.Menu()
         m.Append(ID_CALLTIPS_SHOW, 'Show Call &Tips\tCtrl+Shift+T',
                  'Show call tips with argument signature and docstring', wx.ITEM_CHECK)
@@ -536,19 +536,13 @@ class Frame(wx.Frame):
             return
         win = wx.Window.FindFocus()
         if self.shellName == 'PyCrust':
-            self.findDlg = wx.FindReplaceDialog(win, self.findData,
-                                               "Find",wx.FR_NOWHOLEWORD)
+            self.findDlg = wx.FindReplaceDialog(win, self.findData, "Find")
         else:
-            self.findDlg = wx.FindReplaceDialog(win, self.findData,
-                "Find & Replace", wx.FR_NOWHOLEWORD|wx.FR_REPLACEDIALOG)
+            self.findDlg = wx.FindReplaceDialog(win, self.findData, "Find & Replace",
+                                                wx.FR_REPLACEDIALOG)
         self.findDlg.Show()
 
-    def OnFindNext(self, event,backward=False):
-        if backward and (self.findData.GetFlags() & wx.FR_DOWN):
-            self.findData.SetFlags( self.findData.GetFlags() ^ wx.FR_DOWN )
-        elif not backward and not (self.findData.GetFlags() & wx.FR_DOWN):
-            self.findData.SetFlags( self.findData.GetFlags() ^ wx.FR_DOWN )
-
+    def OnFindNext(self, event, backward=False):
         if not self.findData.GetFindString():
             self.OnFindText(event)
             return
@@ -556,12 +550,16 @@ class Frame(wx.Frame):
             win = self.findDlg.GetParent()
         else:
             win = wx.Window.FindFocus()
+            if backward:
+                self.findData.Flags &= ~wx.FR_DOWN
+            else:
+                self.findData.Flags |= wx.FR_DOWN
         win.DoFindNext(self.findData, self.findDlg)
         if self.findDlg is not None:
             self.OnFindClose(None)
 
     def OnFindPrevious(self, event):
-        self.OnFindNext(event,backward=True)
+        self.OnFindNext(event, backward=True)
 
     def OnFindClose(self, event):
         self.findDlg.Destroy()
@@ -907,7 +905,7 @@ class ShellFrameMixin:
             with open(fileName, "w") as f:
                 f.write(text)
         except:
-            d = wx.MessageDialog(self, 'Error saving session','Error',
+            d = wx.MessageDialog(self, u'Error saving session',u'Error',
                                  wx.OK | wx.ICON_ERROR)
             d.ShowModal()
             d.Destroy()
@@ -918,7 +916,7 @@ class ShellFrameMixin:
             import io
             # Use newline=None to translate \n \r \r\n to \n on read.  The
             # old-style mode='U' is deprecated.
-            with open(self.startupScript, newline=None, encoding='utf-8') as fid:
+            with io.open(self.startupScript, 'r', newline=None, encoding='utf-8') as fid:
                 text = fid.read()
         else:
             text = ''

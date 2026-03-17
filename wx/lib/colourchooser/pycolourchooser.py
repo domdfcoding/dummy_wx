@@ -12,7 +12,6 @@ but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 """
 
-
 # 12/14/2003 - Jeff Grimmett (grimmtooth@softhome.net)
 #
 # o 2.5 compatibility update.
@@ -42,7 +41,7 @@ ColourChangedEventBase, EVT_COLOUR_CHANGED = newevent.NewEvent()
 class ColourChangedEvent(ColourChangedEventBase):
     """Adds GetColour()/GetValue() for compatibility with ColourPickerCtrl and colourselect"""
     def __init__(self, newColour):
-        super().__init__(newColour = newColour)
+        super(ColourChangedEvent, self).__init__(newColour = newColour)
 
     def GetColour(self):
         return self.newColour
@@ -119,7 +118,7 @@ class PyColourChooser(wx.Panel):
     # Generate the custom colours. These colours are shared across
     # all instances of the colour chooser
     NO_CUSTOM_COLOURS = 16
-    custom_colours = [ (wx.Colour(255, 255, 255),
+    custom_colours = [ (wx.WHITE,
                         pycolourslider.PyColourSlider.HEIGHT / 2)
                      ] * NO_CUSTOM_COLOURS
     last_custom = 0
@@ -187,7 +186,7 @@ class PyColourChooser(wx.Panel):
         self.colour_slider.Bind(wx.EVT_MOTION, self.onSliderMotion)
         self.slider = wx.Slider(
                         self, self.idSCROLL, 86, 0, self.colour_slider.HEIGHT - 1,
-                        style=wx.SL_VERTICAL, size=(15, self.colour_slider.HEIGHT)
+                        style=wx.SL_VERTICAL, size=(-1, self.colour_slider.HEIGHT)
                         )
 
         self.Bind(wx.EVT_COMMAND_SCROLL, self.onScroll, self.slider)
@@ -337,7 +336,7 @@ class PyColourChooser(wx.Panel):
         min = self.slider.GetMin()
         max = self.slider.GetMax()
         val = (1 - v) * max
-        self.slider.SetValue(val)
+        self.slider.SetValue(int(val))
 
     def getVFromSlider(self):
         """Get the current value of "V" from the v slider."""
@@ -452,7 +451,8 @@ class PyColourChooser(wx.Panel):
         self.colour_slider.CaptureMouse()
 
     def onSliderUp(self, event):
-        self.colour_slider.ReleaseMouse()
+        if self.colour_slider.HasCapture():
+            self.colour_slider.ReleaseMouse()
 
     def onSliderMotion(self, event):
         """Handle mouse-down drag on the colour slider palette"""
@@ -470,7 +470,8 @@ class PyColourChooser(wx.Panel):
 
     def onPaletteUp(self, event):
         """Stores state that the mouse is no longer depressed."""
-        self.palette.ReleaseMouse() # Must call once for each CaputreMouse()
+        if self.palette.HasCapture():
+            self.palette.ReleaseMouse() # Must call once for each CaputreMouse()
 
     def onPaletteMotion(self, event):
         """Updates the colour values during mouse motion while the
@@ -570,7 +571,7 @@ def main():
 
     class CCTestDialog(wx.Dialog):
         def __init__(self, parent, initColour):
-            super().__init__(parent, title="Pick A Colo(u)r")
+            super(CCTestDialog, self).__init__(parent, title="Pick A Colo(u)r")
 
             sizer = wx.BoxSizer(wx.VERTICAL)
             self.chooser = PyColourChooser(self, wx.ID_ANY)
@@ -582,7 +583,7 @@ def main():
 
     class CCTestFrame(wx.Frame):
         def __init__(self):
-            super().__init__(None, -1, 'PyColourChooser Test')
+            super(CCTestFrame, self).__init__(None, -1, 'PyColourChooser Test')
             sizer = wx.BoxSizer(wx.VERTICAL)
 
             sizer.Add(wx.StaticText(self, label="CLICK ME"), 0, wx.CENTER)

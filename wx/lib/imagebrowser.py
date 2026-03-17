@@ -84,7 +84,7 @@ if 'wxOSX' in wx.PlatformInfo:
     import wx.lib.buttons
     class BitmapButton(wx.lib.buttons.GenBitmapButton):
         def __init__(self, *args, **kw):
-            super().__init__(*args, **kw)
+            super(BitmapButton, self).__init__(*args, **kw)
             self.SetBezelWidth(1)
             self.SetInitialSize()
             print(self.GetSize(), self.GetBestSize())
@@ -347,8 +347,8 @@ class ImageView(wx.Window):
         owidth = int(scale*iwidth)
         oheight = int(scale*iheight)
 
-        diffx = (wwidth - owidth)/2   # center calc
-        diffy = (wheight - oheight)/2   # center calc
+        diffx = (wwidth - owidth)//2   # center calc
+        diffy = (wheight - oheight)//2   # center calc
 
         if not bmp:
             if owidth!=iwidth or oheight!=iheight:

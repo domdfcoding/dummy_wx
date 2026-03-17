@@ -1323,7 +1323,7 @@ def PointOnLine(pt1, pt2, length, maxLen):
 
     if pt2.x != pt1.x:
 
-        m = float(pt2.y - pt1.y)/(pt2.x - pt1.x)
+        m = float((pt2.y - pt1.y))/(pt2.x - pt1.x)
         m2 = m*m
         a2 = a*a
         c = pt1.y - m*pt1.x
@@ -1641,7 +1641,7 @@ class BasePyControl(wx.Control):
             self.SetDoubleBuffered(True)
 
         self._bitmap = bitmap
-        mask = wx.Mask(self._bitmap, wx.Colour(192, 192, 192))
+        mask = wx.Mask(self._bitmap, wx.LIGHT_GREY)
         self._bitmap.SetMask(mask)
 
         self._mainDialog = wx.GetTopLevelParent(self)
@@ -2672,7 +2672,7 @@ class CustomPanel(wx.Control):
             if c.IsOk():
                 self._customColours[i] = self._colourData.GetCustomColour(i)
             else:
-                self._customColours[i] = wx.Colour(255, 255, 255)
+                self._customColours[i] = wx.WHITE
 
             if c == curr:
                 self._colourSelection = i
@@ -2944,16 +2944,18 @@ class CubeColourDialog(wx.Dialog):
     def SetProperties(self):
         """ Sets some initial properties for :class:`CubeColourDialog` (sizes, values). """
 
+        # Adjust for GTK3's wider SpinButtons
+        spinWidth = 120 if 'gtk3' in wx.PlatformInfo else 60
         self.okButton.SetDefault()
         self.oldColourPanel.SetMinSize((-1, 50))
         self.newColourPanel.SetMinSize((-1, 50))
-        self.redSpin.SetMinSize((60, -1))
-        self.greenSpin.SetMinSize((60, -1))
-        self.blueSpin.SetMinSize((60, -1))
-        self.hueSpin.SetMinSize((60, -1))
-        self.saturationSpin.SetMinSize((60, -1))
-        self.brightnessSpin.SetMinSize((60, -1))
-        self.alphaSpin.SetMinSize((60, -1))
+        self.redSpin.SetMinSize((spinWidth, -1))
+        self.greenSpin.SetMinSize((spinWidth, -1))
+        self.blueSpin.SetMinSize((spinWidth, -1))
+        self.hueSpin.SetMinSize((spinWidth, -1))
+        self.saturationSpin.SetMinSize((spinWidth, -1))
+        self.brightnessSpin.SetMinSize((spinWidth, -1))
+        self.alphaSpin.SetMinSize((spinWidth, -1))
         self.showAlpha.SetValue(1)
         self.accessCode.SetInitialSize((80, -1))
         self.webSafe.SetInitialSize((80, -1))
@@ -3517,8 +3519,8 @@ if __name__ == '__main__':
         # returned as a three-tuple (r, g, b) in this particular case.
         colour = colourData.GetColour()
         r, g, b, alpha = colour.Red(), colour.Green(), colour.Blue(), colour.Alpha()
-        print("You selected (RGBA): %d, %d, %d, %d"%(r, g, b, alpha))
-        print("You selected (HSVA): %d, %d, %d, %d"%(h, s, v, a))
+        print(("You selected (RGBA): %d, %d, %d, %d"%(r, g, b, alpha)))
+        print(("You selected (HSVA): %d, %d, %d, %d"%(h, s, v, a)))
 
     # Once the dialog is destroyed, Mr. wx.ColourData is no longer your
     # friend. Don't use it again!

@@ -14,7 +14,7 @@
 # o Updated for V2.5 compatibility
 #
 
-'''
+r'''
 wx.lib.wxpTag
 
 This module contains a wxHtmlTagHandler that knows how to build
@@ -45,7 +45,7 @@ The name-value pairs in all the nested PARAM tags are packaged up as
 strings into a python dictionary and passed to the __init__ method of
 the class as keyword arguments.  This means that they are all
 accessible from the __init__ method as regular parameters, or you use
-the special Python \\*\\*kw syntax in your __init__ method to get the
+the special Python \*\*kw syntax in your __init__ method to get the
 dictionary directly.
 
 Some parameter values are special and if they are present then they will
@@ -58,13 +58,13 @@ be converted from strings to alternate datatypes.  They are:
     colours      Any value of the form "#123ABC" will automatically be
                  converted to a wxColour object.
 
-    Py Types     Any value begining with "(", "[" or "{" are expected to
+    Py Types     Any value beginning with "(", "[" or "{" are expected to
                  be a Python tuple, list, or dictionary and eval()
                  will be used to convert them to that type.  If the
                  eval() fails then the original string value will be
                  preserved.
 
-    wx Types     Any value begining with "wx" is expected to be an attempt
+    wx Types     Any value beginning with "wx" is expected to be an attempt
                  to create a wxPython object, such as a wxSize, etc.
                  The eval() will be used to try and construct the
                  object and if it fails then the original string value

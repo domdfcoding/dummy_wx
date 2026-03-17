@@ -13,8 +13,14 @@ A class like :class:`wx.BusyInfo` but which doesn't take up so much space by def
 and which has a nicer look.
 """
 
+import sys
 import wx
 from wx.lib.stattext import GenStaticText as StaticText
+
+if sys.version_info >= (3, 11):
+    from typing import Self
+else:
+    from typing_extensions import Self
 
 #---------------------------------------------------------------------------
 
@@ -26,7 +32,7 @@ class BusyInfo:
     size) and the background and foreground colors of the message box can be
     set.
 
-    Creating an instace of the class will create and show a window with the
+    Creating an instance of the class will create and show a window with the
     given message, and when the instance is deleted then that window will be
     closed. This class also implements the context manager magic methods, so
     it can be used with Python's `with` statement, like this::
@@ -68,7 +74,7 @@ class BusyInfo:
 
 
     # Magic methods for using this class as a Context Manager
-    def __enter__(self):
+    def __enter__(self) -> Self:
         return self
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.Close()

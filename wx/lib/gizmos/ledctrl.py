@@ -75,13 +75,13 @@ class LEDNumberCtrl(wx.Control):
             self._init_full(*args, **kw)
 
     def _init_default(self):
-        super().__init__()
+        super(LEDNumberCtrl, self).__init__()
         self._init()
 
     def _init_full(self, parent, id=wx.ID_ANY,
                    pos=wx.DefaultPosition, size=wx.DefaultSize,
                    style=LED_ALIGN_LEFT|LED_DRAW_FADED, name='ledctrl'):
-        super().__init__(parent, id, pos, size, style, name=name)
+        super(LEDNumberCtrl, self).__init__(parent, id, pos, size, style, name=name)
         self._init()
         self._post_create()
 
@@ -89,7 +89,7 @@ class LEDNumberCtrl(wx.Control):
     def Create(self, parent, id=wx.ID_ANY,
                pos=wx.DefaultPosition, size=wx.DefaultSize,
                style=LED_ALIGN_LEFT|LED_DRAW_FADED, name='ledctrl'):
-        super().Create(parent, id, pos, size, style, name=name)
+        super(LEDNumberCtrl, self).Create(parent, id, pos, size, style, name=name)
         return self._post_create()
 
 
@@ -293,7 +293,7 @@ class LEDNumberCtrl(wx.Control):
 
         if digit & c.COLON:
             dc.SetBrush(wx.Brush(lineColor))
-            centerX = XPos + (self.m_lineLength + self.m_digitMargin) / 2
-            radius = self.m_lineWidth / 2
-            dc.DrawCircle(centerX, (self.m_lineLength + (self.m_lineMargin * 4)) / 2, radius)
-            dc.DrawCircle(centerX, (self.m_lineLength * 2 + (self.m_lineMargin * 6)) * 3 / 4, radius)
+            centerX = XPos + (self.m_lineLength + self.m_digitMargin) // 2
+            radius = self.m_lineWidth // 2
+            dc.DrawCircle(centerX, (self.m_lineLength + (self.m_lineMargin * 4)) // 2, radius)
+            dc.DrawCircle(centerX, (self.m_lineLength * 2 + (self.m_lineMargin * 6)) * 3 // 4, radius)

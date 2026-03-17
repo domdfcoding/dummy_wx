@@ -140,20 +140,20 @@ def _write_image(out, imgName, data, append, icon, catalog, functionCompatible, 
             out.write("catalog = {}\n")
             out.write("index = []\n\n")
     varName = _replace_non_alphanumeric_with_underscore(imgName)
-    out.write(f"{varName} = PyEmbeddedImage(\n{data}\n")
+    out.write("%s = PyEmbeddedImage(\n%s\n" % (varName, data))
     if catalog:
         if imgName in old_index:
             print("Warning: %s already in catalog." % imgName)
             print("         Only the last entry will be accessible.\n")
         old_index.append(imgName)
         out.write("index.append('%s')\n" % imgName)
-        out.write(f"catalog['{imgName}'] = {varName}\n")
+        out.write("catalog['%s'] = %s\n" % (imgName, varName))
     if functionCompatible:
-        out.write(f"get{varName}Data = {varName}.GetData\n")
-        out.write(f"get{varName}Image = {varName}.GetImage\n")
-        out.write(f"get{varName}Bitmap = {varName}.GetBitmap\n")
+        out.write("get%sData = %s.GetData\n" % (varName, varName))
+        out.write("get%sImage = %s.GetImage\n" % (varName, varName))
+        out.write("get%sBitmap = %s.GetBitmap\n" % (varName, varName))
         if icon:
-            out.write(f"get{varName}Icon = {varName}.GetIcon\n")
+            out.write("get%sIcon = %s.GetIcon\n" % (varName, varName))
     out.write("\n")
 
 
@@ -198,10 +198,7 @@ def img2py(image_file, python_file,
         while data:
             part = data[:72]
             data = data[72:]
-            if sys.version > '3':
-                output = '    %s' % part
-            else:
-                output = '    "%s"' % part
+            output = '    %s' % part
             if not data:
                 output += ")"
             lines.append(output)
@@ -218,7 +215,7 @@ def img2py(image_file, python_file,
 
         append_catalog = True
 
-        with open(python_file) as sourcePy:
+        with open(python_file, "r") as sourcePy:
             for line in sourcePy:
                 if line == "catalog = {}\n":
                     append_catalog = False
@@ -256,7 +253,7 @@ def img2py(image_file, python_file,
     else:
         m_msg = ""
 
-    print(f"Embedded {image_file}{n_msg} into {python_file}{m_msg}")
+    print("Embedded %s%s into %s%s" % (image_file, n_msg, python_file, m_msg))
 
 def main(args=None):
     if not args:

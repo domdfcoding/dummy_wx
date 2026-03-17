@@ -6,10 +6,14 @@
 demo.py
 =======
 
-This is a demo showing some of the capabilities of the :mod:`wx.lib.plot`
-package. It is intended to be run as a standalone script via::
+.. highlight:: shell
 
-  user@host:.../site-packages/wx/lib/plot$ python examples/demo.py
+This is a demo showing some of the capabilities of the :mod:`wx.lib.plot`
+package.
+
+It is intended to be run as a standalone script via::
+
+    user@host:.../site-packages/wx/lib/plot$ python examples/demo.py
 
 """
 __docformat__ = "restructuredtext en"
@@ -230,7 +234,7 @@ def _draw8Objects():
     """
     Box plot
     """
-    data1 = np.array([np.NaN, 337, 607, 583, 512, 531, 558, 381, 621, 574,
+    data1 = np.array([np.nan, 337, 607, 583, 512, 531, 558, 381, 621, 574,
                       538, 577, 679, 415, 454, 417, 635, 319, 350, 183,
                       863, 337, 607, 583, 512, 531, 558, 381, 621, 574,
                       538, 577, 679, 415, 454, 417, 635, 319, 350, 97])
@@ -481,7 +485,7 @@ class PlotDemoMainFrame(wx.Frame):
                          "Bottom+Left", "All")
         self.axesSubMenu = submenu
         for _i, item in enumerate(submenu_items, 2401):
-            submenu.AppendCheckItem(_i, item, f"Enables {item} axis")
+            submenu.AppendCheckItem(_i, item, "Enables {} axis".format(item))
             submenu.Check(_i, True)
 
         self.Bind(wx.EVT_MENU, self.OnEnableAxesBottom, id=2401)
@@ -967,7 +971,7 @@ class PlotDemoMainFrame(wx.Frame):
 
     def DrawPointLabel(self, dc, mDataDict):
         """
-        This is the fuction that defines how the pointLabels are plotted
+        This is the function that defines how the pointLabels are plotted
 
         :param dc: DC that will be passed
         :param mDataDict: Dictionary of data that you want to use
@@ -983,7 +987,7 @@ class PlotDemoMainFrame(wx.Frame):
 
         sx, sy = mDataDict["scaledXY"]  # scaled x,y of closest point
         # 10by10 square centered on point
-        dc.DrawRectangle(sx - 5, sy - 5, 10, 10)
+        dc.DrawRectangle(int(sx - 5), int(sy - 5), 10, 10)
         px, py = mDataDict["pointXY"]
         cNum = mDataDict["curveNum"]
         pntIn = mDataDict["pIndex"]
@@ -991,7 +995,7 @@ class PlotDemoMainFrame(wx.Frame):
         # make a string to display
         s = "Crv# %i, '%s', Pt. (%.2f,%.2f), PtInd %i" % (
             cNum, legend, px, py, pntIn)
-        dc.DrawText(s, sx, sy + 1)
+        dc.DrawText(s, int(sx), int(sy + 1))
 
 
 def run_demo():

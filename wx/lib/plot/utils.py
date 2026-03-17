@@ -12,6 +12,7 @@ This is a collection of utilities used by the :mod:`wx.lib.plot` package.
 __docformat__ = "restructuredtext en"
 
 # Standard Library
+import sys
 import functools
 import inspect
 import itertools
@@ -20,6 +21,12 @@ from warnings import warn as _warn
 # Third Party
 import wx
 import numpy as np
+
+if sys.version_info >= (3, 11):
+    from typing import Self
+else:
+    from typing_extensions import Self
+
 
 class PlotPendingDeprecation(wx.wxPyDeprecationWarning):
     pass
@@ -31,7 +38,7 @@ class DisplaySide:
     Used for fine-tuning the axis, ticks, and values of a graph.
 
     This class somewhat mimics a collections.namedtuple factory function in
-    that it is an iterable and can have indiviual elements accessible by name.
+    that it is an iterable and can have individual elements accessible by name.
     It differs from a namedtuple in a few ways:
 
     - it's mutable
@@ -85,7 +92,7 @@ class DisplaySide:
             err_str = "attribute must be one of {}"
             raise NameError(err_str.format(self.valid_names))
         if not isinstance(value, bool):
-            raise TypeError(f"'{name}' must be a boolean")
+            raise TypeError("'{}' must be a boolean".format(name))
         self.__dict__[name] = value
 
     def __len__(self):
@@ -163,7 +170,7 @@ class TempStyle:
     def __init__(self, which='both', dc=None):
         if which not in self._valid_types:
             raise ValueError(
-                f"`which` must be one of {self._valid_types}"
+                "`which` must be one of {}".format(self._valid_types)
             )
         self.which = which
         self.dc = dc
@@ -194,7 +201,7 @@ class TempStyle:
 
         return wrapper
 
-    def __enter__(self):
+    def __enter__(self) -> Self:
         self._save_items(self.dc)
         return self
 

@@ -23,7 +23,7 @@ keyword parameter.
 
 PB_STYLE_DEFAULT:
 Creates a flat label button with rounded corners, the highlight for mouse over
-and press states is based off of the hightlight color from the systems current
+and press states is based off of the highlight color from the systems current
 theme.
 
 PB_STYLE_GRADIENT:
@@ -129,7 +129,7 @@ class PlateButton(wx.Control):
         :keyword `style`: Button style
 
         """
-        super().__init__(parent, id, pos, size,
+        super(PlateButton, self).__init__(parent, id, pos, size,
                                           wx.BORDER_NONE|wx.TRANSPARENT_WINDOW,
                                           name=name)
 
@@ -177,7 +177,7 @@ class PlateButton(wx.Control):
         """Draw the bitmap if one has been set
 
         :param wx.GCDC `gc`: :class:`wx.GCDC` to draw with
-        :return: x cordinate to draw text at
+        :return: x coordinate to draw text at
 
         """
         if self.IsEnabled():
@@ -264,7 +264,7 @@ class PlateButton(wx.Control):
         """Draw the button"""
         # TODO using a buffered paintdc on windows with the nobg style
         #      causes lots of weird drawing. So currently the use of a
-        #      buffered dc is dissabled for this style.
+        #      buffered dc is disabled for this style.
         if PB_STYLE_NOBG & self._style:
             dc = wx.PaintDC(self)
         else:
@@ -408,7 +408,7 @@ class PlateButton(wx.Control):
 
     def Disable(self):
         """Disable the control"""
-        super().Disable()
+        super(PlateButton, self).Disable()
         self.Refresh()
 
 
@@ -448,7 +448,7 @@ class PlateButton(wx.Control):
 
     def Enable(self, enable=True):
         """Enable/Disable the control"""
-        super().Enable(enable)
+        super(PlateButton, self).Enable(enable)
         self.Refresh()
 
 
@@ -482,7 +482,7 @@ class PlateButton(wx.Control):
         :return: :class:`wx.Bitmap` or None
 
         """
-        return self.BitmapDisabled
+        return self._bmp['disable']
 
 
     def GetBitmapLabel(self):
@@ -491,7 +491,7 @@ class PlateButton(wx.Control):
         :return: :class:`wx.Bitmap` or None
 
         """
-        return self.BitmapLabel
+        return self._bmp['enable']
 
     # GetBitmap Aliases for BitmapButton api
     GetBitmapFocus = GetBitmapLabel
@@ -670,12 +670,12 @@ class PlateButton(wx.Control):
         """Set this control to have the focus"""
         if self._state['cur'] != PLATE_PRESSED:
             self._SetState(PLATE_HIGHLIGHT)
-        super().SetFocus()
+        super(PlateButton, self).SetFocus()
 
 
     def SetFont(self, font):
         """Adjust size of control when font changes"""
-        super().SetFont(font)
+        super(PlateButton, self).SetFont(font)
         self.InvalidateBestSize()
 
 
@@ -685,7 +685,7 @@ class PlateButton(wx.Control):
         :param string `label`: label string
 
         """
-        super().SetLabel(label)
+        super(PlateButton, self).SetLabel(label)
         self.InvalidateBestSize()
 
 
@@ -769,7 +769,7 @@ class PlateButton(wx.Control):
 
     def SetWindowVariant(self, variant):
         """Set the variant/font size of this control"""
-        super().SetWindowVariant(variant)
+        super(PlateButton, self).SetWindowVariant(variant)
         self.InvalidateBestSize()
 
 

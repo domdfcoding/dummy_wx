@@ -2,10 +2,8 @@
 the local namespace or any object."""
 
 __author__ = "Patrick K. O'Brien <pobrien@orbtech.com>"
-# Tags: py3-port
 
 import wx
-import six
 
 from . import dispatcher
 from . import editwindow
@@ -125,6 +123,9 @@ class FillingTree(wx.TreeCtrl):
                 d[key] = obj[n]
         if otype not in COMMONTYPES:
             for key in introspect.getAttributeNames(obj):
+                if wx.Platform == '__WXMSW__':
+                    if key == 'DropTarget': # Windows bug fix.
+                        continue
                 # Believe it or not, some attributes can disappear,
                 # such as the exc_traceback attribute of the sys
                 # module. So this is nested in a try block.
@@ -177,7 +178,7 @@ class FillingTree(wx.TreeCtrl):
             value = ''
         if isinstance(obj, str):
             value = repr(obj)
-        text += '\n\nValue: ' + value
+        text += u'\n\nValue: ' + value
         if otype not in SIMPLETYPES:
             try:
                 text += '\n\nDocstring:\n\n"""' + \
@@ -207,7 +208,7 @@ class FillingTree(wx.TreeCtrl):
             parent = self.GetItemParent(item)
             obj = self.GetItemData(parent)
         # Apply dictionary syntax to dictionary items, except the root
-        # and first level children of a namepace.
+        # and first level children of a namespace.
         if ((isinstance(obj, dict)
             or 'BTrees' in str(type(obj))
             and hasattr(obj, 'keys'))

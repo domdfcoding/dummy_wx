@@ -187,7 +187,7 @@ class ColourSelect(wx.lib.buttons.GenBitmapButton):
 
         size.width = size.width if size.width != -1 else w
         size.height = size.height if size.height != -1 else h
-        super().__init__(parent, id, wx.Bitmap(w,h),
+        super(ColourSelect, self).__init__(parent, id, wx.Bitmap(w,h),
                                  pos=pos, size=size, style=style,
                                  name='ColourSelect')
 

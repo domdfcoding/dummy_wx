@@ -481,7 +481,7 @@ class BaseMaskedComboBox( wx.ComboBox, MaskedEditMixin ):
             if not isinstance(choice, str):
                 raise TypeError('%s: choices must be a sequence of strings' % str(self._index))
             elif not self.IsValid(choice):
-                raise ValueError(f'{str(self._index)}: "{choice}" is not a valid value for the control as specified.')
+                raise ValueError('%s: "%s" is not a valid value for the control as specified.' % (str(self._index), choice))
 
             if not self._ctrl_constraints._choices:
                 self._ctrl_constraints._compareChoices = []
@@ -509,7 +509,7 @@ class BaseMaskedComboBox( wx.ComboBox, MaskedEditMixin ):
             if( not self.IsValid(choice) and
                (not self._ctrl_constraints.IsEmpty(choice) or
                 (self._ctrl_constraints.IsEmpty(choice) and self._ctrl_constraints._validRequired) ) ):
-                raise ValueError(f'"{choice}" is not a valid value for the control "{self.name}" as specified.')
+                raise ValueError('"%s" is not a valid value for the control "%s" as specified.' % (choice, self.name))
 
         wx.ComboBox.Append(self, choice, clientData)
 

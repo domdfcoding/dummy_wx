@@ -40,8 +40,6 @@ from .treeconfig import TreeConfig
 from .topicdefnprovider import ITopicDefnProvider
 from .topicmgrimpl import getRootTopicSpec
 
-from .. import py2and3
-
 
 # ---------------------------------------------------------
 
@@ -148,7 +146,7 @@ class TopicManager:
         if parentObj is self.__allTopics:
             raise TopicNameError(name, 'Root topic "%s" doesn\'t exist' % subtopicName)
 
-        msg = f'Topic "{parentObj.getName()}" doesn\'t have "{subtopicName}" as subtopic'
+        msg = 'Topic "%s" doesn\'t have "%s" as subtopic' % (parentObj.getName(), subtopicName)
         raise TopicNameError(name, msg)
 
     def newTopic(self, _name, _desc, _required=(), **_argDocs):
@@ -237,7 +235,7 @@ class TopicManager:
         return self.getTopic(name, okIfNone=True) is not None
 
     def hasTopicDefinition(self, name):
-        """Determine if there is a definition avaiable for topic 'name'. Return
+        """Determine if there is a definition available for topic 'name'. Return
         true if there is, false otherwise. Note: a topic may have a
         definition without being in use, and vice versa."""
         # in already existing Topic object:
@@ -255,7 +253,7 @@ class TopicManager:
     def checkAllTopicsHaveMDS(self):
         """Check that all topics that have been created for their MDS.
         Raise a TopicDefnError if one is found that does not have one."""
-        for topic in py2and3.itervalues(self._topicsMap):
+        for topic in self._topicsMap.values():
             if not topic.hasMDS():
                 raise TopicDefnError(topic.getNameTuple())
 
@@ -287,7 +285,7 @@ class TopicManager:
         subscribed. Note: the listener can also get messages from any
         sub-topic of returned list."""
         assocTopics = []
-        for topicObj in py2and3.itervalues(self._topicsMap):
+        for topicObj in self._topicsMap.values():
             if topicObj.hasListener(listener):
                 assocTopics.append(topicObj)
         return assocTopics

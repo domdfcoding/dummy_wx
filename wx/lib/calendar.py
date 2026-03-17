@@ -43,7 +43,7 @@
 # 06/02/2004 - Joerg "Adi" Sieker adi@sieker.info
 #
 # o Changed color handling, use dictionary instead of members.
-#   This causes all color changes to be ignored if they manipluate the members directly.
+#   This causes all color changes to be ignored if they manipulate the members directly.
 #   SetWeekColor and other method color methods were adapted to use the new dictionary.
 # o Added COLOR_* constants
 # o Added SetColor method for Calendar class
@@ -439,7 +439,7 @@ class CalDraw:
                 date = date + 7
 
     def GetRect(self):
-        """Get the display rectange list of the day grid."""
+        """Get the display rectangle list of the day grid."""
         cnt = 0
         h = 0
         w = 0
@@ -490,7 +490,7 @@ class CalDraw:
 
         tw, th = DC.GetTextExtent(month)
         adjust = self.cx_st + (self.sizew - tw) / 2
-        DC.DrawText(month, adjust, self.cy_st + th)
+        DC.DrawText(month, int(adjust), self.cy_st + th)
 
         year = str(self.year)
         tw, th = DC.GetTextExtent(year)
@@ -574,12 +574,12 @@ class CalDraw:
 
             pen = wx.Pen(MakeColor(self.colors[COLOR_3D_LIGHT]), 1, wx.PENSTYLE_SOLID)
             DC.SetPen(pen)
-            # draw the horizontal hilight
+            # draw the horizontal highlight
             startPoint = wx.Point(x + 1, y + 1)
             endPoint = wx.Point(x + width - 1, y + 1)
             DC.DrawLine(startPoint, endPoint)
 
-            # draw the vertical hilight
+            # draw the vertical highlight
             startPoint = wx.Point(x + 1, y + 1)
             endPoint = wx.Point(x + 1, y + height - 2)
             DC.DrawLine(startPoint, endPoint)
@@ -601,7 +601,7 @@ class CalDraw:
 
             DC.SetPen(pen)
 
-            point = (x + diffx, y + diffy)
+            point = (int(x + diffx), int(y + diffy))
             DC.DrawText(day, point)
             cnt_x = cnt_x + 1
 
@@ -678,7 +678,7 @@ class CalDraw:
 
         adj_v = adj_v + self.num_indent_vert
 
-        DC.DrawText(text, (x + adj_h, y + adj_v))
+        DC.DrawText(text, (int(x + adj_h), int(y + adj_v)))
 
     def DrawDayText(self, DC, key):
         """
@@ -758,7 +758,7 @@ class CalDraw:
         self.gridy = []
 
         self.x_st = self.cx_st + self.x_mrg
-        # start postion of draw
+        # start position of draw
         self.y_st = self.cy_st + self.y_mrg + self.title_offset
 
         x1 = self.x_st
@@ -1217,7 +1217,7 @@ class Calendar(wx.Control):
         Find the clicked area rectangle.
 
         :param `mx`: the x position
-        :param `my`: the y positon
+        :param `my`: the y position
 
         """
         for key in self.rg:
@@ -1243,10 +1243,10 @@ class Calendar(wx.Control):
 
     def SetTextAlign(self, vert, horz):
         """
-        Set the text allignment.
+        Set the text alignment.
 
-        :param `vert`: the vertical allignment
-        :param `horz`: the horizontal allignment
+        :param `vert`: the vertical alignment
+        :param `horz`: the horizontal alignment
 
         """
         self.num_align_horz = horz
@@ -1517,7 +1517,7 @@ class CalenDlg(wx.Dialog):
 
         # alternate spin button to control the month
         h = self.m_date.GetSize().height
-        self.m_spin = wx.SpinButton(self, -1, (115, 20), (h * 1.5, h), wx.SP_VERTICAL)
+        self.m_spin = wx.SpinButton(self, -1, (115, 20), (int(h * 1.5), h), wx.SP_VERTICAL)
         self.m_spin.SetRange(1, 12)
         self.m_spin.SetValue(date.month)
         self.Bind(wx.EVT_SPIN, self.OnMonthSpin, self.m_spin)
@@ -1526,7 +1526,7 @@ class CalenDlg(wx.Dialog):
         self.y_date = wx.TextCtrl(self, -1, str(date.year), (160, 20), (60, -1))
         h = self.y_date.GetSize().height
 
-        self.y_spin = wx.SpinButton(self, -1, (225, 20), (h * 1.5, h), wx.SP_VERTICAL)
+        self.y_spin = wx.SpinButton(self, -1, (225, 20), (int(h * 1.5), h), wx.SP_VERTICAL)
         self.y_spin.SetRange(date.year-100, date.year+100)
         self.y_spin.SetValue(date.year)
 

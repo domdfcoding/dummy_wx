@@ -90,19 +90,19 @@ class NotifyByWriteFile(INotificationHandler):
 
     def notifySend(self, stage, topicObj, pubListener=None):
         if stage == 'in':
-            msg = f'{self.__pre} Sending message of topic "{topicObj.getName()}" to listener {pubListener}\n'
+            msg = '%s Sending message of topic "%s" to listener %s\n' % (self.__pre, topicObj.getName(), pubListener)
         elif stage == 'pre':
-            msg = f'{self.__pre} Start sending message of topic "{topicObj.getName()}"\n'
+            msg = '%s Start sending message of topic "%s"\n' % (self.__pre, topicObj.getName())
         else:
-            msg = f'{self.__pre} Done sending message of topic "{topicObj.getName()}"\n'
+            msg = '%s Done sending message of topic "%s"\n' % (self.__pre, topicObj.getName())
         self.__fileObj.write(msg)
 
     def notifyNewTopic(self, topicObj, description, required, argsDocs):
-        msg = f'{self.__pre} New topic "{topicObj.getName()}" created\n'
+        msg = '%s New topic "%s" created\n' % (self.__pre, topicObj.getName())
         self.__fileObj.write(msg)
 
     def notifyDelTopic(self, topicName):
-        msg = f'{self.__pre} Topic "{topicName}" destroyed\n'
+        msg = '%s Topic "%s" destroyed\n' % (self.__pre, topicName)
         self.__fileObj.write(msg)
 
 
@@ -288,7 +288,7 @@ def useNotifyByPubsubMessage(publisher=None, all=True, **kwargs):
 
     The publisher is rarely needed:
 
-    * The publisher must be specfied if pubsub is not installed
+    * The publisher must be specified if pubsub is not installed
       on the system search path (ie from pubsub import ... would fail or
       import wrong pubsub -- such as if pubsub is within wxPython's
       wx.lib package). Then pbuModule is the pub module to use::

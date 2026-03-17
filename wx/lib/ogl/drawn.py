@@ -164,21 +164,21 @@ class OpDraw(DrawOp):
 
     def Do(self, dc, xoffset, yoffset):
         if self._op == DRAWOP_DRAW_LINE:
-            dc.DrawLine(self._x1 + xoffset, self._y1 + yoffset, self._x2 + xoffset, self._y2 + yoffset)
+            dc.DrawLine(int(self._x1 + xoffset), int(self._y1 + yoffset), int(self._x2 + xoffset), int(self._y2 + yoffset))
         elif self._op == DRAWOP_DRAW_RECT:
-            dc.DrawRectangle(self._x1 + xoffset, self._y1 + yoffset, self._x2, self._y2)
+            dc.DrawRectangle(int(self._x1 + xoffset), int(self._y1 + yoffset), int(self._x2), int(self._y2))
         elif self._op == DRAWOP_DRAW_ROUNDED_RECT:
-            dc.DrawRoundedRectangle(self._x1 + xoffset, self._y1 + yoffset, self._x2, self._y2, self._radius)
+            dc.DrawRoundedRectangle(int(self._x1 + xoffset), int(self._y1 + yoffset), int(self._x2), int(self._y2), self._radius)
         elif self._op == DRAWOP_DRAW_ELLIPSE:
-            dc.DrawEllipse(self._x1 + xoffset, self._y1 + yoffset, self._x2, self._y2)
+            dc.DrawEllipse(int(self._x1 + xoffset), int(self._y1 + yoffset), int(self._x2), int(self._y2))
         elif self._op == DRAWOP_DRAW_ARC:
-            dc.DrawArc(self._x2 + xoffset, self._y2 + yoffset, self._x3 + xoffset, self._y3 + yoffset, self._x1 + xoffset, self._y1 + yoffset)
+            dc.DrawArc(int(self._x2 + xoffset), int(self._y2 + yoffset), int(self._x3 + xoffset), int(self._y3 + yoffset), int(self._x1 + xoffset), int(self._y1 + yoffset))
         elif self._op == DRAWOP_DRAW_ELLIPTIC_ARC:
-            dc.DrawEllipticArc(self._x1 + xoffset, self._y1 + yoffset, self._x2, self._y2, self._x3 * 360 / (2 * math.pi), self._y3 * 360 / (2 * math.pi))
+            dc.DrawEllipticArc(int(self._x1 + xoffset), int(self._y1 + yoffset), int(self._x2), int(self._y2), self._x3 * 360 / (2 * math.pi), self._y3 * 360 / (2 * math.pi))
         elif self._op == DRAWOP_DRAW_POINT:
             dc.DrawPoint(self._x1 + xoffset, self._y1 + yoffset)
         elif self._op == DRAWOP_DRAW_TEXT:
-            dc.DrawText(self._textString, self._x1 + xoffset, self._y1 + yoffset)
+            dc.DrawText(self._textString, int(self._x1 + xoffset), int(self._y1 + yoffset))
     def Scale(self, scaleX, scaleY):
         self._x1 *= scaleX
         self._y1 *= scaleY
@@ -266,15 +266,15 @@ class OpPolyDraw(DrawOp):
 
     def Do(self, dc, xoffset, yoffset):
         if self._op == DRAWOP_DRAW_POLYLINE:
-            dc.DrawLines(self._points, xoffset, yoffset)
+            dc.DrawLines(self._points, int(xoffset), int(yoffset))
         elif self._op == DRAWOP_DRAW_POLYGON:
-            dc.DrawPolygon(self._points, xoffset, yoffset)
+            dc.DrawPolygon(self._points, int(xoffset), int(yoffset))
         elif self._op == DRAWOP_DRAW_SPLINE:
             dc.DrawSpline(self._points) # no offsets in DrawSpline
 
     def Scale(self, scaleX, scaleY):
         for i in range(self._noPoints):
-            self._points[i] = wx.Point(self._points[i][0] * scaleX, self._points[i][1] * scaleY)
+            self._points[i] = wx.Point(int(self._points[i][0] * scaleX), int(self._points[i][1] * scaleY))
 
     def Translate(self, x, y):
         for i in range(self._noPoints):
@@ -806,7 +806,7 @@ class DrawnShape(RectangleShape):
         if flags and METAFLAGS_ATTACHMENTS:
             self.ClearAttachments()
             for i in range(len(pts)):
-                # TODO: AttachmentPoint does not excist as per PyLint, what should it be???
+                # TODO: AttachmentPoint does not exist as per PyLint, what should it be???
                 self._attachmentPoints.append(AttachmentPoint(i,pts[i][0],pts[i][1]))
         self._metafiles[self._currentAngle].DrawPolygon(pts, flags)
 

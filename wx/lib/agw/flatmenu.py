@@ -197,10 +197,9 @@ __version__ = "1.0"
 import wx
 import os
 import math
+import io
 
 import wx.lib.colourutils as colourutils
-
-import six
 
 from .fmcustomizedlg import FMCustomizeDlg
 from .artmanager import ArtManager, DCSaver
@@ -305,7 +304,7 @@ def GetAccelIndex(label):
     Returns the mnemonic index of the label and the label stripped of the ampersand mnemonic
     (e.g. 'lab&el' ==> will result in 3 and labelOnly = label).
 
-    :param string `label`: a string possibly containining an ampersand.
+    :param string `label`: a string possibly containing an ampersand.
     """
 
     indexAccel = 0
@@ -590,7 +589,7 @@ class FMRenderer:
 
         else:
 
-            stream = six.BytesIO(xpm)
+            stream = io.BytesIO(xpm)
             img = wx.Image(stream)
 
         return wx.Bitmap(img)
@@ -736,8 +735,8 @@ class FMRenderer:
         """
 
         dcsaver = DCSaver(dc)
-        sepRect1 = wx.Rect(xCoord + textX, yCoord + 1, sepWidth/2, 1)
-        sepRect2 = wx.Rect(xCoord + textX + sepWidth/2, yCoord + 1, sepWidth/2-1, 1)
+        sepRect1 = wx.Rect(xCoord + textX, yCoord + 1, sepWidth//2, 1)
+        sepRect2 = wx.Rect(xCoord + textX + sepWidth//2, yCoord + 1, sepWidth//2-1, 1)
 
         artMgr = ArtManager.Get()
         backColour = artMgr.GetMenuFaceColour()
@@ -760,7 +759,7 @@ class FMRenderer:
          the menu border;
         :param integer `textX`: the menu item label x position;
         :param integer `rightMarginX`: the right margin between the text and the menu border;
-        :param bool `selected`: ``True`` if this menu item is currentl hovered by the mouse,
+        :param bool `selected`: ``True`` if this menu item is currently hovered by the mouse,
          ``False`` otherwise.
         :param `backgroundImage`: if not ``None``, an instance of :class:`wx.Bitmap` which will
          become the background image for this :class:`FlatMenu`.
@@ -812,16 +811,16 @@ class FMRenderer:
 
         if bmp.IsOk():
 
-            # Calculate the postion to place the image
+            # Calculate the position to place the image
             imgHeight = bmp.GetHeight()
             imgWidth  = bmp.GetWidth()
 
             if imageMarginX == 0:
-                xx = rect.x + (leftMarginWidth - imgWidth)/2
+                xx = rect.x + (leftMarginWidth - imgWidth)//2
             else:
-                xx = rect.x + ((leftMarginWidth - rect.height) - imgWidth)/2 + rect.height
+                xx = rect.x + ((leftMarginWidth - rect.height) - imgWidth)//2 + rect.height
 
-            yy = rect.y + (rect.height - imgHeight)/2
+            yy = rect.y + (rect.height - imgHeight)//2
             dc.DrawBitmap(bmp, xx, yy, True)
 
         if item.GetKind() == wx.ITEM_CHECK:
@@ -837,7 +836,7 @@ class FMRenderer:
                 if not selected and self.highlightCheckAndRadio:
                     self.DrawButton(dc, rr, ControlFocus)
 
-                dc.DrawBitmap(item._checkMarkBmp, rr.x + (rr.width - 16)/2, rr.y + (rr.height - 16)/2, True)
+                dc.DrawBitmap(item._checkMarkBmp, rr.x + (rr.width - 16)//2, rr.y + (rr.height - 16)//2, True)
 
         if item.GetKind() == wx.ITEM_RADIO:
 
@@ -852,7 +851,7 @@ class FMRenderer:
                 if not selected and self.highlightCheckAndRadio:
                     self.DrawButton(dc, rr, ControlFocus)
 
-                dc.DrawBitmap(item._radioMarkBmp, rr.x + (rr.width - 16)/2, rr.y + (rr.height - 16)/2, True)
+                dc.DrawBitmap(item._radioMarkBmp, rr.x + (rr.width - 16)//2, rr.y + (rr.height - 16)//2, True)
 
         # Draw text - without accelerators
         text = item.GetLabel()
@@ -890,7 +889,7 @@ class FMRenderer:
                 w3, dummy = dc.GetTextExtent(text3)
 
                 posx = xCoord + textX + borderXSize
-                posy = (itemHeight - h)/2 + yCoord
+                posy = (itemHeight - h)//2 + yCoord
 
                 # Draw first part
                 dc.DrawText(text1, posx, posy)
@@ -912,7 +911,7 @@ class FMRenderer:
             else:
 
                 w, h = dc.GetTextExtent(text)
-                dc.DrawText(text, xCoord + textX + borderXSize, (itemHeight - h)/2 + yCoord)
+                dc.DrawText(text, xCoord + textX + borderXSize, (itemHeight - h)//2 + yCoord)
 
 
         # Now draw accelerator
@@ -920,7 +919,7 @@ class FMRenderer:
         if item.GetAccelString():
 
             accelWidth, accelHeight = dc.GetTextExtent(item.GetAccelString())
-            dc.DrawText(item.GetAccelString(), xCoord + rightMarginX - accelWidth, (itemHeight - accelHeight)/2 + yCoord)
+            dc.DrawText(item.GetAccelString(), xCoord + rightMarginX - accelWidth, (itemHeight - accelHeight)//2 + yCoord)
 
         # Check if this item has sub-menu - if it does, draw
         # right arrow on the right margin
@@ -932,7 +931,7 @@ class FMRenderer:
 
             xx = xCoord + rightMarginX + borderXSize
             rr = wx.Rect(xx, rect.y + 1, rect.height-2, rect.height-2)
-            dc.DrawBitmap(rightArrowBmp, rr.x + 4, rr.y +(rr.height-16)/2, True)
+            dc.DrawBitmap(rightArrowBmp, rr.x + 4, rr.y +(rr.height-16)//2, True)
 
 
     def DrawMenuBarButton(self, dc, rect, state):
@@ -1142,7 +1141,7 @@ class FMRenderer:
             # Get the menu item rect
             textWidth, textHeight = dc.GetTextExtent(fixedText)
             #rect = wx.Rect(posx+menubar._spacer/2, posy, textWidth, textHeight)
-            rect = wx.Rect(posx+padding/2, posy, textWidth, textHeight)
+            rect = wx.Rect(posx+padding//2, posy, textWidth, textHeight)
 
             # Can we draw more??
             # the +DROP_DOWN_ARROW_WIDTH  is the width of the drop down arrow
@@ -1172,7 +1171,7 @@ class FMRenderer:
                 dc.SetTextForeground(textColour)
 
             ww, hh = dc.GetTextExtent(labelOnly)
-            textOffset = (rect.width - ww) / 2
+            textOffset = (rect.width - ww) // 2
 
             if not menubar._isLCD and item.GetTextBitmap().IsOk() and not selected:
                 dc.DrawBitmap(item.GetTextBitmap(), rect.x, rect.y, True)
@@ -1192,8 +1191,8 @@ class FMRenderer:
                         memDc.SetTextForeground(textColour)
 
                     # Fill the bitmap with the masking colour
-                    memDc.SetPen(wx.Pen(wx.Colour(255, 0, 0)) )
-                    memDc.SetBrush(wx.Brush(wx.Colour(255, 0, 0)) )
+                    memDc.SetPen(wx.RED_PEN)
+                    memDc.SetBrush(wx.RED_BRUSH)
                     memDc.DrawRectangle(0, 0, rect.width, rect.height)
                     memDc.SetFont(fnt)
 
@@ -1250,7 +1249,7 @@ class FMRenderer:
                     if not menubar._isLCD:
                         memDc.SelectObject(wx.NullBitmap)
                         # Set masking colour to the bitmap
-                        bmp.SetMask(wx.Mask(bmp, wx.Colour(255, 0, 0)))
+                        bmp.SetMask(wx.Mask(bmp, wx.RED))
                         if selected:
                             item.SetSelectedTextBitmap(bmp)
                         else:
@@ -1505,8 +1504,8 @@ class FMRendererMSOffice2007(FMRenderer):
         baseColour = colour
 
         # Define the middle points
-        leftPt = wx.Point(rect.x, rect.y + (rect.height / 2))
-        rightPt = wx.Point(rect.x + rect.width-1, rect.y + (rect.height / 2))
+        leftPt = wx.Point(rect.x, rect.y + (rect.height // 2))
+        rightPt = wx.Point(rect.x + rect.width-1, rect.y + (rect.height // 2))
 
         # Define the top region
         top = wx.Rect((rect.GetLeft(), rect.GetTop()), rightPt)
@@ -1572,11 +1571,11 @@ class FMRendererMSOffice2007(FMRenderer):
 
         factor = artMgr.GetMenuBgFactor()
 
-        leftPt1 = wx.Point(rect.x, rect.y + (rect.height / factor))
-        leftPt2 = wx.Point(rect.x, rect.y + (rect.height / factor)*(factor-1))
+        leftPt1 = wx.Point(rect.x, rect.y + (rect.height // factor))
+        leftPt2 = wx.Point(rect.x, rect.y + (rect.height // factor)*(factor-1))
 
-        rightPt1 = wx.Point(rect.x + rect.width, rect.y + (rect.height / factor))
-        rightPt2 = wx.Point(rect.x + rect.width, rect.y + (rect.height / factor)*(factor-1))
+        rightPt1 = wx.Point(rect.x + rect.width, rect.y + (rect.height // factor))
+        rightPt2 = wx.Point(rect.x + rect.width, rect.y + (rect.height // factor)*(factor-1))
 
         # Define the top region
         topReg = [wx.Point() for ii in range(7)]
@@ -2707,7 +2706,7 @@ class FlatMenuBar(wx.Panel):
             elif tbItem.IsCustomControl():
                 control = tbItem.GetCustomControl()
                 ctrlSize = control.GetSize()
-                ctrlPos = wx.Point(xx, rect.y + (rect.height - ctrlSize.y)/2)
+                ctrlPos = wx.Point(xx, rect.y + (rect.height - ctrlSize.y)//2)
                 if control.GetPosition() != ctrlPos:
                     control.SetPosition(ctrlPos)
 
@@ -2727,9 +2726,9 @@ class FlatMenuBar(wx.Panel):
             # Draw the toolbar image
             if bmp.IsOk():
 
-                x = xx - self._toolbarSpacer/2
+                x = xx - self._toolbarSpacer//2
                 #y = rect.y + (rect.height - bmp.GetHeight())/2 - 1
-                y = rect.y + self._toolbarMargin/2
+                y = rect.y + self._toolbarMargin//2
 
                 buttonRect = wx.Rect(x, y, highlight_width, highlight_height)
 
@@ -2745,8 +2744,8 @@ class FlatMenuBar(wx.Panel):
                     else:
                         self._tbButtons[i]._state = ControlNormal
 
-                imgx = buttonRect.x + (buttonRect.width - bmp.GetWidth())/2
-                imgy = buttonRect.y + (buttonRect.height - bmp.GetHeight())/2
+                imgx = buttonRect.x + (buttonRect.width - bmp.GetWidth())//2
+                imgy = buttonRect.y + (buttonRect.height - bmp.GetHeight())//2
 
                 if self._tbButtons[i]._state == ControlFocus and not self._tbButtons[i]._tbItem.IsSelected():
 
@@ -2827,8 +2826,8 @@ class FlatMenuBar(wx.Panel):
         dropArrowBmp = self.GetRenderer()._bitmaps["arrow_down"]
 
         # Calc the image coordinates
-        xx = rect.x + (DROP_DOWN_ARROW_WIDTH - dropArrowBmp.GetWidth())/2
-        yy = rect.y + (rect.height - dropArrowBmp.GetHeight())/2
+        xx = rect.x + (DROP_DOWN_ARROW_WIDTH - dropArrowBmp.GetWidth())//2
+        yy = rect.y + (rect.height - dropArrowBmp.GetHeight())//2
 
         dc.DrawBitmap(dropArrowBmp, xx, yy + self._spacer, True)
         self._dropDownButtonState = state
@@ -3269,8 +3268,8 @@ class FlatMenuBar(wx.Panel):
 
         # draw the bitmap over the highlight
         buttonRect = wx.Rect(*rect)
-        x = rect.x + (buttonRect.width - self._tbButtons[idx]._tbItem.GetBitmap().GetWidth())/2
-        y = rect.y + (buttonRect.height - self._tbButtons[idx]._tbItem.GetBitmap().GetHeight())/2
+        x = rect.x + (buttonRect.width - self._tbButtons[idx]._tbItem.GetBitmap().GetWidth())//2
+        y = rect.y + (buttonRect.height - self._tbButtons[idx]._tbItem.GetBitmap().GetHeight())//2
 
         if state == ControlFocus:
 
@@ -3293,7 +3292,7 @@ class FlatMenuBar(wx.Panel):
         :param `menuInfo`: an instance of :class:`wx.MenuEntryInfo`.
         """
 
-        # first make sure all other menus are not popedup
+        # first make sure all other menus are not poppedup
         if menuInfo.GetMenu().IsShown():
             return
 
@@ -3649,7 +3648,7 @@ class FlatMenuBar(wx.Panel):
         if not self._dlg:
             self._dlg = FMCustomizeDlg(self)
         else:
-            # intialize the dialog
+            # initialize the dialog
             self._dlg.Initialise()
 
         if self._dlg.ShowModal() == wx.ID_OK:
@@ -3784,7 +3783,7 @@ class FlatMenuBar(wx.Panel):
         pn.Name("flat_menu_bar")
         pn.Caption("Menu Bar")
         pn.Top()
-        pn.MinSize(wx.Size(xx/2, self._barHeight))
+        pn.MinSize(wx.Size(xx//2, self._barHeight))
         pn.LeftDockable(False)
         pn.RightDockable(False)
         pn.ToolbarPane()
@@ -3893,21 +3892,20 @@ havePopupWindow = 1
 
 if wx.Platform == '__WXMAC__':
     havePopupWindow = 0
-    wx.PopupWindow = mcPopupWindow
 
 
 # ---------------------------------------------------------------------------- #
 # Class ShadowPopupWindow
 # ---------------------------------------------------------------------------- #
 
-class ShadowPopupWindow(wx.PopupWindow):
+class ShadowPopupWindow(wx.PopupWindow if havePopupWindow else mcPopupWindow):
     """ Base class for generic :class:`FlatMenu` derived from :class:`PopupWindow`. """
 
     def __init__(self, parent=None):
         """
         Default class constructor.
 
-        :param `parent`: the :class:`ShadowPopupWindow` parent (tipically your main frame).
+        :param `parent`: the :class:`ShadowPopupWindow` parent (typically your main frame).
         """
 
         if not parent:
@@ -3997,8 +3995,8 @@ class FlatMenuButton:
         """
 
         rect = wx.Rect(self._pos, self._size)
-        xx = rect.x + (rect.width - self._normalBmp.GetWidth())/2
-        yy = rect.y + (rect.height - self._normalBmp.GetHeight())/2
+        xx = rect.x + (rect.width - self._normalBmp.GetWidth())//2
+        yy = rect.y + (rect.height - self._normalBmp.GetHeight())//2
 
         self._parent.GetRenderer().DrawScrollButton(dc, rect, self._state)
         dc.DrawBitmap(self._normalBmp, xx, yy, True)
@@ -4097,7 +4095,7 @@ class FlatMenuButton:
         :param `input2`: if not ``None``, it is an integer representing the button `y` position.
         """
 
-        if type(input) == type(1):
+        if type(input1) == type(1):
             self._pos = wx.Point(input1, input2)
         else:
             self._pos = input1
@@ -4113,7 +4111,7 @@ class FlatMenuButton:
         :param `input2`: if not ``None``, it is an integer representing the button height.
         """
 
-        if type(input) == type(1):
+        if type(input1) == type(1):
             self._size = wx.Size(input1, input2)
         else:
             self._size = input1
@@ -4422,7 +4420,7 @@ class FlatMenuBase(ShadowPopupWindow):
          owner menu, ``False`` otherwise.
         """
 
-        # Check if child menu is poped, if so, dismiss it
+        # Check if child menu is popped, if so, dismiss it
         if self._openedSubMenu:
             self._openedSubMenu.Dismiss(False, resetOwner)
 
@@ -4860,10 +4858,11 @@ class FlatMenuItem:
         self.SetLabel(self._text)
         self.SetMenuBar()
 
-        self._checkMarkBmp = wx.Bitmap(check_mark_xpm)
-        self._checkMarkBmp.SetMask(wx.Mask(self._checkMarkBmp, wx.WHITE))
-        self._radioMarkBmp = wx.Bitmap(radio_item_xpm)
-        self._radioMarkBmp.SetMask(wx.Mask(self._radioMarkBmp, wx.WHITE))
+        if not hasattr(FlatMenuItem, '_checkMarkBmp'):
+            FlatMenuItem._checkMarkBmp = wx.Bitmap(check_mark_xpm)
+            FlatMenuItem._checkMarkBmp.SetMask(wx.Mask(self._checkMarkBmp, wx.WHITE))
+            FlatMenuItem._radioMarkBmp = wx.Bitmap(radio_item_xpm)
+            FlatMenuItem._radioMarkBmp.SetMask(wx.Mask(self._radioMarkBmp, wx.WHITE))
 
 
     def SetLongHelp(self, help):
@@ -5357,6 +5356,11 @@ class FlatMenu(FlatMenuBase):
         self.Bind(wx.EVT_TIMER, self.OnTimer)
 
 
+    def Destroy(self, *args, **kwargs):
+        self.Clear()
+        return super().Destroy(*args, **kwargs)
+
+
     def SetMenuBar(self, mb):
         """
         Attaches this menu to a menubar.
@@ -5620,7 +5624,7 @@ class FlatMenu(FlatMenuBase):
 
         dc.SetFont(font)
 
-        accelFiller = "XXXX"     # 4 spaces betweem text and accel column
+        accelFiller = "XXXX"     # 4 spaces between text and accel column
 
         # Calc text length/height
         dummy, itemHeight = dc.GetTextExtent("Tp")
@@ -5836,7 +5840,7 @@ class FlatMenu(FlatMenuBase):
         from this.
         """
 
-        # Draw all childs menus of self menu as well
+        # Draw all child menus of self menu as well
         child = self._openedSubMenu
         while child:
             dc = wx.ClientDC(child)
@@ -5958,7 +5962,7 @@ class FlatMenu(FlatMenuBase):
 
                             itemIdx = i
                             # We keep the index of only
-                            # the first occurence
+                            # the first occurrence
 
                         occur += 1
 
@@ -6647,7 +6651,7 @@ class FlatMenu(FlatMenuBase):
         :param `item`: can be either a menu item identifier or a plain :class:`FlatMenuItem`.
         """
 
-        if type(item) != type(1):
+        if not isinstance(item, (wx.StandardID, int)):
             item = item.GetId()
 
         return self._RemoveById(item)
@@ -6674,7 +6678,7 @@ class FlatMenu(FlatMenuBase):
         :param `item`: can be either a menu item identifier or a plain :class:`FlatMenuItem`.
         """
 
-        if type(item) != type(1):
+        if not isinstance(item, (wx.StandardID, int)):
             item = item.GetId()
 
         self._DestroyById(item)
@@ -6735,7 +6739,7 @@ class FlatMenu(FlatMenuBase):
 
         if item.IsRadioItem():
 
-            # Udpate radio groups in case this item is a radio item
+            # Update radio groups in case this item is a radio item
             sibling = self.GetSiblingGroupItem(item)
             if sibling:
 

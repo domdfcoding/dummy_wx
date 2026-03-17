@@ -33,9 +33,7 @@
 
 import  locale
 import  wx
-import six
 
-# python 3 lacks cmp:
 def cmp(a, b):
     return (a > b) - (a < b)
 
@@ -46,7 +44,7 @@ class ColumnSorterMixin:
     A mixin class that handles sorting of a wx.ListCtrl in REPORT mode when
     the column header is clicked on.
 
-    There are a few requirments needed in order for this to work genericly:
+    There are a few requirements needed in order for this to work genericly:
 
       1. The combined class must have a GetListCtrl method that
          returns the wx.ListCtrl to be sorted, and the list control
@@ -105,7 +103,7 @@ class ColumnSorterMixin:
         Returns a tuple of image list indexesthe indexes in the image list for an image to be put on the column
         header when sorting in descending order.
         """
-        return (-1, -1)  # (decending, ascending) image IDs
+        return (-1, -1)  # (descending, ascending) image IDs
 
 
     def GetColumnSorter(self):
@@ -143,10 +141,12 @@ class ColumnSorterMixin:
         """
         Return a tuple containing the index of the column that was last sorted
         and the sort direction of that column.
-        Usage:
-        col, ascending = self.GetSortState()
-        # Make changes to list items... then resort
-        self.SortListItems(col, ascending)
+
+        Usage::
+
+            col, ascending = self.GetSortState()
+            # Make changes to list items... then resort
+            self.SortListItems(col, ascending)
         """
         return (self._col, self._colSortFlag[self._col])
 
@@ -442,7 +442,7 @@ class TextEditMixin:
     """
 
     editorBgColour = wx.Colour(255,255,175) # Yellow
-    editorFgColour = wx.Colour(0,0,0)       # black
+    editorFgColour = wx.BLACK
 
     def __init__(self):
         #editor = wx.TextCtrl(self, -1, pos=(-1,-1), size=(-1,-1),
@@ -458,7 +458,7 @@ class TextEditMixin:
 
     def make_editor(self, col_style=wx.LIST_FORMAT_LEFT):
 
-        style =wx.TE_PROCESS_ENTER|wx.TE_PROCESS_TAB|wx.TE_RICH2
+        style =wx.TE_PROCESS_ENTER|wx.TE_PROCESS_TAB
         style |= {wx.LIST_FORMAT_LEFT: wx.TE_LEFT,
                   wx.LIST_FORMAT_RIGHT: wx.TE_RIGHT,
                   wx.LIST_FORMAT_CENTRE : wx.TE_CENTRE
@@ -583,9 +583,9 @@ class TextEditMixin:
                 # don't start scrolling unless we really need to
                 offset = x0+x1-self.GetSize()[0]-scrolloffset
                 # scroll a bit more than what is minimum required
-                # so we don't have to scroll everytime the user presses TAB
+                # so we don't have to scroll every time the user presses TAB
                 # which is very tireing to the eye
-                addoffset = self.GetSize()[0]/4
+                addoffset = self.GetSize()[0]//4
                 # but be careful at the end of the list
                 if addoffset + scrolloffset < self.GetSize()[0]:
                     offset += addoffset
@@ -641,7 +641,7 @@ class TextEditMixin:
         ret = self.GetEventHandler().ProcessEvent(evt)
         if not ret or evt.IsAllowed():
             if self.IsVirtual():
-                # replace by whather you use to populate the virtual ListCtrl
+                # replace by whatever you use to populate the virtual ListCtrl
                 # data source
                 self.SetVirtualData(self.curRow, self.curCol, text)
             else:
@@ -691,6 +691,11 @@ HISTORY:
 1.1     - Initial version
 """
 
+_warning = (
+"The CheckListCtrlMixin class has been made redundant by new checkbox features in the "
+"wx.ListCtrl class. It is advised to switch your code to use that instead of this mixin.")
+
+
 class CheckListCtrlMixin:
     """
     This is a mixin for ListCtrl which add a checkbox in the first
@@ -708,8 +713,14 @@ class CheckListCtrlMixin:
           CheckItem().
 
     You should not set a imagelist for the ListCtrl once this mixin is used.
+
+    WARNING: This class is obsolete as wx.ListCtrl now includes nearly the same
+    functionality.
     """
     def __init__(self, check_image=None, uncheck_image=None, imgsz=(16,16)):
+        import warnings
+        warnings.warn(_warning)
+
         if check_image is not None:
             imgsz = check_image.GetSize()
         elif uncheck_image is not None:

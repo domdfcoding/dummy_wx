@@ -23,5 +23,5 @@ def verifySubset(all, sub, topicName, extraMsg=''):
     notInAll = set(sub).difference(all)
     if notInAll:
         args = ','.join(all)
-        msg = f'Params [{args}] missing inherited [%s] for topic "{topicName}"{extraMsg}'
+        msg = 'Params [%s] missing inherited [%%s] for topic "%s"%s' % (args, topicName, extraMsg)
         raise MessageDataSpecError(msg, tuple(notInAll) )

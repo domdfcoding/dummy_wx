@@ -1,5 +1,3 @@
-from wx import PyEventBinder
-
 # Based on wxPython
 # Copyright: (c) 2018 by Total Control Software
 # License:   wxWindows License

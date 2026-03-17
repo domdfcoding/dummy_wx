@@ -112,10 +112,10 @@ class Diagram:
         :param `y2`: the y2 position
 
         """
-        dc.SetPen(wx.Pen(wx.Colour(0, 0, 0), 1, wx.PENSTYLE_DOT))
+        dc.SetPen(wx.Pen(wx.BLACK, 1, wx.PENSTYLE_DOT))
         dc.SetBrush(wx.TRANSPARENT_BRUSH)
 
-        dc.DrawLines([[x1, y1], [x2, y1], [x2, y2], [x1, y2], [x1, y1]])
+        dc.DrawLines([[int(x1), int(y1)], [int(x2), int(y1)], [int(x2), int(y2)], [int(x1), int(y2)], [int(x1), int(y1)]])
 
     def RecentreAll(self, dc):
         """Recentre all the text that should be centred.

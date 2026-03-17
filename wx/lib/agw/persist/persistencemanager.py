@@ -34,7 +34,6 @@ import datetime
 
 import wx
 import wx.adv
-import six
 
 from .persist_handlers import FindHandler, HasCtrlHandler
 

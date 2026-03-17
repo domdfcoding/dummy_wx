@@ -12,7 +12,7 @@
 #----------------------------------------------------------------------------
 """
 Dock art provider code - a dock provider provides all drawing functionality to
-the AUI dock manager. This allows the dock manager to have a plugable look-and-feel.
+the AUI dock manager. This allows the dock manager to have a pluggable look-and-feel.
 
 By default, a :class:`~wx.lib.agw.aui.framemanager` uses an instance of this class called :mod:`~wx.lib.agw.aui.dockart`
 which provides bitmap art and a colour scheme that is adapted to the major platforms'
@@ -51,7 +51,7 @@ if wx.Platform == "__WXMSW__":
 class AuiDefaultDockArt:
     """
     Dock art provider code - a dock provider provides all drawing functionality to the AUI dock manager.
-    This allows the dock manager to have a plugable look-and-feel.
+    This allows the dock manager to have a pluggable look-and-feel.
 
     By default, a :class:`~wx.lib.agw.aui.framemanager.AuiManager` uses an instance of this class called
     :class:`AuiDefaultDockArt` which provides bitmap art and a colour scheme that is adapted to the major
@@ -89,6 +89,7 @@ class AuiDefaultDockArt:
     ``AUI_DOCKART_GRADIENT_TYPE``                     Customizes the gradient type (no gradient, vertical or horizontal)
     ``AUI_DOCKART_DRAW_SASH_GRIP``                    Draw a sash grip on the sash
     ``AUI_DOCKART_HINT_WINDOW_COLOUR``                Customizes the hint window background colour (currently light blue)
+    ``AUI_DOCKART_HINT_WINDOW_BORDER_COLOUR``         Customizes the hint window border background colour (currently grey)
     ================================================  ======================================
 
 
@@ -206,7 +207,7 @@ class AuiDefaultDockArt:
 
         self._active_caption_gradient_colour = LightContrastColour(wx.SystemSettings.GetColour(wx.SYS_COLOUR_HIGHLIGHT))
         self._active_caption_text_colour = wx.SystemSettings.GetColour(wx.SYS_COLOUR_HIGHLIGHTTEXT)
-        self._inactive_caption_text_colour = wx.BLACK
+        self._inactive_caption_text_colour =  wx.SystemSettings.GetColour(wx.SYS_COLOUR_GRAYTEXT)
 
 
     def SetDefaultColours(self, base_colour=None):
@@ -240,6 +241,7 @@ class AuiDefaultDockArt:
         self._gripper_pen3 = wx.WHITE_PEN
 
         self._hint_background_colour = colourHintBackground
+        self._hint_border_colour = colourHintBorder
 
 
     def GetMetric(self, id):
@@ -325,6 +327,8 @@ class AuiDefaultDockArt:
             return self._gripper_brush.GetColour()
         elif id == AUI_DOCKART_HINT_WINDOW_COLOUR:
             return self._hint_background_colour
+        elif id == AUI_DOCKART_HINT_WINDOW_BORDER_COLOUR:
+            return self._hint_border_colour
         else:
             raise Exception("Invalid Colour Ordinal.")
 
@@ -376,6 +380,8 @@ class AuiDefaultDockArt:
             self._gripper_pen2.SetColour(StepColour(colour, 60))
         elif id == AUI_DOCKART_HINT_WINDOW_COLOUR:
             self._hint_background_colour = colour
+        elif id == AUI_DOCKART_HINT_WINDOW_BORDER_COLOUR:
+            self._hint_border_colour = colour
         else:
             raise Exception("Invalid Colour Ordinal.")
 
@@ -605,7 +611,7 @@ class AuiDefaultDockArt:
         draw_text = ChopText(dc, text, variable)
 
         if captionLeft:
-            dc.DrawRotatedText(draw_text, rect.x+(rect.width/2)-(h/2)-1, rect.y+rect.height-3-caption_offset, 90)
+            dc.DrawRotatedText(draw_text, rect.x+(rect.width//2)-(h//2)-1, rect.y+rect.height-3-caption_offset, 90)
         else:
             dc.DrawText(draw_text, rect.x+3+caption_offset, rect.y+(rect.height//2)-(h//2)-1)
 
@@ -740,9 +746,7 @@ class AuiDefaultDockArt:
             rect.x = rect.x + (rect.width//2) - (bmp.GetWidth()//2)
             rect.width = old_x + rect.width - rect.x - 1
         else:
-            old_y = rect.y
             rect.y = rect.y + (rect.height//2) - (bmp.GetHeight()//2)
-            rect.height = old_y + rect.height - rect.y - 1
 
         if button_state == AUI_BUTTON_STATE_PRESSED:
             rect.x += 1

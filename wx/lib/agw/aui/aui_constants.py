@@ -344,6 +344,8 @@ AUI_DOCKART_DRAW_SASH_GRIP = 18
 """ Draw a sash grip on the sash. """
 AUI_DOCKART_HINT_WINDOW_COLOUR = 19
 """ Customizes the hint window background colour (currently light blue). """
+AUI_DOCKART_HINT_WINDOW_BORDER_COLOUR = 20
+""" Customizes the hint window border background colour (currently grey). """
 
 # Caption Gradient Type
 AUI_GRADIENT_NONE = 0
@@ -2569,12 +2571,13 @@ colourTargetBorder = wx.Colour(180, 180, 180)
 colourTargetShade = wx.Colour(206, 206, 206)
 colourTargetBackground = wx.Colour(224, 224, 224)
 colourIconBorder = wx.Colour(82, 65, 156)
-colourIconBackground = wx.Colour(255, 255, 255)
+colourIconBackground = wx.WHITE
 colourIconDockingPart1 = wx.Colour(215, 228, 243)
 colourIconDockingPart2 = wx.Colour(180, 201, 225)
 colourIconShadow = wx.Colour(198, 198, 198)
 colourIconArrow = wx.Colour(77, 79, 170)
 colourHintBackground = wx.Colour(0, 64, 255)
+colourHintBorder = wx.Colour(60, 60, 60)
 guideSizeX, guideSizeY = 29, 32
 aeroguideSizeX, aeroguideSizeY = 31, 32
 whidbeySizeX, whidbeySizeY = 43, 30
@@ -2590,16 +2593,7 @@ SWITCHER_TEXT_MARGIN_Y = 1
 if __name__ == '__main__':
     # Easy image extraction.
     import sys
-    if sys.version_info[0] == 2:
-        PY2 = True
-        PY3 = False
-    elif sys.version_info[0] == 3:
-        PY2 = False
-        PY3 = True
-    if PY2:
-        answer = int(raw_input('Enter 1 to extract all bitmaps: '))
-    elif PY3:
-        answer = int(input('Enter 1 to extract all bitmaps: '))
+    answer = int(input('Enter 1 to extract all bitmaps: '))
     if answer == 1:
         app = wx.App(0)
         import os
@@ -2618,7 +2612,4 @@ if __name__ == '__main__':
             except Exception:
                 pass
         app.MainLoop()
-        if PY2:
-            raw_input('Press Enter To Exit.')
-        elif PY3:
-            input('Press Enter To Exit.')
+        input('Press Enter To Exit.')

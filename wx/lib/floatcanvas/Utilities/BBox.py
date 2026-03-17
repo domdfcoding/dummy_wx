@@ -15,9 +15,9 @@ A Bounding Box object and assorted utilities , subclassed from a numpy array
 
 """
 
-import numpy as N
+import numpy as np
 
-class BBox(N.ndarray):
+class BBox(np.ndarray):
     """
     A Bounding Box object:
 
@@ -61,12 +61,12 @@ class BBox(N.ndarray):
         fromPoints
 
         """
-        arr = N.array(data, N.float)
+        arr = np.array(data, float)
         arr.shape = (2,2)
         if arr[0,0] > arr[1,0] or arr[0,1] > arr[1,1]:
             # note: zero sized BB OK.
             raise ValueError("BBox values not aligned: \n minimum values must be less that maximum values")
-        return N.ndarray.__new__(subtype, shape=arr.shape, dtype=arr.dtype, buffer=arr)
+        return np.ndarray.__new__(subtype, shape=arr.shape, dtype=arr.dtype, buffer=arr)
 
     def Overlaps(self, BB):
         """
@@ -77,7 +77,7 @@ class BBox(N.ndarray):
         If they are just touching, returns True
         """
 
-        if N.isinf(self).all() or N.isinf(BB).all():
+        if np.isinf(self).all() or np.isinf(BB).all():
             return True
         if ( (self[1,0] >= BB[0,0]) and (self[0,0] <= BB[1,0]) and
              (self[1,1] >= BB[0,1]) and (self[0,1] <= BB[1,1]) ):
@@ -130,7 +130,7 @@ class BBox(N.ndarray):
         """
         if self.IsNull():
             self[:] = BB
-        elif N.isnan(BB).all(): ## BB may be a regular array, so I can't use IsNull
+        elif np.isnan(BB).all(): ## BB may be a regular array, so I can't use IsNull
             pass
         else:
             if BB[0,0] < self[0,0]: self[0,0] = BB[0,0]
@@ -141,7 +141,7 @@ class BBox(N.ndarray):
         return None
 
     def IsNull(self):
-        return N.isnan(self).all()
+        return np.isnan(self).all()
 
     ## fixme: it would be nice to add setter, too.
     def _getLeft(self):
@@ -174,12 +174,12 @@ class BBox(N.ndarray):
         #~ # returns the bounding box of a bunch of bounding boxes
         #~ upperleft = N.minimum.reduce(bboxarray[:,0])
         #~ lowerright = N.maximum.reduce(bboxarray[:,1])
-        #~ return N.array((upperleft, lowerright), N.float)
+        #~ return N.array((upperleft, lowerright), float)
     #~ _getboundingbox = staticmethod(_getboundingbox)
 
 
     ## Save the ndarray __eq__ for internal use.
-    Array__eq__ = N.ndarray.__eq__
+    Array__eq__ = np.ndarray.__eq__
     def __eq__(self, BB):
         """
         __eq__(BB) The equality operator
@@ -187,7 +187,7 @@ class BBox(N.ndarray):
         A == B if and only if all the entries are the same
 
         """
-        if self.IsNull() and N.isnan(BB).all(): ## BB may be a regular array, so I can't use IsNull
+        if self.IsNull() and np.isnan(BB).all(): ## BB may be a regular array, so I can't use IsNull
             return True
         else:
             return self.Array__eq__(BB).all()
@@ -212,8 +212,8 @@ def asBBox(data):
 
     if isinstance(data, BBox):
         return data
-    arr = N.asarray(data, N.float)
-    return N.ndarray.__new__(BBox, shape=arr.shape, dtype=arr.dtype, buffer=arr)
+    arr = np.asarray(data, float)
+    return np.ndarray.__new__(BBox, shape=arr.shape, dtype=arr.dtype, buffer=arr)
 
 def fromPoints(Points):
     """
@@ -225,10 +225,10 @@ def fromPoints(Points):
     If a single point is passed in, a zero-size Bounding Box is returned.
 
     """
-    Points = N.asarray(Points, N.float).reshape(-1,2)
+    Points = np.asarray(Points, float).reshape(-1,2)
 
-    arr = N.vstack( (Points.min(0), Points.max(0)) )
-    return N.ndarray.__new__(BBox, shape=arr.shape, dtype=arr.dtype, buffer=arr)
+    arr = np.vstack( (Points.min(0), Points.max(0)) )
+    return np.ndarray.__new__(BBox, shape=arr.shape, dtype=arr.dtype, buffer=arr)
 
 def fromBBArray(BBarray):
     """
@@ -241,10 +241,10 @@ def fromBBArray(BBarray):
     #upperleft = N.minimum.reduce(BBarray[:,0])
     #lowerright = N.maximum.reduce(BBarray[:,1])
 
- #   BBarray = N.asarray(BBarray, N.float).reshape(-1,2)
+ #   BBarray = N.asarray(BBarray, float).reshape(-1,2)
  #   arr = N.vstack( (BBarray.min(0), BBarray.max(0)) )
-    BBarray = N.asarray(BBarray, N.float).reshape(-1,2,2)
-    arr = N.vstack( (BBarray[:,0,:].min(0), BBarray[:,1,:].max(0)) )
+    BBarray = np.asarray(BBarray, float).reshape(-1,2,2)
+    arr = np.vstack( (BBarray[:,0,:].min(0), BBarray[:,1,:].max(0)) )
     return asBBox(arr)
     #return asBBox( (upperleft, lowerright) ) * 2
 
@@ -260,8 +260,8 @@ def NullBBox():
 
     """
 
-    arr = N.array(((N.nan, N.nan),(N.nan, N.nan)), N.float)
-    return N.ndarray.__new__(BBox, shape=arr.shape, dtype=arr.dtype, buffer=arr)
+    arr = np.array(((np.nan, np.nan),(np.nan, np.nan)), float)
+    return np.ndarray.__new__(BBox, shape=arr.shape, dtype=arr.dtype, buffer=arr)
 
 def InfBBox():
     """
@@ -269,8 +269,8 @@ def InfBBox():
 
     """
 
-    arr = N.array(((-N.inf, -N.inf),(N.inf, N.inf)), N.float)
-    return N.ndarray.__new__(BBox, shape=arr.shape, dtype=arr.dtype, buffer=arr)
+    arr = np.array(((-np.inf, -np.inf),(np.inf, np.inf)), float)
+    return np.ndarray.__new__(BBox, shape=arr.shape, dtype=arr.dtype, buffer=arr)
 
 class RectBBox(BBox):
     """
