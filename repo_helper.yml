@@ -25,6 +25,7 @@ preserve_custom_theme: True
 
 exclude_files:
   - pre-commit
+  - gitignore
 
 manifest_additional:
   - "recursive-include wx/py *.txt"
