@@ -45,6 +45,7 @@ repos:
       args:
        - --py36-plus
        - --keep-runtime-typing
+      exclude: ^wx/
 
  - repo: https://github.com/Lucas-C/pre-commit-hooks
    rev: v1.5.1
