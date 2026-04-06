@@ -12,7 +12,7 @@ repos:
     - id: reformat-pyproject
 
  - repo: https://github.com/pre-commit/pre-commit-hooks
-   rev: v3.4.0
+   rev: v6.0.0
    hooks:
     - id: check-added-large-files
     - id: check-ast
@@ -31,7 +31,7 @@ repos:
     - id: end-of-file-fixer
 
  - repo: https://github.com/domdfcoding/pre-commit-hooks
-   rev: v0.6.0
+   rev: v0.7.0
    hooks:
     - id: requirements-txt-sorter
       args:
@@ -39,7 +39,7 @@ repos:
     - id: bind-requirements
 
  - repo: https://github.com/python-formate/pyupgrade
-   rev: '2e49872'
+   rev: 'v3.3.0'
    hooks:
     - id: pyupgrade
       args:
@@ -48,7 +48,7 @@ repos:
       exclude: ^wx/
 
  - repo: https://github.com/Lucas-C/pre-commit-hooks
-   rev: v1.5.1
+   rev: v1.5.6
    hooks:
     - id: remove-crlf
     - id: forbid-crlf
