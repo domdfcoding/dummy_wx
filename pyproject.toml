@@ -46,7 +46,7 @@ base-classifiers = [ "Intended Audience :: Developers", "Operating System :: OS 
 python-versions = [ "3.7", "3.8",]
 python-implementations = [ "CPython",]
 platforms = [ "Windows", "macOS", "Linux",]
-license-key = "LGPL-3.0-or-later"
+license-key = "LGPLv3+"
 package = "wx"
 additional-files = [
     "recursive-include wx/py *.txt",
